@@ -2,6 +2,8 @@ package com.oscat.cinema.entity;
 
 import lombok.Data;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -28,6 +30,9 @@ public class Cinema {
 
 	@Column(name = "facilities", nullable = false, columnDefinition = "VARCHAR(MAX)")
 	private String facilities;
+
+	@Column(name = "base_price", nullable = false, precision = 10, scale = 5)
+	private BigDecimal basePrice;
 
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ScreeningRoom> screeningRooms;

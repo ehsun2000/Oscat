@@ -20,8 +20,8 @@ public class ShowTime {
 	@Column(name = "film_type", nullable = false, length = 255)
 	private String filmType;
 
-	@Column(name = "price", nullable = false, precision = 10, scale = 2)
-	private BigDecimal price;
+	@Column(name = "extra_fee", precision = 10, scale = 5, columnDefinition = "DECIMAL(10, 2) DEFAULT 0")
+	private BigDecimal extraFee;
 
 	@Column(name = "show_date_and_time", nullable = false)
 	private LocalDateTime showDateAndTime;

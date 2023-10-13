@@ -26,8 +26,8 @@ public class TicketType {
 	@Column(name = "ticket_type_name", nullable = false, length = 255)
 	private String ticketTypeName;
 
-	@Column(name = "discount", nullable = false, precision = 5, scale = 2)
-	private BigDecimal discount;
+	@Column(name = "price_difference", nullable = false, precision = 5, scale = 2)
+	private BigDecimal priceDifference;
 
 	@OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
