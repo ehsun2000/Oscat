@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>請輸入驗證碼</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+	<div class="card-header">請輸入驗證碼與新密碼</div>
+	<table>
+		<tr>
+			<td>驗證碼<input id="otp" type="text" name="otp" /></td>
+			<td id="result"></td>
+		</tr>
+		<tr>
+			<td>密碼<input id="newPwd" type="password" name="newPwd" /></td>
+		</tr>
+	</table>
+	<button id="send">重設密碼</button>
+
+<script>
+	$(function() {
+		$('#send').click(function() {
+			var otp = $('#otp').val();
+			var newPwd = $('#newPwd').val(); // 獲取新密碼的值
+
+			if ($.trim(otp) == '' || $.trim(newPwd) == '') {
+				alert('驗證碼和新密碼不得為空');
+				return;
+			}
+
+			console.log('otp:' + otp);
+			//console.log('newPwd:' + newPwd);
+			var params = {
+				"otp" : otp,
+				"newPwd" : newPwd
+			// 包含新密碼的值
+			};
+
+			$.ajax({
+				type : 'post',
+				url : 'checkOtpPwd',
+				contentType : 'application/json',
+				data : JSON.stringify(params),
+				success : function(data) {
+					console.log('data:' + data);
+					if (data == 'Y') {
+						//$('#result').html('驗證碼正確');
+						window.location.href = 'otpPwdReset';
+					}
+
+					if (data == 'N') {
+						$('#result').html('驗證碼錯誤，請重新輸入');
+					}
+				}
+			});
+		});
+	});
+</script>
+</body>
+</html>

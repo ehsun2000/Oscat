@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+		<h1>新增影城資訊</h1>
+		<div class="card">
+			<div class="card-header">請輸入影城資訊</div>
+			<div class="card-body">
+				<form action="#" method="post" enctype="multipart/form-data">
+					<div class="input=group">
+					<label for="cinemaName" class="form-label">影城名稱 </label>
+					<input class="form-comtrol" name="cinemaName" id="cinemaName" required/>
+					</div>
+					<br>
+					<div class="input=group">
+					<label for="cinemaAddress" class="form-label">地址 </label>
+					<input class="form-comtrol" name="cinemaAddress" id="cinemaAddress" required/>
+					</div>
+					<br>
+					<div class="input=group">
+					<label for="contactPhone" class="form-label">電話 </label>
+					<input class="form-comtrol" name="contactPhone" id="contactPhone" required/>
+					</div>
+					<br>
+					<div class="input=group">
+					<label for="openingHours" class="form-label">營業時間 </label>
+					<input class="form-comtrol" name="openingHours" id="openingHours" required/>
+					</div>
+					<br>
+					<div class="input=group">
+					<label for="facilities" class="form-label">設施 </label>
+					<input class="form-comtrol" name="facilities" id="facilities" required/>
+					</div>
+					<br>
+				
+				
+				
+				</form>
+				
+			</div>
+		</div>
+	</div>
+</body>
+</html>

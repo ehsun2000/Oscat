@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AJAX-MOVIE</title>
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+  <style>
+    .insertzone {
+      position: fixed;
+      background: #333333AA;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-basis: 50%;
+      color: white;
+      font-weight: bolder;
+      text-align: center;
+    }
+
+    .insertzone>form {
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <table width="100%">
+    <thead>
+      <tr>
+        <td>編號</td>
+        <td>動物名</td>
+        <td>重量</td>
+        <td>簡介</td>
+        <td>更新日期</td>
+    
+      </tr>
+      <tr>
+        <td colspan="6">
+          <hr>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="6" style="text-align: center;padding:10px">
+          <button onclick="activeForm()">新增</button>
+          <button onclick="loading()">加載</button>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="insertzone" style="display: none;">
+    <!-- 
+    這裡不先寫好HTML是因為我們網頁不會重整，因此第二次進行新增時HTML子元素需要清掉
+    因此直接由JavaScript來設計較適宜
+    -->
+  </div>
+  <script>
+    /*select*/
+    let start = 0;
+    function loading() {
+      $.post("api.php?do=select", { start }, function (result) {
+        if (result != "fail") {
+          $("tbody").append(result);
+          $(".mdy").click(chginput);//因為是後來生成的 HTML，你必須重新使 DOM 路徑被認識（或者走 HTML 的 onclick 比較快）
+          start += 10;
+        }
+      });
+    }
+    loading();
+
+    /*update before DOM transform*/
+    function chginput() {
+      let item = $(this).parent().siblings();
+      item.parent().html(`
+        <td><input type="hidden" name="id" value="${item.eq(0).text()}">${item.eq(0).text()}</td>
+        <td><input type="text" name="name" value="${item.eq(1).text()}"></td>
+        <td><input type="text" name="weight" value="${item.eq(2).text()}"></td>
+        <td><input type="text" name="info" value="${item.eq(3).text()}"></td>
+        <td>${item.eq(4).text()}</td>
+        <td>
+          <button onclick="chgtxt(this)">儲存</button>
+        </td>
+      `);
+      //像這裡就直接指定 onclick，否則你必須要在宣告一次 click
+      //HTML的onclick不像js event事件能自身帶this，所以要塞入this才能傳遞
+    }
+
+    /*update after DOM transform*/
+    function chgtxt(who) {
+      const data = $(who).parents("tr").find("input").serialize();
+      $.post("api.php?do=update", data, function (cdate) {
+        let item = $(who).parent().siblings();
+        const
+          id = item.eq(0).text(),
+          name = item.eq(1).children().val(),
+          weight = item.eq(2).children().val(),
+          info = item.eq(3).children().val();
+
+        item.parent().html(`
+          <td>${id}</td>
+          <td>${name}</td>
+          <td>${weight}</td>
+          <td>${info}</td>
+          <td>${cdate}</td>
+          <td>
+            <button class="mdy">修改</button>
+            <button onclick="del(this)">刪除</button>
+          </td>
+        `);
+        $(".mdy").click(chginput);//這裡新的 HTML 已經跟前面出現過的脫節，所以還要重新再綁一次
+      });
+    }
+    /*delete*/
+    function del(who) {
+      let id = $(who).parent().siblings().eq(0).text();
+      // $.post("api.php?do=delete",{"id":id},function(result){ //DATA=JSON
+      $.post("api.php?do=delete", { id }, function (result) {
+        if (result) $(who).parent().parent().remove(); //有回傳才做事
+      });
+    }
+
+    /*insert*/
+    function activeForm() {
+      $(".insertzone").html(`
+        <form action="">
+        <h1>新增動物資料</h1>
+        <hr>
+        <p>動物：<input type="text" name="name"></p>
+        <p>重量：<input type="text" name="weight"></p>
+        <p>簡介：<input type="text" name="info"></p>
+        <hr>
+        <p>
+          <!-- 注意button沒有type會形同submit -->
+          <button type="button" onclick="sendForm(this)">新增</button>
+          <button type="button" onclick="closeAddform()">取消</button>
+        </p>
+      </form>
+      `);
+      $(".insertzone").fadeIn();
+    }
+    function closeAddform() {
+      $(".insertzone").fadeOut();
+    }
+    function sendForm(who) {
+      const data = $(who).parents("form").find("input").serialize();
+      $.post("api.php?do=insert", data, function (result) {
+        //由於是分流載入而考慮情況較多。最快就是歸零重新載入初始select
+        $("tbody").empty();
+        start = 0;
+        loading();
+        $(".insertzone").fadeOut();
+      });
+    }
+  </script>
+
+</body>
+
+</html>
