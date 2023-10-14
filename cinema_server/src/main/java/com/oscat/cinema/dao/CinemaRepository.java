@@ -24,5 +24,9 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 	List<SearchCinemaForBook> findCinemasByMovieId(@Param("movieId") UUID movieId, 
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate);
+
+	// 查詢單筆 cinema 資料 JPQL
+	@Query("FROM Cinema CINEMA WHERE cinemaId = :id")
+	Cinema findCinemaById(@Param("id") Integer id);
 	
 }
