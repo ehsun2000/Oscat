@@ -33,10 +33,18 @@ public class CinemaInfoController {
 
 	}
 
+	/*
+	 * /api/cinemas - 搜尋第一頁，使用預設的頁面大小和排序。 
+	 * /api/cinemas?page=1 - 搜尋第二頁。
+	 * /api/cinemas?size=5 - 指定大小為5。 
+	 * /api/cinemas?sort=cinemaName,asc - 按cinemaName升序排列结果。
+	*/
 	// 找尋分頁影城資料
-	@GetMapping
-	public ResponseEntity<Page<Object[]>> getAllCinemas(Pageable pageable) {
-		return ResponseEntity.ok(null);
+	@GetMapping("/")
+	public ResponseEntity<Page<CinemaDTO>> getAllCinemas(Pageable pageable) {
+		Page<CinemaDTO> cinemas = infoService.findAll(pageable);
+		
+		return ResponseEntity.ok(cinemas);
 	}
 
 }
