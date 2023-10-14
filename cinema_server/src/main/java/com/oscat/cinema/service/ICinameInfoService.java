@@ -12,5 +12,8 @@ public interface ICinameInfoService {
 
 	// 找尋分頁影城資料
 	Page<CinemaDTO> findAll(Pageable pageable);
+
+	// 更新影城資料
+	boolean update(CinemaDTO cinema);
 	
 }
