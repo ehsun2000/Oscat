@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 
-@Configuration
-@PropertySource("google-oauth2.properties")  // 把該檔案放到 resources 底下, 且加入 gitignore 
+//@Configuration
+//@PropertySource("google-oauth2.properties")  // 把該檔案放到 resources 底下, 且加入 gitignore 
 public class GoogleOAuth2Config {
 
 	@Value("${client_id}")
