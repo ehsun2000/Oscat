@@ -1,6 +1,9 @@
 package com.oscat.cinema.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.oscat.cinema.entity.TicketType;
 
 import lombok.Data;
 
@@ -13,4 +16,6 @@ public class CinemaDTO {
     private String openingHours;
     private String facilities;
 	private BigDecimal basePrice;
+	private String img;
+	private List<TicketTypeDTO> types;
 }

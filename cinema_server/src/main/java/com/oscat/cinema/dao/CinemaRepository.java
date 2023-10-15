@@ -28,7 +28,7 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
             @Param("endDate") LocalDateTime endDate);
 
 	// 查詢單筆 cinema 資料 JPQL
-	@Query("FROM Cinema CINEMA WHERE cinemaId = :id")
+	@Query("FROM Cinema WHERE cinemaId = :id")
 	Cinema findCinemaById(@Param("id") Integer id);
 	
 	// 查詢分頁 cinema 資料 JPQL
