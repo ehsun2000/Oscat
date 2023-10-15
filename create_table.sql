@@ -79,6 +79,9 @@ CREATE TABLE ticket_type
     price_difference  DECIMAL(5, 2) NOT NULL  -- 修改根據票種有不同的漲幅
 );
 
+/*
+    為了防止移除 ticket_type (更動) 時，會導致關聯到的 ticket 會失去關聯的 type 故建此表。
+*/
 -- 建立影城票種資料表
 CREATE TABLE cinema_ticket_type (
     cinema_id INT FOREIGN KEY REFERENCES Cinema(cinema_id),
