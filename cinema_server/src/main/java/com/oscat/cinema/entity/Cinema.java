@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -19,10 +21,9 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "cinema")
-@JsonIdentityInfo(
-	    generator = ObjectIdGenerators.PropertyGenerator.class,
-	    property = "cinemaId"
-	)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"..."})
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "cinemaId")
 public class Cinema {
 
 	@Id
@@ -55,5 +56,5 @@ public class Cinema {
 	private List<ScreeningRoom> screeningRooms;
 	
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<TicketType> ticketTypes;
+	private List<CinemaTicketType> ticketTypes;
 }
