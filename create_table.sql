@@ -46,6 +46,7 @@ CREATE TABLE cinema
     cinema_id      INT IDENTITY (1,1) PRIMARY KEY,
     cinema_name    VARCHAR(255) NOT NULL,
     cinema_address VARCHAR(255) NOT NULL,
+    cinema_img     VARCHAR(255) NOT NULL,   -- 新增影城圖片
     contact_phone  VARCHAR(20) NOT NULL,
     opening_hours  VARCHAR(100) NOT NULL,
     facilities     VARCHAR(MAX) NOT NULL,
@@ -74,6 +75,7 @@ CREATE TABLE seat
 CREATE TABLE ticket_type
 (
     ticket_type_id             INT IDENTITY (1,1) PRIMARY KEY,
+    cinema_id                  INT FOREIGN KEY REFERENCES cinema(cinema_id), -- 新增影城外鍵
     ticket_type_name           VARCHAR(255) NOT NULL,
     price_difference  DECIMAL(5, 2) NOT NULL  -- 修改根據票種有不同的漲幅
 );
