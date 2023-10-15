@@ -52,6 +52,7 @@ public interface CinemaMapper {
 		return entity;
 	}
 	
+	// 在 mapping 之後，映射 typeDto 欄位到 tickettype 中，並檢查是否更改、刪除
 	@AfterMapping
 	default void handleTicketTypes(@MappingTarget Cinema cinema, CinemaDTO cinemaDTO) {
 	    if (cinemaDTO.getTypes() != null) {
