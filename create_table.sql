@@ -53,13 +53,6 @@ CREATE TABLE cinema
     base_price     DECIMAL(10, 2) NOT NULL  -- 新增的基礎票價
 );
 
--- 建立影城票種資料表
-CREATE TABLE cinema_ticket_type (
-    cinema_id INT FOREIGN KEY REFERENCES Cinema(cinema_id),
-    ticket_type_id INT FOREIGN KEY REFERENCES ticket_type(ticket_type_id),
-    PRIMARY KEY (cinema_id, ticket_type_id)
-);
-
 -- 建立放映廳 (ScreeningRoom)資料表
 CREATE TABLE screening_room
 (
@@ -84,6 +77,13 @@ CREATE TABLE ticket_type
     ticket_type_id             INT IDENTITY (1,1) PRIMARY KEY,
     ticket_type_name           VARCHAR(255) NOT NULL,
     price_difference  DECIMAL(5, 2) NOT NULL  -- 修改根據票種有不同的漲幅
+);
+
+-- 建立影城票種資料表
+CREATE TABLE cinema_ticket_type (
+    cinema_id INT FOREIGN KEY REFERENCES Cinema(cinema_id),
+    ticket_type_id INT FOREIGN KEY REFERENCES ticket_type(ticket_type_id),
+    PRIMARY KEY (cinema_id, ticket_type_id)
 );
 
 -- 建立場次(ShowTime)資料表
