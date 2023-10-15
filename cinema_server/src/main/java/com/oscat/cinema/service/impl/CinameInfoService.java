@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.oscat.cinema.dao.CinemaRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
+import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
 import com.oscat.cinema.service.ICinameInfoService;
 
@@ -20,7 +21,7 @@ public class CinameInfoService implements ICinameInfoService {
 
 	// 建構子注入
 	@Autowired
-	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper) {
+	public CinameInfoService(CinemaRepository cinemaRepo,CinemaMapper cinmeMapper) {
 		this.cinemaRepo = cinemaRepo;
 		this.cinemaMapper = cinmeMapper;
 	}
@@ -29,6 +30,7 @@ public class CinameInfoService implements ICinameInfoService {
 	@Override
 	public CinemaDTO findCinemaById(Integer id) {
 		Cinema cinema = cinemaRepo.findCinemaById(id);
+		
 		return cinemaMapper.toDto(cinema);
 	}
 
@@ -44,15 +46,15 @@ public class CinameInfoService implements ICinameInfoService {
 	@Override
 	public boolean update(CinemaDTO dto) {
 		Optional<Cinema> existingCinema = cinemaRepo.findById(dto.getId());
-		
+
 //		判斷是否有找到值
 		if (existingCinema.isPresent()) {
-			
+
 			Cinema cinema = existingCinema.get();
-			
+
 //			缺少 validator
-			cinemaMapper.updateFromDto(dto, cinema);
-			
+//			cinemaMapper.updateFromDto(dto, cinema);
+
 			cinemaRepo.save(cinema);
 
 			return true;
