@@ -1,7 +1,7 @@
 -- create database Oscatdb
 use Oscatdb;
 
--- å»ºç«‹é›»å½±(Movie)è³‡æ–™è¡¨
+-- «Ø¥ß¹q¼v(Movie)¸ê®Æªí
 CREATE TABLE movie
 (
     movie_id       uniqueidentifier PRIMARY KEY,
@@ -19,7 +19,7 @@ CREATE TABLE movie
     poster_image   VARCHAR(1000)
 );
 
--- åŠ‡æƒ…ç…§ç‰‡è³‡æ–™è¡¨
+-- ¼@±¡·Ó¤ù¸ê®Æªí
 CREATE TABLE movie_stills
 (
     still_id        uniqueidentifier PRIMARY KEY,
@@ -27,7 +27,7 @@ CREATE TABLE movie_stills
     still_image_url VARCHAR(1000) NOT NULL
 );
 
--- å»ºç«‹æœƒå“¡(Member)è³‡æ–™è¡¨
+-- «Ø¥ß·|­û(Member)¸ê®Æªí
 CREATE TABLE member
 (
     member_id   uniqueidentifier PRIMARY KEY,
@@ -40,7 +40,7 @@ CREATE TABLE member
     join_date   DATETIME     not null
 );
 
--- å»ºç«‹å½±åŸ(Cinema)è³‡æ–™è¡¨
+-- «Ø¥ß¼v«°(Cinema)¸ê®Æªí
 CREATE TABLE cinema
 (
     cinema_id      INT IDENTITY (1,1) PRIMARY KEY,
@@ -49,10 +49,10 @@ CREATE TABLE cinema
     contact_phone  VARCHAR(20) NOT NULL,
     opening_hours  VARCHAR(100) NOT NULL,
     facilities     VARCHAR(MAX) NOT NULL,
-    base_price     DECIMAL(10, 2) NOT NULL  -- æ–°å¢çš„åŸºç¤ç¥¨åƒ¹
+    base_price     DECIMAL(10, 2) NOT NULL  -- ·s¼Wªº°òÂ¦²¼»ù
 );
 
--- å»ºç«‹æ”¾æ˜ å»³ (ScreeningRoom)è³‡æ–™è¡¨
+-- «Ø¥ß©ñ¬MÆU (ScreeningRoom)¸ê®Æªí
 CREATE TABLE screening_room
 (
     room_id   INT identity (1,1) PRIMARY KEY,
@@ -61,7 +61,7 @@ CREATE TABLE screening_room
     cinema_id INT FOREIGN KEY REFERENCES cinema (cinema_id)
 );
 
--- å»ºç«‹åº§ä½ (Seat)è³‡æ–™è¡¨
+-- «Ø¥ß®y¦ì (Seat)¸ê®Æªí
 CREATE TABLE seat
 (
     seat_id     uniqueidentifier PRIMARY KEY,
@@ -70,15 +70,15 @@ CREATE TABLE seat
     seat_status VARCHAR(50) not null
 );
 
--- å»ºç«‹ç¥¨ç¨® (TicketType)è³‡æ–™è¡¨
+-- «Ø¥ß²¼ºØ (TicketType)¸ê®Æªí
 CREATE TABLE ticket_type
 (
     ticket_type_id             INT IDENTITY (1,1) PRIMARY KEY,
     ticket_type_name           VARCHAR(255) NOT NULL,
-    price_difference  DECIMAL(5, 2) NOT NULL  -- ä¿®æ”¹æ ¹æ“šç¥¨ç¨®æœ‰ä¸åŒçš„æ¼²å¹…
+    price_difference  DECIMAL(5, 2) NOT NULL  -- ­×§ï®Ú¾Ú²¼ºØ¦³¤£¦Pªºº¦´T
 );
 
--- å»ºç«‹å ´æ¬¡(ShowTime)è³‡æ–™è¡¨
+-- «Ø¥ß³õ¦¸(ShowTime)¸ê®Æªí
 CREATE TABLE showtime
 (
     showtime_id        UNIQUEIDENTIFIER PRIMARY KEY,
@@ -86,11 +86,11 @@ CREATE TABLE showtime
     room_id            INT FOREIGN KEY REFERENCES screening_room (room_id),
     film_type          VARCHAR(255) NOT NULL,
     price              DECIMAL(10, 2) NOT NULL,
-    extra_fee          DECIMAL(10, 2) DEFAULT 0,  -- æ–°å¢çš„ç‰¹å®šå ´æ¬¡åƒ¹æ ¼èª¿æ•´
+    extra_fee          DECIMAL(10, 2) DEFAULT 0,  -- ·s¼Wªº¯S©w³õ¦¸»ù®æ½Õ¾ã
     show_date_and_time DATETIME2 NOT NULL
 );
 
--- å»ºç«‹è¨‚ç¥¨ç´€éŒ„(TransOrder)è³‡æ–™è¡¨
+-- «Ø¥ß­q²¼¬ö¿ı(TransOrder)¸ê®Æªí
 CREATE TABLE trans_order
 (
     order_id              uniqueidentifier PRIMARY KEY,
@@ -101,7 +101,7 @@ CREATE TABLE trans_order
     total_price           DECIMAL(10, 2) not null
 );
 
--- å»ºç«‹é›»å½±ç¥¨ (Ticket)è³‡æ–™è¡¨
+-- «Ø¥ß¹q¼v²¼ (Ticket)¸ê®Æªí
 CREATE TABLE ticket
 (
     ticket_id uniqueidentifier,
@@ -110,3 +110,27 @@ CREATE TABLE ticket
     seat_id   uniqueidentifier FOREIGN KEY REFERENCES seat (seat_id),
     PRIMARY KEY (ticket_id, seat_id)
 );
+
+
+-- «Ø¥ß²£«~(Product)¸ê®Æªí
+CREATE TABLE product
+(
+    product_id    uniqueidentifier PRIMARY KEY,
+    product_name  VARCHAR(255) NOT NULL,
+    unit_price    DECIMAL(10, 2) NOT NULL,
+    product_type  VARCHAR(50) NOT NULL,
+	product_img VARCHAR(255) NOT NULL
+);
+
+
+-- «Ø¥ß¼v«°²£«~ ¸ê®Æªí
+CREATE TABLE cinema_product
+(
+    cinema_id    INT,
+    product_id   UNIQUEIDENTIFIER,
+    availability INT NOT NULL,
+    PRIMARY KEY (cinema_id, product_id),
+    FOREIGN KEY (cinema_id) REFERENCES cinema (cinema_id),
+    FOREIGN KEY (product_id) REFERENCES product (product_id)
+);
+
