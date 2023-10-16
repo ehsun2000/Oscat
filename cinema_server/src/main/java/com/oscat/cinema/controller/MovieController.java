@@ -1,5 +1,6 @@
 package com.oscat.cinema.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,20 +23,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.oscat.cinema.dao.MovieRepository;
 import com.oscat.cinema.entity.Movie;
+import com.oscat.cinema.entity.MovieStills;
 
 import jakarta.transaction.Transactional;
 
 @RestController
+@CrossOrigin(origins="http://localhost:8081")
 public class MovieController {
 
 	@Autowired
 	private MovieRepository movRepo;
 
 	@PostMapping("/movie/add")
-	public Movie postAddMovie(@RequestBody Movie mov) {
+	public ResponseEntity<?> postAddMovie(@RequestBody Movie movie) {
 
-		return movRepo.save(mov);
+	    Movie addMovie = new Movie();
+	    addMovie.setMovieName(movie.getMovieName());
+	    addMovie.setMovieType(movie.getMovieType());
+	    addMovie.setMovieStatus(movie.getMovieStatus());
+	    addMovie.setDirector(movie.getDirector());
+	    addMovie.setWriterList(movie.getWriterList());
+	    addMovie.setActorList(movie.getActorList());
+	    addMovie.setPlotSummary(movie.getPlotSummary());
+	    addMovie.setReleaseDate(movie.getReleaseDate());
+	    addMovie.setDuration(movie.getDuration());
+	    addMovie.setClassification(movie.getClassification());
+	    addMovie.setTrailerLink(movie.getTrailerLink());
+	    addMovie.setPosterImage(movie.getPosterImage());
+	    
+	    List<MovieStills> movieStillsList = new ArrayList<>();
+	    for (MovieStills movieStill : movie.getMovieStills()) {
+	        MovieStills newMovieStill = new MovieStills();
+	        newMovieStill.setStillImageUrl(movieStill.getStillImageUrl());
+	        newMovieStill.setMovie(addMovie);
+	        movieStillsList.add(newMovieStill);
+	    }
 
+	    addMovie.setMovieStills(movieStillsList);
+	    
+	    Movie createMovie = movRepo.save(addMovie);
+	    
+	    if (createMovie != null) {
+	    	return new ResponseEntity<Movie>(createMovie,null,HttpStatus.OK);
+	    }
+	    return new ResponseEntity<String>("新增失敗，請檢查輸入格式",null,HttpStatus.BAD_REQUEST);
 	}
 
 	@PostMapping("/movie/addList")

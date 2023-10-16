@@ -1,5 +1,5 @@
--- create database Oscatdb
-use Oscatdb;
+--create database Oscatdb
+--use Oscatdb;
 
 -- 建立電影(Movie)資料表
 CREATE TABLE movie

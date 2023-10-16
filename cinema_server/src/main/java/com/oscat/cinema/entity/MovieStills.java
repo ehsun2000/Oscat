@@ -3,6 +3,8 @@ import lombok.Data;
 import jakarta.persistence.*;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Data
 @Entity
 @Table(name = "movie_stills")
@@ -13,6 +15,7 @@ public class MovieStills {
     @Column(columnDefinition = "uniqueidentifier", name = "still_id")
     private UUID stillId;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
