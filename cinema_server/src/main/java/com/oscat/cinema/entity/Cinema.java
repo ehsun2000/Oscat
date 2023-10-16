@@ -36,4 +36,7 @@ public class Cinema {
 
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ScreeningRoom> screeningRooms;
+	
+	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CinemaProduct> cinemaProducts;
 }
