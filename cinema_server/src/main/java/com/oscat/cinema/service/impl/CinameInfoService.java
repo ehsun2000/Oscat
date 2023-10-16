@@ -1,5 +1,6 @@
 package com.oscat.cinema.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,29 +9,36 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.CinemaRepository;
+import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
+import com.oscat.cinema.mapper.TicketTypeMapper;
 import com.oscat.cinema.service.ICinameInfoService;
 
 @Service
 public class CinameInfoService implements ICinameInfoService {
 	private final CinemaRepository cinemaRepo;
+	private final TicketTypeRepository typeRepository;
 	private final CinemaMapper cinemaMapper;
+	private final TicketTypeMapper typeMapper;
 
 	// 建構子注入
 	@Autowired
-	public CinameInfoService(CinemaRepository cinemaRepo,CinemaMapper cinmeMapper) {
+	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper, TicketTypeRepository typeRepository,
+			TicketTypeMapper typeMapper) {
 		this.cinemaRepo = cinemaRepo;
+		this.typeRepository = typeRepository;
 		this.cinemaMapper = cinmeMapper;
+		this.typeMapper = typeMapper;
 	}
 
 	// 單筆影城查詢方法
 	@Override
 	public CinemaDTO findCinemaById(Integer id) {
 		Cinema cinema = cinemaRepo.findCinemaById(id);
-		
+
 		return cinemaMapper.toDto(cinema);
 	}
 
@@ -46,6 +54,8 @@ public class CinameInfoService implements ICinameInfoService {
 	@Override
 	public boolean update(CinemaDTO dto) {
 		Optional<Cinema> existingCinema = cinemaRepo.findById(dto.getId());
+		List<TicketType> types = typeRepository.findAll();
+		
 
 //		判斷是否有找到值
 		if (existingCinema.isPresent()) {
@@ -53,10 +63,12 @@ public class CinameInfoService implements ICinameInfoService {
 			Cinema cinema = existingCinema.get();
 
 //			缺少 validator
-//			cinemaMapper.updateFromDto(dto, cinema);
+			cinemaMapper.updateFromDto(dto, cinema, types);
 
 			cinemaRepo.save(cinema);
-
+			
+			cinemaRepo.flush();
+			
 			return true;
 		} else {
 			return false;

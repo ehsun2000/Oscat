@@ -18,5 +18,5 @@ public class CinemaDTO {
     private String facilities;
 	private BigDecimal basePrice;
 	private String img;
-	private List<TicketTypeDTO> types;
+	private List<String> types;
 }

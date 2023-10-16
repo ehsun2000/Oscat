@@ -14,15 +14,13 @@ import com.oscat.cinema.entity.TicketType;
 
 //使用 mapstruct 轉換 dto
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface CinemaTicketTypeMapper {
+public interface TicketTypeMapper {
 	
 	
-	// 將 TicketType 映射到 TicketTypeDTO
-//	@Mapping(target = "type", source = "ticketType.ticketTypeName")
-//	@Mapping(target = "different", source = "ticketType.priceDifference")
-	default String toDto(CinemaTicketType ticketType) {
-		return ticketType.getTicketType().getTicketTypeName();
+	// 將 TicketType.name 映射到 String
+	default String toStrArr(TicketType ticketType) {
+		return ticketType.getTicketTypeName();
 	};
 
-	List<String> toDto(List<CinemaTicketType> ticketTypes);
+	List<String> toStrArr(List<TicketType> ticketTypes);
 }
