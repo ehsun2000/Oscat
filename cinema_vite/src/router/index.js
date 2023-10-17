@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import SeatController from '../components/seat/SeatController.vue';
 
 const routes = [
   {
@@ -8,8 +7,12 @@ const routes = [
     component: () => import('../App.vue'),
   },
   {
-    path: '/seatcontroller',
-    component: SeatController,
+    path: '/SeatController',
+    component: () => import('../components/seat/SeatController.vue'),
+  },
+  {
+    path: '/SeatStatus',
+    component: () => import('../components/seat/SeatStatus.vue'),
   },
 ];
 

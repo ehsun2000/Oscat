@@ -82,6 +82,11 @@ public class SeatService {
         return updatedRows > 0;
     }
     
+    public boolean updateSeatStatusBySeatId(String status,UUID id) {
+    	int updatedRows = seatRepository.updateSeatStatusById(status, id);
+    	return updatedRows > 0;
+    }
+    
     public void deleteSeatById(UUID id) {
     	seatRepository.deleteById(id);
     }

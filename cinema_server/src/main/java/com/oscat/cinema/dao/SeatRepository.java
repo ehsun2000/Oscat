@@ -24,6 +24,11 @@ public interface SeatRepository extends JpaRepository<Seat, UUID> {
 	Integer updateSeatStatusBySeatNameAndRoomId(@Param("status") String status, @Param("seatName") String seatName,
 			@Param("roomId") Integer roomId);
 	
+	@Transactional
+	@Modifying
+	@Query("update Seat set seatStatus = :status where id = :id")
+	Integer updateSeatStatusById(@Param("status") String status, @Param("id") UUID id );
+	
     List<Seat> findByScreeningRoom_RoomIdOrderBySeatName(Integer roomId);
     
     @Query("SELECT s FROM Seat s WHERE s.screeningRoom.roomId = :roomId ORDER BY s.seatName")

@@ -64,7 +64,6 @@ public class SeatController {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	
 
 	@PutMapping("/updateSeatStatus")
 	public ResponseEntity<String> updateSeatStatus(@RequestBody Map<String, Object> request) {
@@ -80,13 +79,24 @@ public class SeatController {
 	    }
 	}
 	
+	@PutMapping("/updateSeatStatusById")
+	@CrossOrigin(origins = "http://localhost:8081")
+	public ResponseEntity<String> updateSeatStatusById(@RequestParam UUID id,@RequestParam String status) {
+		boolean result = seatService.updateSeatStatusBySeatId(status, id);
+	    if (result) {
+	        return ResponseEntity.ok("更新成功");
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+	
 	@DeleteMapping("/deleteSeat")
 	public String deleteSeat(@RequestParam("id") UUID id) {
 	    seatService.deleteSeatById(id);
 	    return "刪除成功";
 	}
 	
-	@GetMapping("/ScreeningRoom/findall")
+	@GetMapping("/ScreeningRoom/findallScreeningRoom")
 	@CrossOrigin(origins = "http://localhost:8081")
 	public List<ScreeningRoomDTO> findAllScreeningRoom(){
 	    List<ScreeningRoom> screeningRooms = srRepo.findAll();
