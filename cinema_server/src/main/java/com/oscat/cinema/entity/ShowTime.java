@@ -36,4 +36,7 @@ public class ShowTime {
 
 	@OneToMany(mappedBy = "showTime", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TransOrder> transOrders;
+	
+	@Column(name = "price")
+	private int price;
 }
