@@ -65,13 +65,14 @@ public class CinameInfoService implements ICinameInfoService {
 			cinemaMapper.updateFromDto(dto, cinema, types);
 
 			try {
-//				cinemaRepo.save(cinema);				
+				cinemaRepo.save(cinema);
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {				
+			} finally {
+//				強制進行 flush
 				cinemaRepo.flush();
 			}
-			
+
 			return true;
 		} else {
 			return false;
