@@ -28,7 +28,7 @@ import com.oscat.cinema.entity.MovieStills;
 import jakarta.transaction.Transactional;
 
 @RestController
-@CrossOrigin(origins="http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:8081")
 public class MovieController {
 
 	@Autowired
@@ -37,36 +37,36 @@ public class MovieController {
 	@PostMapping("/movie/add")
 	public ResponseEntity<?> postAddMovie(@RequestBody Movie movie) {
 
-	    Movie addMovie = new Movie();
-	    addMovie.setMovieName(movie.getMovieName());
-	    addMovie.setMovieType(movie.getMovieType());
-	    addMovie.setMovieStatus(movie.getMovieStatus());
-	    addMovie.setDirector(movie.getDirector());
-	    addMovie.setWriterList(movie.getWriterList());
-	    addMovie.setActorList(movie.getActorList());
-	    addMovie.setPlotSummary(movie.getPlotSummary());
-	    addMovie.setReleaseDate(movie.getReleaseDate());
-	    addMovie.setDuration(movie.getDuration());
-	    addMovie.setClassification(movie.getClassification());
-	    addMovie.setTrailerLink(movie.getTrailerLink());
-	    addMovie.setPosterImage(movie.getPosterImage());
-	    
-	    List<MovieStills> movieStillsList = new ArrayList<>();
-	    for (MovieStills movieStill : movie.getMovieStills()) {
-	        MovieStills newMovieStill = new MovieStills();
-	        newMovieStill.setStillImageUrl(movieStill.getStillImageUrl());
-	        newMovieStill.setMovie(addMovie);
-	        movieStillsList.add(newMovieStill);
-	    }
+		Movie addMovie = new Movie();
+		addMovie.setMovieName(movie.getMovieName());
+		addMovie.setMovieType(movie.getMovieType());
+		addMovie.setMovieStatus(movie.getMovieStatus());
+		addMovie.setDirector(movie.getDirector());
+		addMovie.setWriterList(movie.getWriterList());
+		addMovie.setActorList(movie.getActorList());
+		addMovie.setPlotSummary(movie.getPlotSummary());
+		addMovie.setReleaseDate(movie.getReleaseDate());
+		addMovie.setDuration(movie.getDuration());
+		addMovie.setClassification(movie.getClassification());
+		addMovie.setTrailerLink(movie.getTrailerLink());
+		addMovie.setPosterImage(movie.getPosterImage());
 
-	    addMovie.setMovieStills(movieStillsList);
-	    
-	    Movie createMovie = movRepo.save(addMovie);
-	    
-	    if (createMovie != null) {
-	    	return new ResponseEntity<Movie>(createMovie,null,HttpStatus.OK);
-	    }
-	    return new ResponseEntity<String>("新增失敗，請檢查輸入格式",null,HttpStatus.BAD_REQUEST);
+		List<MovieStills> movieStillsList = new ArrayList<>();
+		for (MovieStills movieStill : movie.getMovieStills()) {
+			MovieStills newMovieStill = new MovieStills();
+			newMovieStill.setStillImageUrl(movieStill.getStillImageUrl());
+			newMovieStill.setMovie(addMovie);
+			movieStillsList.add(newMovieStill);
+		}
+
+		addMovie.setMovieStills(movieStillsList);
+
+		Movie createMovie = movRepo.save(addMovie);
+
+		if (createMovie != null) {
+			return new ResponseEntity<Movie>(createMovie, null, HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("新增失敗，請檢查輸入格式", null, HttpStatus.BAD_REQUEST);
 	}
 
 	@PostMapping("/movie/addList")
@@ -83,6 +83,17 @@ public class MovieController {
 			return new ResponseEntity<Movie>(result, null, HttpStatus.OK);
 		}
 
+		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
+	}
+
+	@GetMapping("movie/{movieId}")
+	public ResponseEntity<?> findById(@PathVariable UUID movieId) {
+		Optional<Movie> optional = movRepo.findById(movieId);
+
+		if (optional.isPresent()) {
+			Movie movie = optional.get();
+			return new ResponseEntity<Movie>(movie, null, HttpStatus.OK);
+		}
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
