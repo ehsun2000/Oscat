@@ -55,7 +55,6 @@ public class CinameInfoService implements ICinameInfoService {
 	public boolean update(CinemaDTO dto) {
 		Optional<Cinema> existingCinema = cinemaRepo.findById(dto.getId());
 		List<TicketType> types = typeRepository.findAll();
-		
 
 //		判斷是否有找到值
 		if (existingCinema.isPresent()) {
@@ -65,9 +64,13 @@ public class CinameInfoService implements ICinameInfoService {
 //			缺少 validator
 			cinemaMapper.updateFromDto(dto, cinema, types);
 
-			cinemaRepo.save(cinema);
-			
-			cinemaRepo.flush();
+			try {
+//				cinemaRepo.save(cinema);				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {				
+				cinemaRepo.flush();
+			}
 			
 			return true;
 		} else {
