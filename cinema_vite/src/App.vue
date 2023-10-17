@@ -21,8 +21,6 @@ body {
 
 /* 控制 boostrap 顏色 */
 :root {
-  --bs-body-bg: #222d32;
-
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
   --bs-purple: #6f42c1;
