@@ -3,19 +3,9 @@
     <h2>修改座位狀態</h2>
     <form @submit.prevent="submitForm">
       <label for="status">座位狀態：</label>
-      <input
-        type="radio"
-        v-model="selectedStatus"
-        value="Normal"
-        name="status"
-      />
+      <input type="radio" v-model="selectedStatus" value="Normal" name="status" />
       正常
-      <input
-        type="radio"
-        v-model="selectedStatus"
-        value="Maintenance"
-        name="status"
-      />
+      <input type="radio" v-model="selectedStatus" value="Maintenance" name="status" />
       維修中
       <button type="submit">確認</button>
     </form>
