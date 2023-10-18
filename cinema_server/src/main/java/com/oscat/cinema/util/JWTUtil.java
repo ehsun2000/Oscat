@@ -1,7 +1,5 @@
 package com.oscat.cinema.util;
 
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +38,12 @@ public class JWTUtil {
 
 	// 從 token 中提取所有的 claims
 	private Claims extractAllClaims(String token) {
-		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+		return Jwts
+                .parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 	}
 
 	// 檢查 token 是否已過期
