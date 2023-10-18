@@ -29,4 +29,8 @@ public class ScreeningRoom {
 
 	@OneToMany(mappedBy = "screeningRoom", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ShowTime> showTimes;
+
+	public ScreeningRoom(int roomId) {
+		this.roomId = roomId;
+	}
 }

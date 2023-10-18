@@ -1,5 +1,6 @@
 package com.oscat.cinema.dao;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,11 +9,15 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.oscat.cinema.dto.SearchShowDateForBook;
+import com.oscat.cinema.entity.Movie;
+import com.oscat.cinema.entity.ScreeningRoom;
 import com.oscat.cinema.entity.ShowTime;
+import com.oscat.cinema.entity.TransOrder;
 
 @Repository
 public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
@@ -54,4 +59,9 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 	        @Param("Price") Double price,
 	        @Param("NumberOfShowsToAdd") Integer numberOfShowsToAdd,
 	        @Param("Interval") Integer interval);
+	@Procedure(name = "CreateShowTimes")
+	List<Timestamp> addShows(Movie movie, UUID showTimeId, String filmType, BigDecimal extraFee,
+	        LocalDateTime showDateAndTime, ScreeningRoom screeningRoom, List<TransOrder> transOrders, int price,
+	        int duration);
+
 }
