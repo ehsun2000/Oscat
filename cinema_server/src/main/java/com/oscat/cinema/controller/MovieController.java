@@ -36,7 +36,8 @@ public class MovieController {
 
 	@PostMapping("/movie/add")
 	public ResponseEntity<?> postAddMovie(@RequestBody Movie movie) {
-
+		System.out.println(movie);
+		
 		Movie addMovie = new Movie();
 		addMovie.setMovieName(movie.getMovieName());
 		addMovie.setMovieType(movie.getMovieType());

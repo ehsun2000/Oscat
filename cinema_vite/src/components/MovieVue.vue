@@ -1,5 +1,7 @@
 <template>
-  <h1>Movie Page</h1>
+  <RouterLink class="btn btn-outline-success" to="/movie/add"
+    ><i class="bi bi-plus"></i> 新增</RouterLink
+  >
   <div>
     <div v-for="movie in movies" :key="movie.movieId" class="movie">
       <a :href="movie.trailerLink">
