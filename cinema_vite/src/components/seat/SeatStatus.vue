@@ -7,7 +7,7 @@
       正常
       <input type="radio" v-model="selectedStatus" value="Maintenance" name="status" />
       維修中
-      <button type="submit">確認</button>
+      <button type="submit" @click="closeDialog">確認</button>
     </form>
   </div>
 </template>
