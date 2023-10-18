@@ -7,29 +7,41 @@
       <button type="button" @click="getSeatStatus">查詢所有座位</button>
     </form>
     <div id="result">
-      <p v-for="seat in seats" :key="seat.seatId">
+      <p v-for="seat in seats" :key="seat.seatId" v-show="isShow">
         <button @click="openSeatStatusDialog(seat)">
+          <span style="display: none">{{ seat.seatId }}</span>
           座位名稱: {{ seat.seatName }}, 狀態: {{ seat.seatStatus }}
         </button>
       </p>
+      <div class="from" v-show="!isShow">
+        <div v-if="isDialogVisible" id="dialog-container">
+          <SeatStatusDialog
+            :selectedSeatId="selectedSeat.seatId"
+            :selectedSeatStatus="selectedSeat.seatStatus"
+            @seatUpdated="closeSeatStatusDialog"
+          />
+          <button @click="close">關</button>
+        </div>
+      </div>
     </div>
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
   </div>
 </template>
 
 <script>
-import { ref, createApp } from 'vue';
+import { ref } from 'vue';
 import SeatStatusDialog from './SeatStatus.vue';
 
 export default {
   data() {
     return {
       findSeatApi: import.meta.env.VITE_API_FindSeat,
-      seatIds: [],
       roomId: ref(''),
       seats: ref([]),
       errorMessage: '',
-      isDialogVisible: false,
+      isShow: true,
+      isDialogVisible: false, // 控制彈出式視窗顯示
+      selectedSeat: null, // 存儲所選座位資訊
     };
   },
   methods: {
@@ -48,38 +60,36 @@ export default {
       }
     },
     openSeatStatusDialog(seat) {
-      // 創建彈出式視窗容器
-      const dialogContainer = document.createElement('div');
-
-      // 使用 Portals 或您的彈出式視窗庫來顯示彈出式視窗，這取決於您的實際需求
-      // 這裡使用 Vue 3 的 Portals 作為範例
-      const portalTarget = document.querySelector('#dialog-container');
-      if (portalTarget) {
-        portalTarget.appendChild(dialogContainer);
-      } else {
-        // 如果找不到 portalTarget，您可以添加適當的錯誤處理邏輯
-        console.error('找不到 portalTarget');
-        return;
-      }
-
-      // 創建 Vue 應用
-      const dialogApp = createApp(SeatStatusDialog);
-      const dialogInstance = dialogApp.mount(dialogContainer);
-
-      // 設置彈出式視窗的相關數據，以便根據所選座位進行修改
-      dialogInstance.seat = seat;
-
-      // 為彈出式視窗添加關閉方法
-      dialogInstance.closeDialog = () => {
-        // 從 Portals 中移除彈出式視窗
-        if (portalTarget) {
-          portalTarget.removeChild(dialogContainer);
-        }
-
-        // 可以在關閉時執行一些清理邏輯
-        dialogInstance.unmount();
-      };
+      this.isShow = false;
+      this.selectedSeat = seat;
+      this.isDialogVisible = true;
     },
+    async refreshSeatStatus(roomId) {
+      try {
+        const response = await fetch(`${this.findSeatApi}${roomId}`);
+        if (response.ok) {
+          const data = await response.json();
+          this.seats = data;
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = '請求失敗：' + response.statusText;
+        }
+      } catch (error) {
+        this.errorMessage = '請求失敗：' + error.message;
+      }
+    },
+    close() {
+      this.isShow = !this.isShow;
+      this.refreshSeatStatus(this.roomId);
+    },
+    closeSeatStatusDialog() {
+      this.isDialogVisible = false;
+      this.selectedSeat = null;
+      this.close(); // 這裡調用 close 方法
+    },
+  },
+  components: {
+    SeatStatusDialog,
   },
 };
 </script>
@@ -87,5 +97,15 @@ export default {
 <style scoped>
 .error-message {
   color: red;
+}
+.from {
+  width: 400px;
+  height: 400px;
+  background: #efefef;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
 }
 </style>
