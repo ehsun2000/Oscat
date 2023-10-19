@@ -7,9 +7,9 @@
       <button type="button" @click="getSeatStatus">查詢所有座位</button>
     </form>
     <div id="result">
-      <div v-show="isShow">
+      <div v-show="isShow" class="seats-container">
         <template v-for="(seat, index) in seats" :key="seat.seatId">
-          <button @click="openSeatStatusDialog(seat)">
+          <button class="seat-button" @click="openSeatStatusDialog(seat)">
             <span style="display: none"
               >{{ seat.seatId }},{{ seat.seatStatus }}</span
             >
@@ -129,11 +129,20 @@ export default {
   color: red;
 }
 .form {
-  width: 400px;
-  height: 400px;
+  width: 800px;
   background: #efefef;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.seats-container {
+  flex-wrap: wrap; /* 允許座位按鈕換行 */
+  justify-content: space-between;
+  align-items: center;
+}
+
+.seat-button {
+  box-sizing: border-box;
+  transform: scale(0.8); /* 使用 transform 縮小按鈕大小到50% */
 }
 </style>
