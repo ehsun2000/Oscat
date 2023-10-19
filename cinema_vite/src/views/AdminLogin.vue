@@ -1,25 +1,63 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/index.js';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 const router = useRouter();
-const email = ref('admin@example.com');
+const account = ref('admin');
 const password = ref('password');
 
-const handleSubmit = () => {
-  // 假設這裡是驗證登入的邏輯
-  if (email.value === 'admin@example.com' && password.value === 'password') {
-    localStorage.setItem('accessToken', 'some-token');
-    router.push({ path: '/dashboard' });
-  } else {
+// 創建一個非同步函數來處理登入邏輯
+async function handleLogin() {
+  // 使用 userStore
+  const userStore = useUserStore();
+
+  // 讀取用戶輸入的 account 和 password
+  const accountValue = account.value;
+  const passwordValue = password.value;
+
+  // 從環境變量中讀取 API 端點
+  const apiEndpoint = import.meta.env.VITE_OSCAT_API_ENDPOINT;
+  const apiLink = `${apiEndpoint}/adminlogin`;
+
+  // 設置請求選項
+  const requestOptions = {
+    method: 'POST',
+    credentials: 'include', // 憑證模式設為 'include'
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      account: accountValue,
+      password: passwordValue,
+    }),
+  };
+
+  try {
+    console.log(apiLink);
+    const response = await fetch(apiLink, requestOptions);
+    if (response.ok) {
+      // 使用 Pinia 的 userStore 來更新登入狀態
+      userStore.login();
+
+      // 跳轉到 dashboard 頁面
+      router.push({ path: '/dashboard' });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: '登入失敗',
+        text: '用戶名或密碼不正確',
+      });
+    }
+  } catch (error) {
     Swal.fire({
       icon: 'error',
-      title: '登入失敗',
-      text: '用戶名或密碼不正確',
+      title: '出錯了',
+      text: '無法完成登入',
     });
   }
-};
+}
 </script>
 
 <template>
@@ -31,16 +69,16 @@ const handleSubmit = () => {
             <div class="md-5 mt-md-4 pb-5">
               <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
 
-              <form @submit.prevent="handleSubmit">
+              <form @submit.prevent="handleLogin">
                 <div class="form-outline form-white mb-4">
                   <input
-                    type="email"
-                    v-model="email"
-                    id="email"
+                    type="text"
+                    v-model="account"
+                    id="account"
                     class="form-control form-control-lg text-light"
                     required
                   />
-                  <label class="form-label" for="email">Email</label>
+                  <label class="form-label" for="account">Account</label>
                 </div>
 
                 <div class="form-outline form-white mb-4">
