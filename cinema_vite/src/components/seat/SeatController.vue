@@ -7,14 +7,21 @@
       <button type="button" @click="getSeatStatus">查詢所有座位</button>
     </form>
     <div id="result">
-      <p v-for="seat in seats" :key="seat.seatId" v-show="isShow">
-        <button @click="openSeatStatusDialog(seat)">
-          <span style="display: none">{{ seat.seatId }}</span>
-          座位名稱: {{ seat.seatName }}, 狀態: {{ seat.seatStatus }}
-        </button>
-      </p>
+      <div v-show="isShow">
+        <template v-for="(seat, index) in seats" :key="seat.seatId">
+          <button @click="openSeatStatusDialog(seat)">
+            <span style="display: none"
+              >{{ seat.seatId }},{{ seat.seatStatus }}</span
+            >
+            <i v-if="seat.seatStatus === 'Normal'" class="bi bi-box2"></i>
+            <i v-else class="bi bi-box2-fill"></i><br />
+            {{ seat.seatName }}
+          </button>
+          <br v-if="shouldInsertLineBreak(seat, index)" />
+        </template>
+      </div>
       <div class="form" v-show="!isShow">
-        <div v-if="isDialogVisible" id="dialog-container">
+        <div v-if="isDialogVisible">
           <SeatStatusDialog
             :selectedSeatId="selectedSeat.seatId"
             :selectedSeatName="selectedSeat.seatName"
@@ -32,6 +39,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import SeatStatusDialog from './SeatStatus.vue';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default {
   setup() {
@@ -82,6 +90,15 @@ export default {
       getSeatStatus();
     };
 
+    const shouldInsertLineBreak = (seat, index) => {
+      if (index < seats.value.length - 1) {
+        return (
+          seat.seatName.charAt(0) !== seats.value[index + 1].seatName.charAt(0)
+        );
+      }
+      return false;
+    };
+
     onMounted(() => {
       getSeatStatus();
     });
@@ -98,6 +115,7 @@ export default {
       openSeatStatusDialog,
       closeSeatStatusDialog,
       showError,
+      shouldInsertLineBreak, // 將函數暴露給模板
     };
   },
   components: {
