@@ -23,4 +23,7 @@ public interface MovieRepository extends JpaRepository<Movie, UUID> {
 	
 	Optional<Movie> findBymovieName(@Param("n") String movieName);
 
+	Movie findByMovieId(UUID fromString);
+
+
 }

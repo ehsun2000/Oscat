@@ -29,30 +29,29 @@ public class ShowTimeManagerService {
 		this.movieRepository = movieRepository;
 	}
 
-	 @Transactional
-	    public ShowTime addShow(ShowTime st) {
-	        List<Movie> movies = movieRepository.findAll();
+	@Transactional
+	public ShowTime addShow(String movieId, ShowTime st) {
+		// 使用指定的 movieId 查找相應的 Movie 對象
+		Movie selectedMovie = movieRepository.findByMovieId(UUID.fromString(movieId));
 
-	        if (!movies.isEmpty()) {
-	            Movie selectedMovie = movies.get(2); // 假設選擇第一個電影
+		if (selectedMovie != null) {
+			// 创建新的 ShowTime 对象并设置相应的属性
+			ShowTime newShowTime = new ShowTime();
+			newShowTime.setMovie(selectedMovie); // 設置 Movie 屬性
+			newShowTime.setFilmType(st.getFilmType());
+			newShowTime.setExtraFee(st.getExtraFee());
+			newShowTime.setShowDateAndTime(st.getShowDateAndTime());
+			newShowTime.setScreeningRoom(st.getScreeningRoom());
+			newShowTime.setTransOrders(st.getTransOrders());
+			newShowTime.setPrice(st.getPrice());
 
-	            // 创建新的 ShowTime 对象并设置相应的属性
-	            ShowTime newShowTime = new ShowTime();
-	            newShowTime.setMovie(selectedMovie);
-	            newShowTime.setFilmType(st.getFilmType());
-	            newShowTime.setExtraFee(st.getExtraFee());
-	            newShowTime.setShowDateAndTime(st.getShowDateAndTime());
-	            newShowTime.setScreeningRoom(st.getScreeningRoom());
-	            newShowTime.setTransOrders(st.getTransOrders());
-	            newShowTime.setPrice(st.getPrice());
+			// 执行插入操作
+			showTimeRepository.save(newShowTime);
 
-	            // 执行插入操作
-	            showTimeRepository.save(newShowTime);
-
-	            return newShowTime;
-	        }
-	        return null;
-	    }
+			return newShowTime;
+		}
+		return null;
+	}
 
 	public List<ShowTime> findAll() {
 		// 調用相應的 ShowTimeRepository 方法來查找所有 show times

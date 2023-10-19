@@ -26,7 +26,7 @@ public class ShowTimeManagerController {
 
 	@PostMapping("/add")
 	public ShowTime createShowTime(@RequestBody ShowTime st) {
-	    return stmService.addShow(st);
+	    return stmService.addShow(null, st);
 	}
 
 

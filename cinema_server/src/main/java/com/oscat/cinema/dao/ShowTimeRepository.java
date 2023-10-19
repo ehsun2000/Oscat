@@ -22,46 +22,34 @@ import com.oscat.cinema.entity.TransOrder;
 @Repository
 public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 
-	@Query("SELECT DISTINCT NEW com.oscat.cinema.dto.SearchShowDateForBook(st.showDateAndTime) " +
-	        "FROM ShowTime st " +
-	        "JOIN st.screeningRoom sr " +
-	        "JOIN sr.cinema c " +
-	        "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId " +
-	        "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate " +
-	        "ORDER BY st.showDateAndTime ASC")
+	@Query("SELECT DISTINCT NEW com.oscat.cinema.dto.SearchShowDateForBook(st.showDateAndTime) " + "FROM ShowTime st "
+			+ "JOIN st.screeningRoom sr " + "JOIN sr.cinema c "
+			+ "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId "
+			+ "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate "
+			+ "ORDER BY st.showDateAndTime ASC")
 
-	Set<SearchShowDateForBook> findShowDateByMovieIdAndCinemaId(@Param("movieId") UUID movieId, 
-	                                              @Param("cinemaId") Integer cinemaId, 
-	                                              @Param("startDate") LocalDateTime startDate, 
-	                                              @Param("endDate") LocalDateTime endDate);
+	Set<SearchShowDateForBook> findShowDateByMovieIdAndCinemaId(@Param("movieId") UUID movieId,
+			@Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate);
 
-	@Query("SELECT sr.roomName, st.showDateAndTime " +
-	        "FROM ShowTime st " +
-	        "JOIN st.screeningRoom sr " +
-	        "JOIN sr.cinema c " +
-	        "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId " +
-	        "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate " + 
-	        "ORDER BY st.showDateAndTime, sr.roomName")
+	@Query("SELECT sr.roomName, st.showDateAndTime " + "FROM ShowTime st " + "JOIN st.screeningRoom sr "
+			+ "JOIN sr.cinema c " + "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId "
+			+ "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate "
+			+ "ORDER BY st.showDateAndTime, sr.roomName")
 	List<Object[]> findShowTimeByMovieIdAndCinemaIdAndDate(@Param("movieId") UUID movieId,
-												@Param("cinemaId") Integer cinemaId, 
-												@Param("startDate") LocalDateTime startDate, 
-												@Param("endDate") LocalDateTime endDate);
-	
-	@Query(value = "EXEC CreateShowTimes "
-			+ ":MovieId, :RoomId, :StartTime, "
-			+ ":FilmType, :Price, :NumberOfShowsToAdd, "
-			+ ":Interval", nativeQuery = true)
-    List<Timestamp> addShows(
-	        @Param("MovieId") UUID movieId,
-	        @Param("RoomId") Integer roomId,
-	        @Param("StartTime") LocalDateTime startTime,
-	        @Param("FilmType") String filmType,
-	        @Param("Price") Double price,
-	        @Param("NumberOfShowsToAdd") Integer numberOfShowsToAdd,
-	        @Param("Interval") Integer interval);
+			@Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate);
+
+	@Query(value = "EXEC CreateShowTimes " + ":MovieId, :RoomId, :StartTime, "
+			+ ":FilmType, :Price, :NumberOfShowsToAdd, " + ":Interval", nativeQuery = true)
+	List<Timestamp> addShows(@Param("MovieId") UUID movieId, @Param("RoomId") Integer roomId,
+			@Param("StartTime") LocalDateTime startTime, @Param("FilmType") String filmType,
+			@Param("Price") Double price, @Param("NumberOfShowsToAdd") Integer numberOfShowsToAdd,
+			@Param("Interval") Integer interval);
+
 	@Procedure(name = "CreateShowTimes")
 	List<Timestamp> addShows(Movie movie, UUID showTimeId, String filmType, BigDecimal extraFee,
-	        LocalDateTime showDateAndTime, ScreeningRoom screeningRoom, List<TransOrder> transOrders, int price,
-	        int duration);
+			LocalDateTime showDateAndTime, ScreeningRoom screeningRoom, List<TransOrder> transOrders, int price,
+			int duration);
 
 }
