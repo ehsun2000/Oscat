@@ -20,17 +20,17 @@ import com.oscat.cinema.dto.AuthenticationRequest;
 import com.oscat.cinema.util.JWTUtil;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 public class AdminLoginController {
 
-	private final JWTUtil jwtUtil;
 	private final AuthenticationManager authenticationManager; // 自動注入 AuthenticationManager
 
 	@Autowired
-	public AdminLoginController(JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
-		this.jwtUtil = jwtUtil;
+	public AdminLoginController(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
 	}
 
@@ -54,29 +54,39 @@ public class AdminLoginController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest,
-			HttpServletResponse response) {
+			HttpServletRequest req,HttpSession session) {
 		try {
 			// 嘗試進行身份認證
-			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+			Authentication authentication = 
+					authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 					authenticationRequest.getAccount(), authenticationRequest.getPassword()));
 			
 			// 從 Authentication 對象中獲取 UserDetails
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-			// 生成 JWT 令牌
-			String jwt = jwtUtil.generateToken(userDetails);
-
-			// 將 JWT 令牌存儲到 Cookie 中
-			Cookie cookie = new Cookie("token", jwt);
-			cookie.setHttpOnly(true);
-			cookie.setMaxAge(60 * 60 * 10); // 10 小時
-			cookie.setPath("/");
-			response.addCookie(cookie);
-
+			
+			// 使用 Session 儲存驗證資訊
+			session.setAttribute("userdetails", userDetails);
+			session.setMaxInactiveInterval(60 * 60 * 10); // 10 小時
+			
+//			// 使用 JWT 存到 Cookie
+//			// 生成 JWT 令牌
+//			String jwt = jwtUtil.generateToken(userDetails);
+//
+//			// 將 JWT 令牌存儲到 Cookie 中
+//			Cookie cookie = new Cookie("token", jwt);
+//			cookie.setHttpOnly(true);
+//			cookie.setMaxAge(60 * 60 * 10); // 10 小時
+//			cookie.setPath("/");
+//			response.addCookie(cookie);
+			
+			System.out.println(session.getId());
+			System.out.println(userDetails.getUsername());
+			System.out.println(userDetails.getPassword());
 			return ResponseEntity.ok("Login Success");
 		} catch (AuthenticationException e) {
 			// 身份認證失敗，進行錯誤處理
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
+//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
 		}
+		return ResponseEntity.notFound().build();
 	}
 }

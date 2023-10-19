@@ -10,6 +10,8 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.ldap.EmbeddedLdapServerContextSourceFactoryBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.oscat.cinema.filter.JWTRequestFilter; // 引入您自定義的 JWT 過濾器
+import com.oscat.cinema.filter.AuthRequestFilter; // 引入您自定義的 JWT 過濾器
 import com.oscat.cinema.service.AdminUserDetailsService;
 
 @Configuration // 標記為配置類
@@ -27,7 +29,7 @@ public class SecurityConfig {
 	@Autowired
 	private AdminUserDetailsService detailsService; // 自定義的用戶詳細信息服務
 	@Autowired
-	private JWTRequestFilter jwtRequestFilter; // 自定義的 JWT 過濾器
+	private AuthRequestFilter authRequestFilter; // 自定義的 JWT 過濾器
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -49,13 +51,20 @@ public class SecurityConfig {
 	// 安全過濾器鏈Bean
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable() // 禁用 CSRF，如果您使用的是 RESTful API
-				.authenticationProvider(authenticationProvider()) // 設置身份驗證提供者
-				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // 在用戶名密碼驗證之前加入 JWT 過濾器
-				.authorizeHttpRequests(authz -> authz // 授權請求設定
-						.requestMatchers("/login","/generatekey").permitAll() // 允許所有人訪問登入接口
-						.requestMatchers("/api/**").hasAnyRole("ADMIN") // 只有 ADMIN 才能使用 /api/cinemas
-						.anyRequest().authenticated()); // 其他請求需要身份驗證
+//		http.cors() // 啟用 CORS 支持
+//			.and()		
+//			.csrf(); // 禁用 CSRF，如果您使用的是 RESTful API				
+//		        		
+//		http.sessionManagement()
+//            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+		
+//		http.authenticationProvider(authenticationProvider()) // 設置身份驗證提供者
+//			.addFilterBefore(authRequestFilter, UsernamePasswordAuthenticationFilter.class) // 在用戶名密碼驗證之前加入 Auth 過濾器
+//			.authorizeHttpRequests(auth -> 
+//				auth.requestMatchers("/login","/generatekey").permitAll() // 允許所有人訪問登入接口 
+//					.requestMatchers("/api/**").hasAnyRole("ADMIN") // 只有 ADMIN 才能使用 /api
+//					.anyRequest().authenticated() // 其他請求需要身份驗證
+//			);
 
 		return http.build();
 	}

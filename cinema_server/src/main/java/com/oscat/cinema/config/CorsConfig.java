@@ -13,7 +13,8 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Allow requests from any origin (you can specify a specific origin)
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:8081"); // Allow requests from any origin (you can specify a specific origin)
         config.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
         config.addAllowedHeader("*"); // Allow all headers in the request
 
