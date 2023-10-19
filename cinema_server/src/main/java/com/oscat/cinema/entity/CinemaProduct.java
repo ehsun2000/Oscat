@@ -1,5 +1,9 @@
 package com.oscat.cinema.entity;
 
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -21,20 +25,15 @@ public class CinemaProduct {
 	
 	@Id
 	@Column(name = "product_id")
-	private Integer productId;
-	
-	@Column(name = "availability")
-	private Integer availability;
+	private UUID productId;
 	
 	@ManyToOne
 	@JoinColumn(name = "product_id",insertable = false, updatable = false)
 	private Product product;
 	
-	
 	@ManyToOne
+	@JsonIgnore //忽略屬性
 	@JoinColumn(name = "cinema_id",insertable = false, updatable = false)
 	private Cinema cinema;
-	
-	
 
 }

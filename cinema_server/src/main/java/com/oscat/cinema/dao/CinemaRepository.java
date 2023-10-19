@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.entity.Cinema;
+import com.oscat.cinema.entity.Product;
 
 @Repository
 public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
@@ -25,4 +26,9 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate);
 	
+	@Query("SELECT cinemaId,cinemaName FROM Cinema")
+	List<Cinema> findAllCinema();
+	
+	@Query("SELECT cp.product FROM CinemaProduct cp WHERE cp.cinema.cinemaId = :cinemaId")
+	List<Product> findProductByCinemaId(@Param("cinemaId")Integer cinemaId);
 }

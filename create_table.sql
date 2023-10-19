@@ -128,7 +128,6 @@ CREATE TABLE cinema_product
 (
     cinema_id    INT,
     product_id   UNIQUEIDENTIFIER,
-    availability INT NOT NULL,
     PRIMARY KEY (cinema_id, product_id),
     FOREIGN KEY (cinema_id) REFERENCES cinema (cinema_id),
     FOREIGN KEY (product_id) REFERENCES product (product_id)
