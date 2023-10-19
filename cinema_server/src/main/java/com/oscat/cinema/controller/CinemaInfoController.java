@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.service.impl.CinameInfoService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping(path = "/api/cinemas")
 public class CinemaInfoController {
@@ -25,7 +27,6 @@ public class CinemaInfoController {
 	// 找尋一筆影城資料
 	@GetMapping(path = "/{cinemaId}")
 	public ResponseEntity<CinemaDTO> getCinemaById(@PathVariable Integer cinemaId) {
-
 		CinemaDTO cinema = infoService.findCinemaById(cinemaId);
 
 		if (cinema == null) {

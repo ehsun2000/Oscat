@@ -1,6 +1,6 @@
 package com.oscat.cinema.config;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,62 +10,81 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.ldap.EmbeddedLdapServerContextSourceFactoryBean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.oscat.cinema.filter.AuthRequestFilter; // 引入您自定義的 JWT 過濾器
 import com.oscat.cinema.service.AdminUserDetailsService;
 
-@Configuration // 標記為配置類
-@EnableWebSecurity // 啟用Spring Security
+@Configuration // 配置類
+@EnableWebSecurity // 啟用 Spring Security
 public class SecurityConfig {
 
 	@Autowired
 	private AdminUserDetailsService detailsService; // 自定義的用戶詳細信息服務
+
 	@Autowired
 	private AuthRequestFilter authRequestFilter; // 自定義的 JWT 過濾器
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 
-	// 身份驗證提供者Bean
+	@Autowired
+	private PasswordEncoder passwordEncoder; // 密碼加密器
+
+	// 身份驗證提供者，設定 UserdetailsService 和 PasswordEncoder
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(detailsService); // 設置用戶詳細信息服務
-		provider.setPasswordEncoder(passwordEncoder); // 設置密碼加密器
+		provider.setUserDetailsService(detailsService);
+		provider.setPasswordEncoder(passwordEncoder);
 		return provider;
 	}
 
-	// AuthenticationManager Bean
+	// AuthenticationManager 實例
 	@Bean
-	public AuthenticationManager customAuthenticationManager() throws Exception {
-		return new ProviderManager(Arrays.asList(authenticationProvider()));
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return new ProviderManager(authenticationProvider());
 	}
 
-	// 安全過濾器鏈Bean
+	// 跨域請求設定
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//		http.cors() // 啟用 CORS 支持
-//			.and()		
-//			.csrf(); // 禁用 CSRF，如果您使用的是 RESTful API				
-//		        		
-//		http.sessionManagement()
-//            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-		
-//		http.authenticationProvider(authenticationProvider()) // 設置身份驗證提供者
-//			.addFilterBefore(authRequestFilter, UsernamePasswordAuthenticationFilter.class) // 在用戶名密碼驗證之前加入 Auth 過濾器
-//			.authorizeHttpRequests(auth -> 
-//				auth.requestMatchers("/login","/generatekey").permitAll() // 允許所有人訪問登入接口 
-//					.requestMatchers("/api/**").hasAnyRole("ADMIN") // 只有 ADMIN 才能使用 /api
-//					.anyRequest().authenticated() // 其他請求需要身份驗證
-//			);
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://localhost:8081"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+		config.setAllowCredentials(true);
+		config.setAllowedHeaders(List.of("*"));
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
+	}
+
+	// 安全過濾鏈
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+		http.cors() // 啟用 CORS
+				.and().csrf().disable(); // 禁用 CSRF
+
+		// 只有在需要時，如登入驗證情況下去建立新的 SessionID
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+
+		// 設定驗證的提供者
+		http.authenticationProvider(authenticationProvider()).addFilterBefore(authRequestFilter,
+				UsernamePasswordAuthenticationFilter.class);
+
+		// 控制 api 使用權限
+		http.authorizeHttpRequests(authorize -> {
+			authorize.requestMatchers("/adminlogin", "/generatekey").permitAll();
+			authorize.requestMatchers("/api/**").hasAnyRole("ADMIN");
+			authorize.anyRequest().authenticated();
+		});
 
 		return http.build();
 	}
+
 }

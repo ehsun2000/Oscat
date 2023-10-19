@@ -52,7 +52,7 @@ public class AdminLoginController {
 		return encodedKey;
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/adminlogin")
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest,
 			HttpServletRequest req,HttpSession session) {
 		try {
@@ -85,8 +85,7 @@ public class AdminLoginController {
 			return ResponseEntity.ok("Login Success");
 		} catch (AuthenticationException e) {
 			// 身份認證失敗，進行錯誤處理
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
 		}
-		return ResponseEntity.notFound().build();
 	}
 }
