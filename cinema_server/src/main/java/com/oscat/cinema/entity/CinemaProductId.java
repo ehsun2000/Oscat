@@ -1,6 +1,7 @@
 package com.oscat.cinema.entity;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import lombok.Data;
 
@@ -11,6 +12,6 @@ public class CinemaProductId implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Integer cinemaId;
-	private Integer productId;
+	private UUID productId;
 
 }

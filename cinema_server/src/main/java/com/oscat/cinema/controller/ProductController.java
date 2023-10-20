@@ -20,7 +20,6 @@ import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.service.ProductService;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:8080")
 public class ProductController {
 	
 	@Autowired
@@ -35,6 +34,7 @@ public class ProductController {
 	
 	//查詢全部
 	@GetMapping("/products/all")
+	@CrossOrigin(origins = "http://localhost:8081")
 	public List<Product> findAllProducts(){
 		List<Product> products = productService.findAllProducts();
 		return products;
