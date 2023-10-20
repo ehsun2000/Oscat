@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.CinemaRepository;
+import com.oscat.cinema.dao.CinemaTicketTypeRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
@@ -20,18 +21,18 @@ import com.oscat.cinema.service.ICinameInfoService;
 @Service
 public class CinameInfoService implements ICinameInfoService {
 	private final CinemaRepository cinemaRepo;
-	private final TicketTypeRepository typeRepository;
 	private final CinemaMapper cinemaMapper;
-	private final TicketTypeMapper typeMapper;
+	private final TicketTypeRepository typeRepository;
+	private final CinemaTicketTypeRepository cinemaTicketTypeRepo;
 
 	// 建構子注入
 	@Autowired
-	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper, TicketTypeRepository typeRepository,
-			TicketTypeMapper typeMapper) {
+	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper,
+			CinemaTicketTypeRepository cinemaTicketTypeRepo, TicketTypeRepository typeRepository) {
 		this.cinemaRepo = cinemaRepo;
-		this.typeRepository = typeRepository;
+		this.cinemaTicketTypeRepo = cinemaTicketTypeRepo;
 		this.cinemaMapper = cinmeMapper;
-		this.typeMapper = typeMapper;
+		this.typeRepository = typeRepository;
 	}
 
 	// 單筆影城查詢方法
@@ -62,21 +63,18 @@ public class CinameInfoService implements ICinameInfoService {
 			Cinema cinema = existingCinema.get();
 
 //			缺少 validator
-			cinemaMapper.updateFromDto(dto, cinema, types);
 
-			try {
-				cinemaRepo.save(cinema);
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-//				強制進行 flush
-				cinemaRepo.flush();
-			}
+			cinemaMapper.updateFromDto(dto, cinema, types);
+			cinemaRepo.flush();
+
+			cinemaRepo.save(cinema);
 
 			return true;
 		} else {
 			return false;
 		}
+//		cinemaRepo.flush();
+//		return true;
 	}
 
 }
