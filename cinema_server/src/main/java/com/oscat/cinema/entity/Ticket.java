@@ -2,10 +2,7 @@ package com.oscat.cinema.entity;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,9 +18,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "ticket")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "..." })
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "ticketId")
 public class Ticket {
 
 	@Id
@@ -31,14 +25,17 @@ public class Ticket {
 	@Column(columnDefinition = "uniqueidentifier", name = "ticket_id")
 	private UUID ticketId;
 
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private TransOrder transOrder;
 
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "type_id")
 	private TicketType ticketType;
 
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "seat_id")
 	private Seat seat;

@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -49,12 +51,15 @@ public class ShowTime {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "movie_id")
+	@JsonBackReference
 	private Movie movie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id")
+	@JsonBackReference
 	private ScreeningRoom screeningRoom;
 
 	@OneToMany(mappedBy = "showTime", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<TransOrder> transOrders;
 }

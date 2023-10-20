@@ -3,10 +3,8 @@ package com.oscat.cinema.entity;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,9 +22,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "seat")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"..."})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "seatId")
 public class Seat {
 
 	@Id
@@ -41,9 +36,11 @@ public class Seat {
 	private String seatName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonBackReference
 	@JoinColumn(name = "room_id")
 	private ScreeningRoom screeningRoom;
 
 	@OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<Ticket> tickets;
 }

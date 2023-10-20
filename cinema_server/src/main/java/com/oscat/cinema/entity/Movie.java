@@ -4,11 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,10 +21,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "movie")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"..."})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "movieId")
-@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 public class Movie {
 
 	@Id
@@ -73,6 +65,7 @@ public class Movie {
 	@Column(name = "poster_image", length = 1000)
 	private String posterImage;
 
+	@JsonManagedReference
 	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<MovieStills> movieStills;
 }

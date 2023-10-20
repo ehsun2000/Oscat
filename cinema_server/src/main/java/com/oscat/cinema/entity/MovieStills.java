@@ -1,10 +1,8 @@
 package com.oscat.cinema.entity;
+
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,20 +18,18 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "movie_stills")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"..."})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "stillId")
 public class MovieStills {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "uniqueidentifier", name = "still_id")
-    private UUID stillId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(columnDefinition = "uniqueidentifier", name = "still_id")
+	private UUID stillId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie movie;
+	@Column(name = "still_image_url", nullable = false, length = 1000)
+	private String stillImageUrl;
 
-    @Column(name = "still_image_url", nullable = false, length = 1000)
-    private String stillImageUrl;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonBackReference
+	@JoinColumn(name = "movie_id", nullable = false)
+	private Movie movie;
 }
