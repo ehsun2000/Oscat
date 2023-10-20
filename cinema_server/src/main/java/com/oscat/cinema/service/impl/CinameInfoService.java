@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.CinemaRepository;
 import com.oscat.cinema.dao.CinemaTicketTypeRepository;
+import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
+import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
 import com.oscat.cinema.mapper.TicketTypeMapper;
@@ -61,9 +63,7 @@ public class CinameInfoService implements ICinameInfoService {
 		if (existingCinema.isPresent()) {
 
 			Cinema cinema = existingCinema.get();
-
 //			缺少 validator
-
 			cinemaMapper.updateFromDto(dto, cinema, types);
 			cinemaRepo.flush();
 
@@ -73,8 +73,6 @@ public class CinameInfoService implements ICinameInfoService {
 		} else {
 			return false;
 		}
-//		cinemaRepo.flush();
-//		return true;
 	}
 
 }

@@ -38,6 +38,7 @@ public interface CinemaMapper {
 	@Mapping(target = "cinemaId", ignore = true)
 	@Mapping(target = "screeningRooms", ignore = true)
 	@Mapping(target = "ticketTypes", ignore = true)
+	@Mapping(target = "cinemaProducts", ignore = true)
 	@Mapping(target = "cinemaName", source = "dto.name")
 	@Mapping(target = "cinemaImg", source = "dto.img")
 	@Mapping(target = "cinemaAddress", source = "dto.address")
