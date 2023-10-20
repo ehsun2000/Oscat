@@ -65,4 +65,12 @@ public class Movie {
 
 	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<MovieStills> movieStills;
+	
+	public Movie() {
+	    // 无参数构造函数
+	}
+	
+	public Movie(UUID movieId) {
+	    this.movieId = movieId;
+	}
 }

@@ -14,7 +14,7 @@
       </tbody>
     </table>
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-      <router-link :to="'/showtime/manager/findAll'">
+      <router-link :to="'/showtime'">
         <button type="button" class="btn btn-outline-secondary">
           新增場次
         </button>

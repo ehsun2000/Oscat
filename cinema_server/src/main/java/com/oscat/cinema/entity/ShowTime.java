@@ -37,12 +37,12 @@ public class ShowTime {
 
 	@OneToMany(mappedBy = "showTime", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TransOrder> transOrders;
-	
+
 	@Column(name = "price")
 	private int price;
 
 	public void setMovie(Movie selectedMovie) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

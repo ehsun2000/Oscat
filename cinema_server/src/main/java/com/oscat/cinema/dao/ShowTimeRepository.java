@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.oscat.cinema.dto.SearchShowDateForBook;
+import com.oscat.cinema.dto.ShowCreationRequestDTO;
 import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.entity.ScreeningRoom;
 import com.oscat.cinema.entity.ShowTime;
@@ -51,5 +52,8 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 	List<Timestamp> addShows(Movie movie, UUID showTimeId, String filmType, BigDecimal extraFee,
 			LocalDateTime showDateAndTime, ScreeningRoom screeningRoom, List<TransOrder> transOrders, int price,
 			int duration);
+
+//	@Query("form")
+//	List<ShowCreationRequestDTO> findAllDto();
 
 }
