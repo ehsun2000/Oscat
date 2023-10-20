@@ -96,7 +96,6 @@ CREATE TABLE showtime
     movie_id           UNIQUEIDENTIFIER FOREIGN KEY REFERENCES movie (movie_id),
     room_id            INT FOREIGN KEY REFERENCES screening_room (room_id),
     film_type          VARCHAR(255) NOT NULL,
-    price              DECIMAL(10, 2) NOT NULL,
     extra_fee          DECIMAL(10, 2) DEFAULT 0,  -- 新增的特定場次價格調整
     show_date_and_time DATETIME2 NOT NULL
 );
@@ -120,4 +119,24 @@ CREATE TABLE ticket
     type_id   INT FOREIGN KEY REFERENCES ticket_type (ticket_type_id),
     seat_id   uniqueidentifier FOREIGN KEY REFERENCES seat (seat_id),
     PRIMARY KEY (ticket_id, seat_id)
+);
+
+-- 建立產品(Product)資料表
+CREATE TABLE product
+(
+    product_id    uniqueidentifier PRIMARY KEY,
+    product_name  VARCHAR(255) NOT NULL,
+    unit_price    DECIMAL(10, 2) NOT NULL,
+    product_type  VARCHAR(50) NOT NULL,
+	product_img VARCHAR(255) NOT NULL
+);
+
+-- 建立影城產品 資料表
+CREATE TABLE cinema_product
+(
+    cinema_id    INT,
+    product_id   UNIQUEIDENTIFIER,
+    PRIMARY KEY (cinema_id, product_id),
+    FOREIGN KEY (cinema_id) REFERENCES cinema (cinema_id),
+    FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
