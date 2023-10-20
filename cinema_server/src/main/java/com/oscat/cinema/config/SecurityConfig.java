@@ -70,9 +70,6 @@ public class SecurityConfig {
 		http.cors() // 啟用 CORS
 				.and().csrf().disable(); // 禁用 CSRF
 
-		// 只有在需要時，如登入驗證情況下去建立新的 SessionID
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-
 		// 設定驗證的提供者
 		http.authenticationProvider(authenticationProvider()).addFilterBefore(authRequestFilter,
 				UsernamePasswordAuthenticationFilter.class);

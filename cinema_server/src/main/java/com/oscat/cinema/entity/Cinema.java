@@ -53,4 +53,8 @@ public class Cinema {
 	@JsonManagedReference
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CinemaTicketType> ticketTypes;
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CinemaProduct> cinemaProducts;
 }

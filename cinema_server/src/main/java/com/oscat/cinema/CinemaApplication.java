@@ -6,8 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 
 @SpringBootApplication
-// 將默認的 sessionAutoConfig 取消
-@EnableAutoConfiguration(exclude = {SessionAutoConfiguration.class})
 public class CinemaApplication {
 
 	public static void main(String[] args) {
