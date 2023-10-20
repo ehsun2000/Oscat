@@ -5,19 +5,17 @@
       <label for="roomId">放映廳ID：</label>
       <input v-model="roomId" type="text" id="roomId" name="roomId" />
       <button type="button" @click="getSeatStatus">查詢所有座位</button>
+      <br />
+      <i class="bi bi-box2"></i>正常狀態 <i class="bi bi-box2-fill"></i>無法使用
     </form>
     <div id="result">
-      <div v-show="isShow" class="seats-container">
-        <template v-for="(seat, index) in seats" :key="seat.seatId">
-          <button class="seat-button" @click="openSeatStatusDialog(seat)">
-            <span style="display: none"
-              >{{ seat.seatId }},{{ seat.seatStatus }}</span
-            >
+      <div class="seats-container" :style="gridStyle" v-show="isShow">
+        <template v-for="seat in seats" :key="seat.seatId">
+          <button @click="openSeatStatusDialog(seat)">
             <i v-if="seat.seatStatus === 'Normal'" class="bi bi-box2"></i>
             <i v-else class="bi bi-box2-fill"></i><br />
             {{ seat.seatName }}
           </button>
-          <br v-if="shouldInsertLineBreak(seat, index)" />
         </template>
       </div>
       <div class="form" v-show="!isShow">
@@ -37,7 +35,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import SeatStatusDialog from './SeatStatus.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -90,17 +88,34 @@ export default {
       getSeatStatus();
     };
 
-    const shouldInsertLineBreak = (seat, index) => {
-      if (index < seats.value.length - 1) {
-        return (
-          seat.seatName.charAt(0) !== seats.value[index + 1].seatName.charAt(0)
-        );
-      }
-      return false;
-    };
-
     onMounted(() => {
       getSeatStatus();
+    });
+
+    // 在 setup() 中新增以下代碼
+    const maxSeatsPerRow = computed(() => {
+      // 找出最多座位的那一行
+      let maxSeats = 0;
+      let currentCount = 0;
+      let currentRow =
+        seats.value.length > 0 ? seats.value[0].seatName.charAt(0) : null;
+      seats.value.forEach((seat) => {
+        if (seat.seatName.charAt(0) === currentRow) {
+          currentCount++;
+        } else {
+          if (currentCount > maxSeats) maxSeats = currentCount;
+          currentRow = seat.seatName.charAt(0);
+          currentCount = 1;
+        }
+      });
+      if (currentCount > maxSeats) maxSeats = currentCount; // 確保最後一行的座位數量也被計算
+      return maxSeats;
+    });
+
+    const gridStyle = computed(() => {
+      return {
+        'grid-template-columns': `repeat(${maxSeatsPerRow.value}, 1fr)`,
+      };
     });
 
     return {
@@ -115,7 +130,8 @@ export default {
       openSeatStatusDialog,
       closeSeatStatusDialog,
       showError,
-      shouldInsertLineBreak, // 將函數暴露給模板
+      maxSeatsPerRow,
+      gridStyle,
     };
   },
   components: {
@@ -136,13 +152,10 @@ export default {
   justify-content: center;
 }
 .seats-container {
-  flex-wrap: wrap; /* 允許座位按鈕換行 */
-  justify-content: space-between;
-  align-items: center;
-}
-
-.seat-button {
-  box-sizing: border-box;
-  transform: scale(0.8); /* 使用 transform 縮小按鈕大小到50% */
+  display: grid;
+  gap: 1px; /* 這個數值可以自行調整 */
+  transform: scale(0.8);
+  margin: 0;
+  padding: 0;
 }
 </style>
