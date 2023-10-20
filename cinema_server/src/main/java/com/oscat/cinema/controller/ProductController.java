@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,35 +20,35 @@ import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.service.ProductService;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:8081")
+//@CrossOrigin(origins = "http://localhost:8080")
 public class ProductController {
 	
 	@Autowired
 	private ProductService productService;
 	
 	//新增產品
-	@PostMapping("/product/add")
+	@PostMapping("/products/add")
 	public Product addProduct(@RequestBody Product product) {
 		productService.addProduct(product);
 		return product;
 	}
 	
 	//查詢全部
-	@GetMapping("/product/all")
+	@GetMapping("/products/all")
 	public List<Product> findAllProducts(){
 		List<Product> products = productService.findAllProducts();
 		return products;
 	}
 	
 	//刪除產品
-	@DeleteMapping("/product/delete")
+	@DeleteMapping("/products/delete")
 	public String deleteProduct(@RequestParam("id")UUID id) {
 		productService.deletePrroductById(id);
 		return "刪除成功";
 	}
 	
 	//更新產品
-	@PutMapping("/product/update")
+	@PutMapping("/products/update")
 	public ResponseEntity<Product> updateProduct(@RequestBody Product updatedProduct) {
         Optional<Product> existingProductOptional = productService.updateProduct(updatedProduct);
 
