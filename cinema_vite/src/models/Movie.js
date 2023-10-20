@@ -15,12 +15,6 @@ const movie = {
     {
       stillImageUrl: '',
     },
-    {
-      stillImageUrl: '',
-    },
-    {
-      stillImageUrl: '',
-    },
   ],
 };
 

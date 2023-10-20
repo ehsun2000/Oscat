@@ -21,12 +21,6 @@
             >
           </li>
           <li class="nav-item">
-            <router-link to="/about" class="nav-link">關於我們</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/contact" class="nav-link">聯絡我們</router-link>
-          </li>
-          <li class="nav-item">
             <router-link to="/movie" class="nav-link">電影管理</router-link>
           </li>
         </ul>
