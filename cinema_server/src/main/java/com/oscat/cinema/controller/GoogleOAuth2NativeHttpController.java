@@ -18,11 +18,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-@Controller
+//@Controller
 public class GoogleOAuth2NativeHttpController {
 	// 原生使用(okhttp) http request, response 執行 OAuth2 的寫法 
 	
-	@Autowired
+//	@Autowired
 	private GoogleOAuth2Config googleOauth2Config;
 	
 	

@@ -1,64 +1,45 @@
 <template>
-  <RouterLink class="btn btn-outline-success" to="/movie/add"
-    ><i class="bi bi-plus"></i> 新增</RouterLink
-  >
   <div>
-    <div v-for="movie in movies" :key="movie.movieId" class="movie">
-      <a :href="movie.trailerLink">
-        <img :src="movie.posterImage" alt="" />
-      </a>
-      <h1>{{ movie.movieName }}</h1>
-      <button type="button" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-up-circle-fill"></i>
-      </button>
-
-      <button type="button" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-down-circle-fill"></i>
-      </button>
-
-      <RouterLink
-        type="button"
-        class="btn btn-outline-secondary"
-        :to="'/movie/edit/' + movie.movieId"
-      >
-        <i class="bi bi-gear"></i>
-      </RouterLink>
-
-      <button type="button" class="btn btn-outline-danger">
-        <i class="bi bi-trash-fill"></i>
-      </button>
+    <h1>電影列表</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">電影名稱</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="movie in movies" :key="movie.movieId" :id="movie.movieId">
+          <td>{{ movie.movieName }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <router-link :to="'/showtime'">
+        <button type="button" class="btn btn-outline-secondary">
+          新增場次
+        </button>
+      </router-link>
     </div>
   </div>
 </template>
 
 <script setup>
-import { fetchMovies, movies } from '../config/function';
-import { onMounted } from 'vue';
+// 引入 Axios
+import axios from 'axios';
+import { ref } from 'vue';
 
-onMounted(async () => {
-  await fetchMovies();
-});
+const movies = ref();
+const loadMovies = async () => {
+  const URLAPI = `${import.meta.env.VITE_API_OSCATURL}movies`;
+  const response = await axios.get(URLAPI);
+  console.log(response);
+
+  movies.value = response.data;
+};
+
+loadMovies();
 </script>
 
-<style scoped>
-img {
-  width: 100%;
-}
-
-h1 {
-  font-size: 18px;
-}
-
-.movie {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  width: 220px;
-  height: 400px;
-  margin: 10px;
-  padding: 10px;
-
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-}
+<style>
+/* 这里可以添加组件的样式 */
 </style>

@@ -3,6 +3,8 @@ package com.oscat.cinema.entity;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,9 +13,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "ticket_type")
 public class TicketType {
@@ -29,6 +33,11 @@ public class TicketType {
 	@Column(name = "price_difference", nullable = false, precision = 5, scale = 2)
 	private BigDecimal priceDifference;
 
+	@JsonManagedReference
 	@OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CinemaTicketType> cinemaTicketTypes;
 }

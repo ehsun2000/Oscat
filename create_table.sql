@@ -46,6 +46,7 @@ CREATE TABLE cinema
     cinema_id      INT IDENTITY (1,1) PRIMARY KEY,
     cinema_name    VARCHAR(255) NOT NULL,
     cinema_address VARCHAR(255) NOT NULL,
+    cinema_img     VARCHAR(255) NOT NULL,   -- 新增影城圖片
     contact_phone  VARCHAR(20) NOT NULL,
     opening_hours  VARCHAR(100) NOT NULL,
     facilities     VARCHAR(MAX) NOT NULL,
@@ -78,6 +79,16 @@ CREATE TABLE ticket_type
     price_difference  DECIMAL(5, 2) NOT NULL  -- 修改根據票種有不同的漲幅
 );
 
+/*
+    為了防止移除 ticket_type (更動) 時，會導致關聯到的 ticket 會失去關聯的 type 故建此表。
+*/
+-- 建立影城票種資料表
+CREATE TABLE cinema_ticket_type (
+    cinema_id INT FOREIGN KEY REFERENCES Cinema(cinema_id),
+    ticket_type_id INT FOREIGN KEY REFERENCES ticket_type(ticket_type_id),
+    PRIMARY KEY (cinema_id, ticket_type_id)
+);
+
 -- 建立場次(ShowTime)資料表
 CREATE TABLE showtime
 (
@@ -85,7 +96,6 @@ CREATE TABLE showtime
     movie_id           UNIQUEIDENTIFIER FOREIGN KEY REFERENCES movie (movie_id),
     room_id            INT FOREIGN KEY REFERENCES screening_room (room_id),
     film_type          VARCHAR(255) NOT NULL,
-    price              DECIMAL(10, 2) NOT NULL,
     extra_fee          DECIMAL(10, 2) DEFAULT 0,  -- 新增的特定場次價格調整
     show_date_and_time DATETIME2 NOT NULL
 );
@@ -109,4 +119,24 @@ CREATE TABLE ticket
     type_id   INT FOREIGN KEY REFERENCES ticket_type (ticket_type_id),
     seat_id   uniqueidentifier FOREIGN KEY REFERENCES seat (seat_id),
     PRIMARY KEY (ticket_id, seat_id)
+);
+
+-- 建立產品(Product)資料表
+CREATE TABLE product
+(
+    product_id    uniqueidentifier PRIMARY KEY,
+    product_name  VARCHAR(255) NOT NULL,
+    unit_price    DECIMAL(10, 2) NOT NULL,
+    product_type  VARCHAR(50) NOT NULL,
+	product_img VARCHAR(255) NOT NULL
+);
+
+-- 建立影城產品 資料表
+CREATE TABLE cinema_product
+(
+    cinema_id    INT,
+    product_id   UNIQUEIDENTIFIER,
+    PRIMARY KEY (cinema_id, product_id),
+    FOREIGN KEY (cinema_id) REFERENCES cinema (cinema_id),
+    FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
