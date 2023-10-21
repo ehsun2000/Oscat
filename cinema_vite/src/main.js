@@ -9,7 +9,9 @@ import '@sweetalert2/theme-dark/dark.css';
 
 import App from './App.vue';
 import router from './router';
+import axios from 'axios';
 
+axios.defaults.withCredentials = true;
 document.body.setAttribute('data-bs-theme', 'dark');
 
 const app = createApp(App);

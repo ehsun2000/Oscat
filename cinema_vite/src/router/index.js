@@ -10,6 +10,23 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/AdminDashboard.vue'),
+    children: [
+      {
+        path: '/member',
+        name: 'Member',
+        component: import('@/views/yuho/MemberAdmin.vue'),
+      },
+      {
+        path: '/member/insert',
+        name: 'Insert',
+        component: import('@/views/yuho/MemberAdInsert.vue'),
+      },
+      {
+        path: '/member/update/:memberId',
+        name: 'Update',
+        component: import('@/views/yuho/MemberAdUpdate.vue'),
+      },
+    ],
   },
 ];
 

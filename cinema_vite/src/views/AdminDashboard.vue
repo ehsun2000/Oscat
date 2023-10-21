@@ -26,7 +26,9 @@ import AdminHeader from '@/components/AdminHeader.vue';
   -->
   <AdminHeader />
   <AdminSideBar />
-  <router-view />
+  <router-view
+    style="width: 85%; margin-left: 15%; height: 90vh; margin-top: 10vh"
+  />
 </template>
 
 <style scope></style>

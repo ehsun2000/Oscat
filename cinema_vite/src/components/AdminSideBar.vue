@@ -6,7 +6,7 @@ const movieItems = [
   { name: '電影設定', path: '/movie' },
 ];
 const memberItems = [
-  { name: '會員設定', path: '/member' },
+  { name: '會員一覽', path: '/member' },
   { name: '分析報告', path: '/member-report' },
 ];
 const cinemaItems = [

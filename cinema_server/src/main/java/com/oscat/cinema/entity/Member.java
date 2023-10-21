@@ -36,7 +36,7 @@ import lombok.Setter;
 public class Member {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(columnDefinition = "uniqueidentifier", name = "member_id")
 	private UUID memberId;
 
