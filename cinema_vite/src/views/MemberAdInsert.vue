@@ -210,7 +210,7 @@ const emailExists = ref(false);
 const checkEmailRepeat = async () => {
   const checkEmail_url = `${
     import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/api/member/add/${member.value.email}`;
+  }/member/add/${member.value.email}`;
   try {
     const response = await axios.get(checkEmail_url);
 
@@ -285,7 +285,7 @@ const addHandler = async () => {
 
   const insert_url = `${
     import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/api/member/add`;
+  }/member/add`;
   try {
     const response = await axios.post(insert_url, member.value);
     if (response.status === 200) {

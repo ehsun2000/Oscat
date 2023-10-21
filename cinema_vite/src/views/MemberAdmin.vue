@@ -73,7 +73,7 @@ const members = ref([]);
 const loadMembers = async () => {
   const member_url = `${
     import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/api/member/all`;
+  }/member/all`;
   const response = await axios.get(member_url);
   members.value = response.data;
 };
@@ -119,7 +119,7 @@ const deleteHandler = async (memberId) => {
   if (window.confirm('確認刪除?')) {
     const delete_url = `${
       import.meta.env.VITE_OSCAT_API_ENDPOINT
-    }/api/member/delete/${memberId}`;
+    }/member/delete/${memberId}`;
     const response = await axios.delete(delete_url);
     if (response.data) {
       alert('刪除成功');

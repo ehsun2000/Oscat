@@ -128,7 +128,7 @@ const existData = async () => {
   const memberId = route.params.memberId;
   const update_url = `${
     import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/api/member/${memberId}`;
+  }/member/${memberId}`;
   const { data } = await axios.get(update_url);
   member.value = data;
 };
@@ -235,7 +235,7 @@ const checkEmailRepeat = async () => {
   if ((oldEmail.value !== null) | (newEmail.value !== oldEmail.value)) {
     const checkEmail_url = `${
       import.meta.env.VITE_OSCAT_API_ENDPOINT
-    }/api/member/add/${member.value.email}`;
+    }/member/add/${member.value.email}`;
     try {
       const response = await axios.get(checkEmail_url);
       if (response.data == 'Y') {
@@ -309,7 +309,7 @@ const editHandler = async () => {
 
   const update_url = `${
     import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/api/member/update/${member.value.memberId}`;
+  }/member/update/${member.value.memberId}`;
 
   try {
     const response = await axios.put(update_url, member.value);
