@@ -13,6 +13,7 @@ import { ref } from 'vue';
 const keyword = ref('');
 const emit = defineEmits(['searchInput']);
 const inputHandler = () => {
+  console.log('觸發子組件');
   emit('searchInput', keyword.value);
 };
 </script>

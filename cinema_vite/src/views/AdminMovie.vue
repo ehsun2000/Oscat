@@ -1,50 +1,90 @@
 <template>
-  <RouterLink class="btn btn-outline-success" to="/movie/add"
-    ><i class="bi bi-plus"></i> 新增</RouterLink
-  >
-  <div class="row mb-3">
-    <div class="col-6"></div>
-    <div class="col-5">
-      <SearchTextMovie></SearchTextMovie>
+  <div class="roll">
+    <div class="box"></div>
+    <h2>電影管理</h2>
+    <RouterLink class="btn btn-outline-success" to="/movie/add"
+      ><i class="bi bi-plus"></i> 新增</RouterLink
+    >
+    <div class="row mb-3">
+      <div class="col-6"></div>
+      <div class="col-5">
+        <SearchTextMovie @searchInput="inputHandler"></SearchTextMovie>
+      </div>
     </div>
-  </div>
-  <div>
-    <div v-for="movie in movies" :key="movie.movieId" class="movie">
-      <a :href="movie.trailerLink">
-        <img :src="movie.posterImage" alt="" />
-      </a>
-      <h1>{{ movie.movieName }}</h1>
-      <button type="button" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-up-circle-fill"></i>
-      </button>
+    <div>
+      <div v-for="movie in formateMovie" :key="movie.movieId" class="movie">
+        <a :href="movie.trailerLink">
+          <img :src="movie.posterImage" alt="" />
+        </a>
+        <h1>{{ movie.movieName }}</h1>
+        <button
+          type="button"
+          :class="[
+            movie.movieStatus === '上映中'
+              ? 'btn btn-primary'
+              : 'btn btn-outline-primary',
+          ]"
+          :disabled="movie.movieStatus === '上映中'"
+          @click="upMovie"
+        >
+          <i class="bi bi-arrow-up-circle-fill"></i>
+        </button>
+        <button
+          type="button"
+          :class="[
+            movie.movieStatus !== '上映中'
+              ? 'btn btn-primary'
+              : 'btn btn-outline-primary',
+          ]"
+          :disabled="movie.movieStatus !== '上映中'"
+          @click="downMovie"
+        >
+          <i class="bi bi-arrow-down-circle-fill"></i>
+        </button>
 
-      <button type="button" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-down-circle-fill"></i>
-      </button>
+        <RouterLink
+          type="button"
+          class="btn btn-outline-secondary"
+          :to="'/movie/edit/' + movie.movieId"
+        >
+          <i class="bi bi-gear"></i>
+        </RouterLink>
 
-      <RouterLink
-        type="button"
-        class="btn btn-outline-secondary"
-        :to="'/movie/edit/' + movie.movieId"
-      >
-        <i class="bi bi-gear"></i>
-      </RouterLink>
-
-      <button type="button" class="btn btn-outline-danger">
-        <i class="bi bi-trash-fill" @click="deleteMovie(movie.movieId)"></i>
-      </button>
+        <button type="button" class="btn btn-outline-danger">
+          <i class="bi bi-trash-fill" @click="deleteMovie(movie.movieId)"></i>
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import SearchTextMovie from '../components/SearchTextMovie.vue';
-import { fetchMovies, movies } from '../config/function';
-import { onMounted } from 'vue';
+import SearchTextMovie from '@/components/SearchTextMovie.vue';
+import { fetchMovies, movies } from '@/services/function.js';
+import { onMounted, computed, reactive } from 'vue';
 import axios from 'axios';
-// import Swal from 'sweetalert2';
+
+//載入所有電影
 onMounted(async () => {
   await fetchMovies();
+});
+
+//搜尋
+const datas = reactive({
+  movieName: '',
+});
+
+const inputHandler = (value) => {
+  datas.movieName = value;
+  // console.log(value);
+  fetchMovies();
+};
+
+const formateMovie = computed(() => {
+  const filteredMovies = movies.value.filter((movie) => {
+    return movie.movieName.includes(datas.movieName);
+  });
+  return filteredMovies;
 });
 
 //刪除

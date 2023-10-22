@@ -116,7 +116,7 @@
 </template>
 
 <script setup>
-import Member from '../../models/member.js'
+import Member from '@/models/member.js';
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -283,9 +283,7 @@ const addHandler = async () => {
     return; // 不提交表單
   }
 
-  const insert_url = `${
-    import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/member/add`;
+  const insert_url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/member/add`;
   try {
     const response = await axios.post(insert_url, member.value);
     if (response.status === 200) {

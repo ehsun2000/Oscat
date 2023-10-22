@@ -1,8 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/HomeVue.vue';
-import Movie from '../views/AdminMovie.vue';
-import Edit from '../views/AdminEditMovie.vue';
-import Add from '../views/AdminAddMovie.vue';
 
 const routes = [
   {
@@ -18,20 +14,54 @@ const routes = [
       {
         path: '/member',
         name: 'Member',
-        component: import('@/views/yuho/MemberAdmin.vue'),
+        component: import('@/views/MemberAdmin.vue'),
       },
       {
         path: '/member/insert',
         name: 'Insert',
-        component: import('@/views/yuho/MemberAdInsert.vue'),
+        component: import('@/views/MemberAdInsert.vue'),
       },
       {
         path: '/member/update/:memberId',
         name: 'Update',
-        component: import('@/views/yuho/MemberAdUpdate.vue'),
+        component: import('@/views/MemberAdUpdate.vue'),
+      },
+      {
+        path: '/movie',
+        name: 'Movie',
+        component: import('@/views/AdminMovie.vue'),
+      },
+      {
+        path: '/movie/add',
+        name: 'Add',
+        component: import('@/views/AdminAddMovie.vue'),
+      },
+      {
+        path: '/movie/edit/:movieId',
+        name: 'Edit',
+        component: import('@/views/AdminEditMovie.vue'),
       },
     ],
   },
+  // {
+
+  //     path: '/movie',
+  //     name: 'Movie',
+  //     component: import('@/views/AdminMovie.vue'),
+  //     children: [
+  //       {
+  //         path: 'add',
+  //         name: 'Add'
+  //         component: import('@/views/AdminAddMovie.vue'),
+  //       },
+  //       {
+  //         path: 'edit/:movieId',
+  //         name: 'Edit',
+  //         component: import('@/views/AdminEditMovie.vue'),
+  //       },
+  //     ]
+
+  // },
 ];
 
 const router = createRouter({

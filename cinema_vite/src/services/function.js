@@ -4,7 +4,7 @@ import axios from 'axios';
 export const movies = ref([]); //export資料
 
 export async function fetchMovies() {
-  const url = `${import.meta.env.VITE_API_OSCATURL}movies`;
+  const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/`;
   try {
     const response = await axios.get(url);
     movies.value = response.data;

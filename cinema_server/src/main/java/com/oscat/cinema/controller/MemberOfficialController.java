@@ -60,8 +60,8 @@ public class MemberOfficialController {
 	}
 
 	@PostMapping("/member/login")
-	public ResponseEntity<ApiResponse<List<String>>> login(@RequestParam("email") String email,
-			@RequestParam("password") String password, HttpSession session) {
+	public ResponseEntity<ApiResponse<List<String>>> login(@RequestParam("e") String email,
+			@RequestParam("p") String password, HttpSession session) {
 		Member loginMember = memberService.checkLogin(email, password);
 		if (loginMember != null) {
 			session.setAttribute("loginMember", loginMember);
@@ -96,5 +96,7 @@ public class MemberOfficialController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 		}
 	}
+	
+
 
 }
