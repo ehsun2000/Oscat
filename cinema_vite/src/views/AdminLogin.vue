@@ -18,8 +18,8 @@ async function handleLogin() {
   const passwordValue = password.value;
 
   // 從環境變量中讀取 API 端點
-  const apiEndpoint = import.meta.env.VITE_OSCAT_API_ENDPOINT;
-  const apiLink = `${apiEndpoint}/adminlogin`;
+  const apiEndpoint = import.meta.env.VITE_LOGIN_API_ENDPOINT;
+  const apiLink = apiEndpoint;
 
   // 設置請求選項
   const requestOptions = {
