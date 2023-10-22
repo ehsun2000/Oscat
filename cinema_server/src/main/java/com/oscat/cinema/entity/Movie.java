@@ -70,4 +70,8 @@ public class Movie {
 	@JsonManagedReference
 	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<MovieStills> movieStills;
+	
+	@JsonManagedReference
+	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ShowTime> showTimes;
 }
