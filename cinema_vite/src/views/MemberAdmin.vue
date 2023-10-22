@@ -65,15 +65,13 @@
 <script setup>
 import axios from 'axios';
 import { ref, reactive, computed } from 'vue';
-import SearchBox from '../yuho/SearchBox.vue';
+import SearchBox from '@/views/SearchBox.vue';
 
 const members = ref([]);
 
 // 載入所有會員
 const loadMembers = async () => {
-  const member_url = `${
-    import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/member/all`;
+  const member_url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/member/all`;
   const response = await axios.get(member_url);
   members.value = response.data;
 };
