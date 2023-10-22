@@ -117,7 +117,7 @@
 import { ref, computed, watch } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
-import Member from '../../models/member.js';
+import Member from '@/models/member.js';
 
 const route = useRoute();
 const router = useRouter();

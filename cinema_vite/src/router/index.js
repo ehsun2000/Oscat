@@ -14,17 +14,17 @@ const routes = [
       {
         path: '/member',
         name: 'Member',
-        component: import('@/views/yuho/MemberAdmin.vue'),
+        component: import('@/views/MemberAdmin.vue'),
       },
       {
         path: '/member/insert',
         name: 'Insert',
-        component: import('@/views/yuho/MemberAdInsert.vue'),
+        component: import('@/views/MemberAdInsert.vue'),
       },
       {
         path: '/member/update/:memberId',
         name: 'Update',
-        component: import('@/views/yuho/MemberAdUpdate.vue'),
+        component: import('@/views/MemberAdUpdate.vue'),
       },
     ],
   },
