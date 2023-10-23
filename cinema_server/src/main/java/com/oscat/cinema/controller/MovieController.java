@@ -2,10 +2,13 @@ package com.oscat.cinema.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -134,8 +137,13 @@ public class MovieController {
 	}
 	
 	@PutMapping("/status")
-	public ResponseEntity<String> updateStatusById(String movieStatus, UUID movieId){
-		boolean result = movieService.updateStatusById(movieStatus, movieId);
+	public ResponseEntity<String> updateStatusById(@RequestBody String json) throws JSONException {
+		System.out.println(json);
+		JSONObject joo = new JSONObject(json);
+		String status = joo.getString("movieStatus");
+		String id = joo.getString("movieId");
+		UUID movieId = UUID.fromString(id);
+		boolean result = movieService.updateStatusById(status, movieId);
 		if(result) {
 			return new ResponseEntity<String>("狀態更新", null, HttpStatus.OK);
 		}

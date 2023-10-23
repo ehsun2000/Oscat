@@ -77,6 +77,7 @@ const upMovie = async (movieStatus, movieId) => {
   console.log(URLAPI);
   const response = await axios.put(URLAPI, { movieStatus, movieId });
   console.log(response);
+  fetchMovies();
 };
 
 const downMovie = async (movieStatus, movieId) => {
@@ -86,6 +87,7 @@ const downMovie = async (movieStatus, movieId) => {
   console.log(movieId);
   const response = await axios.put(URLAPI, { movieStatus, movieId });
   console.log(response);
+  fetchMovies();
 };
 
 //搜尋
