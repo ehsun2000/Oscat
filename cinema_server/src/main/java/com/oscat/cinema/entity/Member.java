@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,15 +26,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "member")
 public class Member {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(columnDefinition = "uniqueidentifier", name = "member_id")
 	private UUID memberId;
 
@@ -74,6 +78,7 @@ public class Member {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date joinDate;
 
+	@JsonManagedReference
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<TransOrder> transOrders;
 
