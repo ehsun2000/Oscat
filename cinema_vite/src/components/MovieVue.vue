@@ -30,8 +30,10 @@ import { ref } from 'vue';
 
 const movies = ref();
 const loadMovies = async () => {
-  const URLAPI = `${import.meta.env.VITE_API_OSCATURL}movies`;
-  const response = await axios.get(URLAPI);
+  const URLAPI = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/`;
+  const response = await axios.get(URLAPI, {
+    withCredentials: true, // 将憑證模式設為 'include'
+  });
   console.log(response);
 
   movies.value = response.data;

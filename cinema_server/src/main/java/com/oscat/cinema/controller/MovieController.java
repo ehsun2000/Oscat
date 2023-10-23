@@ -1,6 +1,5 @@
 package com.oscat.cinema.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,70 +10,50 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscat.cinema.dao.MovieRepository;
+import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.entity.Movie;
-import com.oscat.cinema.entity.MovieStills;
+import com.oscat.cinema.service.MovieService;
 
 import jakarta.transaction.Transactional;
 
 @RestController
-@CrossOrigin(origins="http://localhost:8081")
+@RequestMapping(path = "/api/movie")
 public class MovieController {
 
 	@Autowired
 	private MovieRepository movRepo;
 
-	@PostMapping("/movie/add")
+	@Autowired
+	private MovieService movieService;
+
+	@PostMapping("/add")
 	public ResponseEntity<?> postAddMovie(@RequestBody Movie movie) {
 
-	    Movie addMovie = new Movie();
-	    addMovie.setMovieName(movie.getMovieName());
-	    addMovie.setMovieType(movie.getMovieType());
-	    addMovie.setMovieStatus(movie.getMovieStatus());
-	    addMovie.setDirector(movie.getDirector());
-	    addMovie.setWriterList(movie.getWriterList());
-	    addMovie.setActorList(movie.getActorList());
-	    addMovie.setPlotSummary(movie.getPlotSummary());
-	    addMovie.setReleaseDate(movie.getReleaseDate());
-	    addMovie.setDuration(movie.getDuration());
-	    addMovie.setClassification(movie.getClassification());
-	    addMovie.setTrailerLink(movie.getTrailerLink());
-	    addMovie.setPosterImage(movie.getPosterImage());
-	    
-	    List<MovieStills> movieStillsList = new ArrayList<>();
-	    for (MovieStills movieStill : movie.getMovieStills()) {
-	        MovieStills newMovieStill = new MovieStills();
-	        newMovieStill.setStillImageUrl(movieStill.getStillImageUrl());
-	        newMovieStill.setMovie(addMovie);
-	        movieStillsList.add(newMovieStill);
-	    }
+		Movie result = movieService.saveMovie(movie);
 
-	    addMovie.setMovieStills(movieStillsList);
-	    
-	    Movie createMovie = movRepo.save(addMovie);
-	    
-	    if (createMovie != null) {
-	    	return new ResponseEntity<Movie>(createMovie,null,HttpStatus.OK);
-	    }
-	    return new ResponseEntity<String>("新增失敗，請檢查輸入格式",null,HttpStatus.BAD_REQUEST);
+		if (result != null) {
+			return new ResponseEntity<Movie>(result, null, HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("新增失敗，請檢查輸入格式", null, HttpStatus.BAD_REQUEST);
 	}
 
-	@PostMapping("/movie/addList")
+	@PostMapping("/addList")
 	public List<Movie> addListMovie(@RequestBody List<Movie> MovieList) {
 		return movRepo.saveAll(MovieList);
 	}
 
-	@GetMapping("movie/byName/{movieName}")
+	@GetMapping("/byName/{movieName}")
 	public ResponseEntity<?> findBymovieName(@PathVariable String movieName) {
 		Optional<Movie> optional = movRepo.findBymovieName(movieName);
 
@@ -86,42 +65,53 @@ public class MovieController {
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
-	@GetMapping("/movies")
-	public List<Movie> findAllMovie() {
-		return movRepo.findAll();
-	}
-
-	@DeleteMapping("/movie/delete")
-	public String deleteMovieById(@RequestParam UUID movieId) {
-		Optional<Movie> optional = movRepo.findById(movieId);
-
-		if (optional.isEmpty()) {
-			return "無此筆資料";
-		}
-
-		movRepo.deleteById(movieId);
-
-		return "已刪除";
-	}
-
-	@Transactional
-	@PutMapping("/movie/update")
-	public String updateMovieById(@RequestParam("movieId") UUID movieId, @RequestParam("newName") String newName,
-			@RequestParam("newType") String newType, @RequestParam("newMovieStatus") String newMovieStatus) {
+	@GetMapping("/{movieId}")
+	public ResponseEntity<?> findById(@PathVariable UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
 
 		if (optional.isPresent()) {
 			Movie movie = optional.get();
-			movie.setMovieName(newName);
-			movie.setMovieType(newType);
-			movie.setMovieStatus(newMovieStatus);
-			return "修改完成";
+			return new ResponseEntity<Movie>(movie, null, HttpStatus.OK);
 		}
-
-		return "無此筆資料";
+		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
-	@GetMapping("/movie/page/{pageNumber}")
+	@GetMapping("/")
+	public List<Movie> findAllMovie() {
+		return movRepo.findAll();
+	}
+
+//	@DeleteMapping("/delete")
+//	public String deleteMovieById(@RequestParam UUID movieId) {
+//		Optional<Movie> optional = movRepo.findById(movieId);
+//
+//		if (optional.isEmpty()) {
+//			return "無此筆資料";
+//		}
+//
+//		movRepo.deleteById(movieId);
+//
+//		return "已刪除";
+//	}
+
+	@DeleteMapping("/delete/{movieId}")
+	public String deleteMovieById(@PathVariable UUID movieId) {
+		String result = movieService.deleteMovie(movieId);
+		return result;
+	}
+
+	@Transactional
+	@PutMapping("/update/{movieId}")
+	public String updateMovieById(@PathVariable UUID movieId, @RequestBody MovieDTO newMovieDTO) {
+		Optional<Movie> optional = movieService.updateMovie(movieId, newMovieDTO);
+
+		if (optional.isEmpty()) {
+			return "無此筆資料";
+		}
+		return "修改完成";
+	}
+
+	@GetMapping("/page/{pageNumber}")
 	public Page<Movie> findMovieByPage(@PathVariable Integer pageNumber) {
 		PageRequest pgb = PageRequest.of(pageNumber - 1, 2, Sort.Direction.ASC, "movieId");
 		Page<Movie> page = movRepo.findAll(pgb);
@@ -129,12 +119,12 @@ public class MovieController {
 
 	}
 
-	@GetMapping("/movie/name")
+	@GetMapping("/name")
 	public List<Movie> findMovieByNameNativeQuery(@RequestParam("n") String movieName) {
 		return movRepo.findMovieByNameNativeQuery(movieName);
 	}
 
-	@GetMapping("/movie/nameLike")
+	@GetMapping("/nameLike")
 	public List<Movie> findMovieByNameLike(@RequestParam("n") String name) {
 		return movRepo.findMovieByNameLike(name);
 	}

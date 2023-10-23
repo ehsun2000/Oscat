@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,5 +26,11 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 	List<SearchCinemaForBook> findCinemasByMovieId(@Param("movieId") UUID movieId, 
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate);
+
+	// 查詢單筆 cinema 資料 JPQL
+	@Query("FROM Cinema WHERE cinemaId = :id")
+	Cinema findCinemaById(@Param("id") Integer id);
 	
+	// 查詢分頁 cinema 資料 JPQL
+	Page<Cinema> findAll(Pageable pageable);
 }

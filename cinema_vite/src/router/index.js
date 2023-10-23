@@ -1,16 +1,38 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import About from '../components/AboutVue.vue';
-import Contact from '../components/ContactVue.vue';
-import Home from '../components/HomeVue.vue';
-import Movie from '../components/MovieVue.vue';
-import Showtime from '../components/AddShowVue.vue';
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/about', component: About },
-  { path: '/contact', component: Contact },
-  { path: '/movie', component: Movie },
-  { path: '/showtime', component: Showtime },
+  {
+    path: '/adminlogin',
+    name: 'Login',
+    component: () => import('@/views/AdminLogin.vue'),
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/views/AdminDashboard.vue'),
+    children: [
+      {
+        path: '/member',
+        name: 'Member',
+        component: import('@/views/MemberAdmin.vue'),
+      },
+      {
+        path: '/member/insert',
+        name: 'Insert',
+        component: import('@/views/MemberAdInsert.vue'),
+      },
+      {
+        path: '/member/update/:memberId',
+        name: 'Update',
+        component: import('@/views/MemberAdUpdate.vue'),
+      },
+      {
+        path: '/showtime',
+        name: 'Showtime',
+        component: import('@/components/AddShowVue.vue'),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

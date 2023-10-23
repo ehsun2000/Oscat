@@ -1,14 +1,29 @@
 package com.oscat.cinema.entity;
 
-import lombok.Data;
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-@Data
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "showtime")
 public class ShowTime {
@@ -29,20 +44,16 @@ public class ShowTime {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "movie_id")
+	@JsonBackReference(value="showtime-ref")
 	private Movie movie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id")
+	@JsonBackReference(value = "showtime_room")
 	private ScreeningRoom screeningRoom;
 
 	@OneToMany(mappedBy = "showTime", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference(value = "showtime_order")
 	private List<TransOrder> transOrders;
 
-	@Column(name = "price")
-	private int price;
-
-	public void setMovie(Movie selectedMovie) {
-		// TODO Auto-generated method stub
-
-	}
 }
