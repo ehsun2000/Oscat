@@ -44,15 +44,15 @@ public class ShowTime {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "movie_id")
-	@JsonBackReference
+	@JsonBackReference(value="showtime-ref")
 	private Movie movie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id")
-	@JsonBackReference
+	@JsonBackReference(value = "showtime_room")
 	private ScreeningRoom screeningRoom;
 
 	@OneToMany(mappedBy = "showTime", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonManagedReference(value = "showtime_order")
 	private List<TransOrder> transOrders;
 }

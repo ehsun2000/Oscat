@@ -33,11 +33,11 @@ public class TicketType {
 	@Column(name = "price_difference", nullable = false, precision = 5, scale = 2)
 	private BigDecimal priceDifference;
 
-	@JsonManagedReference
+	@JsonManagedReference(value = "tickettype-ticket")
 	@OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
 
-	@JsonManagedReference
+	@JsonManagedReference(value = "tickettype-cinematickettype")
 	@OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CinemaTicketType> cinemaTicketTypes;
 }

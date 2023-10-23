@@ -8,26 +8,19 @@
       <br />
       <i class="bi bi-box2"></i>正常狀態 <i class="bi bi-box2-fill"></i>無法使用
     </form>
-    <div id="result">
-      <div class="seats-container" :style="gridStyle" v-show="isShow">
-        <template v-for="seat in seats" :key="seat.seatId">
-          <button @click="openSeatStatusDialog(seat)">
-            <i v-if="seat.seatStatus === 'Normal'" class="bi bi-box2"></i>
+    <div id="result" class="scrollable-container">
+      <div class="seats-container" :style="gridStyle">
+        <div v-for="seat in seats" :key="seat.seatId">
+          <button @click="toggleSeatStatus(seat)">
+            <i v-if="seat.tempStatus === 'Normal'" class="bi bi-box2"></i>
             <i v-else class="bi bi-box2-fill"></i><br />
             {{ seat.seatName }}
           </button>
-        </template>
-      </div>
-      <div class="form" v-show="!isShow">
-        <div v-if="isDialogVisible">
-          <SeatStatusDialog
-            :selectedSeatId="selectedSeat.seatId"
-            :selectedSeatName="selectedSeat.seatName"
-            :selectedSeatStatus="selectedSeatStatus"
-            @seatUpdated="closeSeatStatusDialog"
-          />
-          <button @click="closeSeatStatusDialog">關</button>
         </div>
+      </div>
+      <div v-if="showButtons" class="showButtons">
+        <button @click="updateAllSeats">確認更改</button>
+        <button @click="resetTempStatus">取消更改</button>
       </div>
     </div>
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
@@ -35,66 +28,76 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
-import SeatStatusDialog from './SeatStatus.vue';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { ref, computed } from 'vue';
 
 export default {
   setup() {
     const roomId = ref('');
     const seats = ref([]);
     const errorMessage = ref(null);
-    const isShow = ref(true);
-    const isDialogVisible = ref(false);
-    const selectedSeat = ref(null);
-    const selectedSeatStatus = ref('');
-    const showError = ref(false);
+    const showSeats = ref(false);
+    const showButtons = ref(false);
 
-    const findSeatApi = import.meta.env.VITE_API_FindSeat;
+    const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
 
     const getSeatStatus = async () => {
-      if (!roomId.value) {
-        return;
-      }
+      if (!roomId.value) return;
+
       try {
-        const response = await fetch(`${findSeatApi}${roomId.value}`);
+        const response = await fetch(
+          `${api}/seat/findAllSeatByRoomId?roomId=${roomId.value}`,
+          {
+            credentials: 'include',
+          },
+        );
+
         if (response.ok) {
           const data = await response.json();
-          seats.value = data;
-          errorMessage.value = '';
-          showError.value = false;
+          seats.value = data.map((seat) => ({
+            ...seat,
+            tempStatus: seat.seatStatus,
+          }));
+          if (seats.value.length > 0) {
+            showSeats.value = true;
+            showButtons.value = true;
+          } else {
+            showSeats.value = false;
+            showButtons.value = false;
+          }
         } else {
           errorMessage.value = '請求失敗：' + response.statusText;
-          showError.value = true;
         }
       } catch (error) {
         errorMessage.value = '請求失敗：' + error.message;
-        showError.value = true;
       }
     };
 
-    const openSeatStatusDialog = (seat) => {
-      isShow.value = false;
-      selectedSeat.value = seat;
-      selectedSeatStatus.value = seat.seatStatus;
-      isDialogVisible.value = true;
+    const toggleSeatStatus = (seat) => {
+      seat.tempStatus = seat.tempStatus === 'Normal' ? 'Maintenance' : 'Normal';
     };
 
-    const closeSeatStatusDialog = () => {
-      isDialogVisible.value = false;
-      selectedSeat.value = null;
-      selectedSeatStatus.value = '';
-      isShow.value = true;
-      getSeatStatus();
+    const resetTempStatus = () => {
+      seats.value.forEach((seat) => {
+        seat.tempStatus = seat.seatStatus;
+      });
     };
 
-    onMounted(() => {
-      getSeatStatus();
-    });
+    const updateAllSeats = async () => {
+      const seatsToUpdate = seats.value.filter(
+        (seat) => seat.tempStatus !== seat.seatStatus,
+      );
 
-    // 在 setup() 中新增以下代碼
+      for (const seat of seatsToUpdate) {
+        const url = `${api}/seat/updateSeatStatusById?id=${seat.seatId}&status=${seat.tempStatus}`;
+        await fetch(url, {
+          method: 'PUT',
+          credentials: 'include',
+        });
+      }
+      await getSeatStatus();
+    };
+
     const maxSeatsPerRow = computed(() => {
-      // 找出最多座位的那一行
       let maxSeats = 0;
       let currentCount = 0;
       let currentRow =
@@ -108,7 +111,7 @@ export default {
           currentCount = 1;
         }
       });
-      if (currentCount > maxSeats) maxSeats = currentCount; // 確保最後一行的座位數量也被計算
+      if (currentCount > maxSeats) maxSeats = currentCount;
       return maxSeats;
     });
 
@@ -122,20 +125,14 @@ export default {
       roomId,
       seats,
       errorMessage,
-      isShow,
-      isDialogVisible,
-      selectedSeat,
-      selectedSeatStatus,
       getSeatStatus,
-      openSeatStatusDialog,
-      closeSeatStatusDialog,
-      showError,
-      maxSeatsPerRow,
+      toggleSeatStatus,
+      updateAllSeats,
       gridStyle,
+      showSeats,
+      showButtons,
+      resetTempStatus,
     };
-  },
-  components: {
-    SeatStatusDialog,
   },
 };
 </script>
@@ -144,18 +141,21 @@ export default {
 .error-message {
   color: red;
 }
-.form {
-  width: 800px;
-  background: #efefef;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .seats-container {
   display: grid;
-  gap: 1px; /* 這個數值可以自行調整 */
-  transform: scale(0.8);
+  gap: 1px; /* 調整這個值來改變座位之間的間距 */
   margin: 0;
   padding: 0;
+}
+.showButtons {
+  text-align: center;
+  margin-top: 20px;
+}
+.scrollable-container {
+  width: 800px; /* 這裡的寬度可以根據你的需求進行調整 */
+  height: 400px; /* 這裡的高度可以根據你的需求進行調整 */
+  overflow-x: auto; /* 橫向捲動 */
+  overflow-y: auto; /* 縱向捲動 */
+  border: 1px solid #ccc; /* 這是一個可選的邊框，僅為了視覺效果 */
 }
 </style>

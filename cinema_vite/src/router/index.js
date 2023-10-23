@@ -26,6 +26,11 @@ const routes = [
         name: 'Update',
         component: import('@/views/MemberAdUpdate.vue'),
       },
+      {
+        path: '/cinema-seat',
+        name: 'seat',
+        component: import('@/views/SeatController.vue'),
+      },
     ],
   },
 ];

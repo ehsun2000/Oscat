@@ -1,7 +1,9 @@
 <template>
-  <div class="row">
+  <div class="row" style="padding-top: 100px">
+    <div class="box"></div>
     <div class="col-3"></div>
     <div class="col-6">
+      <h2>新增電影</h2>
       <form @submit.prevent="submitForm">
         <div class="form-group mb-3">
           <label for="movieName" class="form-label">電影名稱</label>
@@ -25,12 +27,14 @@
 
         <div class="form-group mb-3">
           <label for="movieStatus" class="form-label">電影狀態</label>
-          <input
-            type="text"
-            class="form-control"
+          <select
+            class="form-select"
             id="movieStatus"
             v-model="movie.movieStatus"
-          />
+          >
+            <option value="上映中">上映中</option>
+            <option value="下檔">下檔</option>
+          </select>
         </div>
 
         <div class="form-group mb-3">
@@ -95,12 +99,16 @@
 
         <div class="form-group mb-3">
           <label for="classification" class="form-label">電影分級</label>
-          <input
-            type="text"
-            class="form-control"
-            id="classification"
+          <select
+            class="form-select"
+            id="movieStatus"
             v-model="movie.classification"
-          />
+          >
+            <option value="普遍級">普遍級</option>
+            <option value="保護級">保護級</option>
+            <option value="輔導級">輔導級</option>
+            <option value="限制級">限制級</option>
+          </select>
         </div>
 
         <div class="form-group mb-3">
@@ -146,7 +154,10 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-success">新增電影</button>
+        <button type="submit" class="btn btn-success mx-2">新增電影</button
+        ><button type="button" class="btn btn-primary" @click="previousPage">
+          返回
+        </button>
       </form>
     </div>
   </div>
@@ -157,11 +168,15 @@
 import { ref } from 'vue';
 import axios from 'axios';
 // import { useRouter } from 'vue-router';
-import Movie from '../models/Movie';
+import Movie from '@/models/Movie.js';
 import Swal from 'sweetalert2';
 
 // const router = useRouter();
 const movie = ref(Movie);
+
+const previousPage = () => {
+  history.back();
+};
 
 const addStillsLink = () => {
   Swal.fire({
@@ -182,7 +197,7 @@ const addStillsLink = () => {
 
 const submitForm = async () => {
   try {
-    const url = `${import.meta.env.VITE_API_OSCATURL}movie/add`;
+    const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/add`;
     console.log(url);
     const response = await axios.post(url, movie.value);
     console.log(response);

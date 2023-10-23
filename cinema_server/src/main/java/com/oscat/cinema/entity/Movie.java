@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -67,11 +68,11 @@ public class Movie {
 	@Column(name = "poster_image", length = 1000)
 	private String posterImage;
 
-	@JsonManagedReference
+	@JsonManagedReference(value="still-ref")
 	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<MovieStills> movieStills;
 	
-	@JsonManagedReference
-	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference(value="showtime-ref")
+	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ShowTime> showTimes;
 }

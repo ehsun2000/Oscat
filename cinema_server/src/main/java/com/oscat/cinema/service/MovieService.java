@@ -13,6 +13,7 @@ import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.dto.MovieStillsDTO;
 import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.entity.MovieStills;
+import com.oscat.cinema.entity.ShowTime;
 
 @Service
 public class MovieService {
@@ -122,6 +123,11 @@ public class MovieService {
 	        return Optional.of(movRepo.save(movieData));
 	    }
 	    return Optional.empty();
+	}
+	
+	public boolean updateStatusById(String movieStatus, UUID movieId) {
+	 	Integer result = movRepo.updateStatuseById(movieStatus, movieId);
+	 	return result > 0;
 	}
 
 }
