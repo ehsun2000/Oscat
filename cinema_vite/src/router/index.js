@@ -28,14 +28,6 @@ const routes = [
       },
     ],
   },
-  {
-    path: '/SeatController',
-    component: () => import('../components/seat/SeatController.vue'),
-  },
-  {
-    path: '/SeatStatus',
-    component: () => import('../components/seat/SeatStatus.vue'),
-  },
 ];
 
 const router = createRouter({

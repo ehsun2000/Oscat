@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.oscat.cinema.dao.CinemaRepository;
-import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
 
 @Service
@@ -64,5 +63,4 @@ public class CinemaService {
 		}
 		return false;
 	}
-	
 }
