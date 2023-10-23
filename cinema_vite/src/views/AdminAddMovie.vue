@@ -197,7 +197,7 @@ const addStillsLink = () => {
 
 const submitForm = async () => {
   try {
-    const url = `${import.meta.env.VITE_API_OSCATURL}movie/add`;
+    const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/add`;
     console.log(url);
     const response = await axios.post(url, movie.value);
     console.log(response);

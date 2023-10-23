@@ -25,7 +25,8 @@
               : 'btn btn-outline-primary',
           ]"
           :disabled="movie.movieStatus === '上映中'"
-          @click="upMovie"
+          @click="upMovie('上映中', movie.movieId)"
+          :data-movie-id="movie.movieId"
         >
           <i class="bi bi-arrow-up-circle-fill"></i>
         </button>
@@ -37,7 +38,8 @@
               : 'btn btn-outline-primary',
           ]"
           :disabled="movie.movieStatus !== '上映中'"
-          @click="downMovie"
+          @click="downMovie('下檔', movie.movieId)"
+          :data-movie-id="movie.movieId"
         >
           <i class="bi bi-arrow-down-circle-fill"></i>
         </button>
@@ -68,6 +70,23 @@ import axios from 'axios';
 onMounted(async () => {
   await fetchMovies();
 });
+
+//修改電影狀態
+const upMovie = async (movieStatus, movieId) => {
+  const URLAPI = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/status`;
+  console.log(URLAPI);
+  const response = await axios.put(URLAPI, { movieStatus, movieId });
+  console.log(response);
+};
+
+const downMovie = async (movieStatus, movieId) => {
+  const URLAPI = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/status`;
+  console.log(URLAPI);
+  console.log(movieStatus);
+  console.log(movieId);
+  const response = await axios.put(URLAPI, { movieStatus, movieId });
+  console.log(response);
+};
 
 //搜尋
 const datas = reactive({

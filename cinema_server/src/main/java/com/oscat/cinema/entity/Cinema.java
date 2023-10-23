@@ -52,11 +52,11 @@ public class Cinema {
 	@Column(name = "cinema_img", nullable = false, length = 255)
 	private String cinemaImg;
 
-	@JsonManagedReference
+	@JsonManagedReference(value = "cinema-room")
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ScreeningRoom> screeningRooms;
 
-	@JsonManagedReference
+	@JsonManagedReference(value = "cinema-tickettype")
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CinemaTicketType> ticketTypes;
 

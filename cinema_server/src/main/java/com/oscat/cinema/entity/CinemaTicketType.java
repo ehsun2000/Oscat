@@ -27,12 +27,12 @@ public class CinemaTicketType {
 	@Column(name = "ticket_type_id")
 	private int ticketTypeId;
 
-	@JsonBackReference
+	@JsonBackReference(value = "tickettype-cinematickettype")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ticket_type_id", insertable = false, updatable = false)
 	private TicketType ticketType;
 
-	@JsonBackReference
+	@JsonBackReference(value = "cinema-tickettype")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cinema_id", insertable = false, updatable = false)
 	private Cinema cinema;
