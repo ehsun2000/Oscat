@@ -26,6 +26,16 @@ const routes = [
         name: 'Update',
         component: import('@/views/MemberAdUpdate.vue'),
       },
+      {
+        path: '/cinema-info',
+        name: 'CinemaInfo',
+        component: import('@/views/CinemaSelect.vue'),
+      },
+      {
+        path: '/cinema-detail/:cinemaId',
+        name: 'CinemaDetail',
+        component: import('@/views/CinemaDetail.vue'),
+      },
     ],
   },
 ];
