@@ -1,20 +1,31 @@
 <template>
-  <li class="nav-item">
+  <li class="nav-item pe-auto">
     <a
-      class="nav-link d-flex justify-content-between align-items-center"
+      class="nav-link d-flex justify-content-around align-items-center text-decoration-none text-light"
       @click="toggleOpen"
     >
+      <!-- 加入 Bootstrap icon -->
+      <i :class="['bi', icon, 'me-2']"></i>
       <span>{{ title }}</span>
       <i
-        :class="['bi', 'bi-arrow-up-short', isOpen ? 'arrow-up' : 'arrow-down']"
+        :class="[
+          'bi',
+          'bi-arrow-up-short',
+          isOpen ? 'arrow-up' : 'arrow-down',
+          'align-content-end',
+        ]"
       ></i>
     </a>
     <div ref="collapseDiv" class="collapse-custom" :id="id">
       <ul class="nav flex-column ms-3">
-        <li class="nav-item" v-for="item in items" :key="item.name">
+        <li
+          class="nav-item d-flex justify-content-around"
+          v-for="item in items"
+          :key="item.name"
+        >
           <router-link
             :to="item.path"
-            class="nav-link"
+            class="nav-link text-decoration-none text-light pe-auto"
             :class="{ active: $route.path === item.path }"
           >
             {{ item.name }}
@@ -42,6 +53,10 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  icon: {
+    type: String,
+    required: true,
+  },
 });
 
 const isOpen = ref(false);
@@ -51,7 +66,6 @@ const toggleOpen = () => {
   isOpen.value = !isOpen.value;
 };
 
-// 監聽 div 狀態，控制高度變化
 watch(isOpen, async (newVal) => {
   await nextTick();
   if (newVal) {
