@@ -38,11 +38,11 @@ public class Seat {
 	private String seatName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference(value="room-seat")
 	@JoinColumn(name = "room_id")
 	private ScreeningRoom screeningRoom;
 
 	@OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonManagedReference(value="seat-ticket")
 	private List<Ticket> tickets;
 }

@@ -31,7 +31,7 @@ public class MovieStills {
 	private String stillImageUrl;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference(value="still-ref")
 	@JoinColumn(name = "movie_id", nullable = false)
 	private Movie movie;
 }

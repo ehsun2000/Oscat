@@ -27,17 +27,17 @@ public class Ticket {
 	@Column(columnDefinition = "uniqueidentifier", name = "ticket_id")
 	private UUID ticketId;
 
-	@JsonBackReference
+	@JsonBackReference(value = "order-type")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private TransOrder transOrder;
 
-	@JsonBackReference
+	@JsonBackReference(value = "tickettype-ticket")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "type_id")
 	private TicketType ticketType;
 
-	@JsonBackReference
+	@JsonBackReference(value="seat-ticket")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "seat_id")
 	private Seat seat;

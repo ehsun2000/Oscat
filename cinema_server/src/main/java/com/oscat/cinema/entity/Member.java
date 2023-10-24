@@ -78,7 +78,7 @@ public class Member {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date joinDate;
 
-	@JsonManagedReference
+	@JsonManagedReference(value = "member-order")
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<TransOrder> transOrders;
 
