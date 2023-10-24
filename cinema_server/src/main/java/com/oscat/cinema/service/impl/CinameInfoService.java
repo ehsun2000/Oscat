@@ -13,6 +13,7 @@ import com.oscat.cinema.dao.CinemaTicketTypeRepository;
 import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
+import com.oscat.cinema.dto.CinemaNameAndIdDTO;
 import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
@@ -51,6 +52,10 @@ public class CinameInfoService implements ICinameInfoService {
 		Page<Cinema> cinemas = cinemaRepo.findAll(pageable);
 		// lambda 將 Page<Cinema> 中所有 Cinema 物件套用 cinemaMapper 中的 toDto 方法
 		return cinemas.map(cinemaMapper::toDto);
+	}
+	
+	public List<CinemaNameAndIdDTO> getAllCinemaIdAndName() {
+	    return cinemaRepo.findAllCinemaIdAndName();
 	}
 
 	// 更新影城資訊

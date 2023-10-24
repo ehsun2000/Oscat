@@ -3,9 +3,6 @@ package com.oscat.cinema.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.oscat.cinema.entity.CinemaTicketType;
-import com.oscat.cinema.entity.TicketType;
-
 import lombok.Data;
 
 @Data

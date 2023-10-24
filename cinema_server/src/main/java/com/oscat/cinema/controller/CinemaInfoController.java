@@ -1,5 +1,7 @@
 package com.oscat.cinema.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscat.cinema.dto.CinemaDTO;
+import com.oscat.cinema.dto.CinemaNameAndIdDTO;
+import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.service.impl.CinameInfoService;
 
 import jakarta.servlet.http.HttpSession;
@@ -48,6 +52,12 @@ public class CinemaInfoController {
 		Page<CinemaDTO> cinemas = infoService.findAll(pageable);
 
 		return ResponseEntity.ok(cinemas);
+	}
+	
+	@GetMapping("/all")
+	public ResponseEntity<List<CinemaNameAndIdDTO>> getCinemaIdAndName() {
+	    List<CinemaNameAndIdDTO> cinemas = infoService.getAllCinemaIdAndName();
+	    return ResponseEntity.ok(cinemas);
 	}
 
 	// 修改影城資料
