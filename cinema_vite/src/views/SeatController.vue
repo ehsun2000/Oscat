@@ -1,6 +1,6 @@
 <template>
   <div class="maindiv">
-    <h1>查詢所有座位</h1>
+    <h1>管理座位狀態</h1>
     <form @submit.prevent="getSeatStatus">
       <select v-model="selectedCinemaId" @change="updateScreeningRooms">
         <option disabled value="">------請選擇戲院------</option>
