@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.SeatRepository;
-import com.oscat.cinema.dto.ScreeningRoomDTO;
 import com.oscat.cinema.dto.SeatDTO;
-import com.oscat.cinema.entity.Seat;
 import com.oscat.cinema.entity.ScreeningRoom;
+import com.oscat.cinema.entity.Seat;
 
 @Service
 public class SeatService {
@@ -89,14 +88,6 @@ public class SeatService {
 
 	public void deleteSeatById(UUID id) {
 		seatRepository.deleteById(id);
-	}
-
-	public ScreeningRoomDTO convertToDTO(ScreeningRoom screeningRoom) {
-		ScreeningRoomDTO dto = new ScreeningRoomDTO();
-		dto.setRoomId(screeningRoom.getRoomId());
-		dto.setRoomName(screeningRoom.getRoomName());
-		dto.setType(screeningRoom.getType());
-		return dto;
 	}
 
 	private SeatDTO convertToDTO(Seat seat) {

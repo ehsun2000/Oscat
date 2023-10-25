@@ -2,6 +2,7 @@ package com.oscat.cinema.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,15 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.CinemaRepository;
 import com.oscat.cinema.dao.CinemaTicketTypeRepository;
-import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
-import com.oscat.cinema.dto.CinemaNameAndIdDTO;
 import com.oscat.cinema.entity.Cinema;
-import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
-import com.oscat.cinema.mapper.TicketTypeMapper;
 import com.oscat.cinema.service.ICinameInfoService;
 
 @Service
@@ -53,10 +50,6 @@ public class CinameInfoService implements ICinameInfoService {
 		// lambda 將 Page<Cinema> 中所有 Cinema 物件套用 cinemaMapper 中的 toDto 方法
 		return cinemas.map(cinemaMapper::toDto);
 	}
-	
-	public List<CinemaNameAndIdDTO> getAllCinemaIdAndName() {
-	    return cinemaRepo.findAllCinemaIdAndName();
-	}
 
 	// 更新影城資訊
 	@Override
@@ -78,6 +71,19 @@ public class CinameInfoService implements ICinameInfoService {
 		} else {
 			return false;
 		}
+	}
+		
+	private CinemaDTO convertToDTO(Cinema cinema) {
+		CinemaDTO dto = new CinemaDTO();
+		dto.setId(cinema.getCinemaId());
+		dto.setName(cinema.getCinemaName());
+		// 注意：其他的欄位我們在這裡沒有設定，所以它們將是預設的值或null
+		return dto;
+	}
+	
+	public List<CinemaDTO> getAllCinemas() {
+		List<Cinema> cinemas = cinemaRepo.findAll();
+		return cinemas.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 }

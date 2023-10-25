@@ -8,18 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscat.cinema.dto.CinemaDTO;
-import com.oscat.cinema.dto.CinemaNameAndIdDTO;
-import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.service.impl.CinameInfoService;
-
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping(path = "/api/cinemas")
@@ -55,8 +50,8 @@ public class CinemaInfoController {
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<CinemaNameAndIdDTO>> getCinemaIdAndName() {
-	    List<CinemaNameAndIdDTO> cinemas = infoService.getAllCinemaIdAndName();
+	public ResponseEntity<List<CinemaDTO>> getCinemaIdAndName() {
+	    List<CinemaDTO> cinemas = infoService.getAllCinemas();
 	    return ResponseEntity.ok(cinemas);
 	}
 

@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.oscat.cinema.dto.CinemaNameAndIdDTO;
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.entity.Cinema;
 
@@ -35,6 +34,5 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 	// 查詢分頁 cinema 資料 JPQL
 	Page<Cinema> findAll(Pageable pageable);
 	
-	@Query("SELECT c.cinemaId as id, c.cinemaName as name FROM Cinema c")
-	List<CinemaNameAndIdDTO> findAllCinemaIdAndName();
+	List<Cinema> findAll();
 }

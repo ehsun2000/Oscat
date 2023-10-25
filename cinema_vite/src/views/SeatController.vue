@@ -1,17 +1,31 @@
 <template>
-  <div>
+  <div class="maindiv">
     <h1>查詢所有座位</h1>
     <form @submit.prevent="getSeatStatus">
-      <label for="roomId">放映廳ID：</label>
-      <input v-model="roomId" type="text" id="roomId" name="roomId" />
-      <button type="button" @click="getSeatStatus">查詢所有座位</button>
+      <select v-model="selectedCinemaId" @change="updateScreeningRooms">
+        <option disabled value="">------請選擇戲院------</option>
+        <option v-for="cinema in cinemas" :key="cinema.id" :value="cinema.id">
+          {{ cinema.name }}
+        </option>
+      </select>
+      <select v-model="selectedRoomId">
+        <option disabled value="">------請選擇影廳------</option>
+        <option
+          v-for="room in screeningRooms"
+          :key="room.roomId"
+          :value="room.roomId"
+        >
+          {{ room.roomName }}
+        </option>
+      </select>
+      <button type="submit">查詢所有座位</button>
       <br />
       <i class="bi bi-box2"></i>正常狀態 <i class="bi bi-box2-fill"></i>無法使用
     </form>
     <div id="result" class="scrollable-container">
       <div class="seats-container" :style="gridStyle">
         <div v-for="seat in seats" :key="seat.seatId">
-          <button @click="toggleSeatStatus(seat)">
+          <button @click="toggleSeatStatus(seat)" class="seat-button">
             <i v-if="seat.tempStatus === 'Normal'" class="bi bi-box2"></i>
             <i v-else class="bi bi-box2-fill"></i><br />
             {{ seat.seatName }}
@@ -23,29 +37,82 @@
         <button @click="resetTempStatus">取消更改</button>
       </div>
     </div>
-    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+    <div
+      v-if="message"
+      :class="[messageType === 'error' ? 'error-message' : 'success-message']"
+    >
+      {{ message }}
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 export default {
   setup() {
-    const roomId = ref('');
+    const cinemas = ref([]);
+    const screeningRooms = ref([]);
+    const selectedCinemaId = ref('');
+    const selectedRoomId = ref('');
     const seats = ref([]);
-    const errorMessage = ref(null);
+    const message = ref(null);
+    const messageType = ref('');
     const showSeats = ref(false);
     const showButtons = ref(false);
 
     const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
 
+    const fetchCinemas = async () => {
+      try {
+        const response = await fetch(`${api}/cinemas/all`, {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          cinemas.value = await response.json();
+        } else {
+          console.error('Failed to fetch cinemas:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching cinemas:', error);
+      }
+    };
+
+    const updateScreeningRooms = async () => {
+      if (selectedCinemaId.value) {
+        try {
+          const response = await fetch(
+            `${api}/screeningRoom/all?id=${selectedCinemaId.value}`,
+            {
+              credentials: 'include',
+            },
+          );
+          if (response.ok) {
+            screeningRooms.value = await response.json();
+          } else {
+            console.error(
+              'Failed to fetch screening rooms:',
+              response.statusText,
+            );
+          }
+        } catch (error) {
+          console.error('Error fetching screening rooms:', error);
+        }
+      } else {
+        screeningRooms.value = [];
+      }
+    };
+
+    onMounted(() => {
+      fetchCinemas();
+    });
+
     const getSeatStatus = async () => {
-      if (!roomId.value) return;
+      if (!selectedRoomId.value) return;
 
       try {
         const response = await fetch(
-          `${api}/seat/findAllSeatByRoomId?roomId=${roomId.value}`,
+          `${api}/seat/findAllSeatByRoomId?roomId=${selectedRoomId.value}`,
           {
             credentials: 'include',
           },
@@ -65,10 +132,12 @@ export default {
             showButtons.value = false;
           }
         } else {
-          errorMessage.value = '請求失敗：' + response.statusText;
+          message.value = '請求失敗：' + response.statusText;
+          messageType.value = 'error';
         }
       } catch (error) {
-        errorMessage.value = '請求失敗：' + error.message;
+        message.value = '請求失敗：' + error.message;
+        messageType.value = 'error';
       }
     };
 
@@ -95,6 +164,8 @@ export default {
         });
       }
       await getSeatStatus();
+      message.value = '更改成功';
+      messageType.value = 'success';
     };
 
     const maxSeatsPerRow = computed(() => {
@@ -122,28 +193,39 @@ export default {
     });
 
     return {
-      roomId,
+      cinemas,
+      selectedCinemaId,
+      selectedRoomId,
+      screeningRooms,
       seats,
-      errorMessage,
       getSeatStatus,
+      updateScreeningRooms,
       toggleSeatStatus,
       updateAllSeats,
       gridStyle,
       showSeats,
       showButtons,
       resetTempStatus,
+      message,
+      messageType,
     };
   },
 };
 </script>
 
 <style scoped>
+.maindiv {
+  text-align: center;
+}
+.success-message {
+  color: green;
+}
 .error-message {
   color: red;
 }
 .seats-container {
   display: grid;
-  gap: 1px; /* 調整這個值來改變座位之間的間距 */
+  gap: 1px;
   margin: 0;
   padding: 0;
 }
@@ -151,11 +233,18 @@ export default {
   text-align: center;
   margin-top: 20px;
 }
+.seat-button {
+  background-color: #1a1a1a;
+  border-color: #1a1a1a;
+}
 .scrollable-container {
-  width: 800px; /* 這裡的寬度可以根據你的需求進行調整 */
-  height: 400px; /* 這裡的高度可以根據你的需求進行調整 */
-  overflow-x: auto; /* 橫向捲動 */
-  overflow-y: auto; /* 縱向捲動 */
-  border: 1px solid #ccc; /* 這是一個可選的邊框，僅為了視覺效果 */
+  width: 800px;
+  height: 400px;
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
 }
 </style>
