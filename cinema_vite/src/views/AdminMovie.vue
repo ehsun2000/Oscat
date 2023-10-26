@@ -2,9 +2,7 @@
   <div class="roll">
     <div class="box"></div>
     <h2>電影管理</h2>
-    <RouterLink class="btn btn-outline-success" to="/movie/add"
-      ><i class="bi bi-plus"></i> 新增</RouterLink
-    >
+    <RouterLink class="btn btn-outline-success" to="/movie/add"><i class="bi bi-plus"></i> 新增</RouterLink>
     <div class="row mb-3">
       <div class="col-6"></div>
       <div class="col-5">
@@ -12,82 +10,116 @@
       </div>
     </div>
     <div>
-      <div v-for="movie in formateMovie" :key="movie.movieId" class="movie">
+      <!-- <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div> -->
+
+      <div v-for="movie in formateMovie" :key="movie.movieId" class="card" style="width: 18rem">
+        <a :href="movie.trailerLink">
+          <img :src="movie.posterImage" class="card-img-top" alt="" />
+        </a>
+        <div class="card-body">
+          <h1>{{ movie.movieName }}</h1>
+          <button type="button" :class="[
+            movie.movieStatus === '上映中'
+              ? 'btn btn-primary'
+              : 'btn btn-outline-primary',
+          ]" :disabled="movie.movieStatus === '上映中'" @click="upMovie('上映中', movie.movieId)"
+            :data-movie-id="movie.movieId">
+            <i class="bi bi-arrow-up-circle-fill"></i>
+          </button>
+          <button type="button" :class="[
+            movie.movieStatus !== '上映中'
+              ? 'btn btn-primary'
+              : 'btn btn-outline-primary',
+          ]" :disabled="movie.movieStatus !== '上映中'" @click="downMovie('下檔', movie.movieId)"
+            :data-movie-id="movie.movieId">
+            <i class="bi bi-arrow-down-circle-fill"></i>
+          </button>
+
+          <RouterLink type="button" class="btn btn-outline-secondary" :to="'/movie/edit/' + movie.movieId">
+            <i class="bi bi-gear"></i>
+          </RouterLink>
+
+          <button type="button" class="btn btn-outline-danger">
+            <i class="bi bi-trash-fill" @click="deleteMovie(movie.movieId)"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- <div v-for="movie in formateMovie" :key="movie.movieId" class="img-thumbnail movie">
         <a :href="movie.trailerLink">
           <img :src="movie.posterImage" alt="" />
         </a>
         <h1>{{ movie.movieName }}</h1>
-        <button
-          type="button"
-          :class="[
-            movie.movieStatus === '上映中'
-              ? 'btn btn-primary'
-              : 'btn btn-outline-primary',
-          ]"
-          :disabled="movie.movieStatus === '上映中'"
-          @click="upMovie('上映中', movie.movieId)"
-          :data-movie-id="movie.movieId"
-        >
+        <button type="button" :class="[
+          movie.movieStatus === '上映中'
+            ? 'btn btn-primary'
+            : 'btn btn-outline-primary',
+        ]" :disabled="movie.movieStatus === '上映中'" @click="upMovie('上映中', movie.movieId)"
+          :data-movie-id="movie.movieId">
           <i class="bi bi-arrow-up-circle-fill"></i>
         </button>
-        <button
-          type="button"
-          :class="[
-            movie.movieStatus !== '上映中'
-              ? 'btn btn-primary'
-              : 'btn btn-outline-primary',
-          ]"
-          :disabled="movie.movieStatus !== '上映中'"
-          @click="downMovie('下檔', movie.movieId)"
-          :data-movie-id="movie.movieId"
-        >
+        <button type="button" :class="[
+          movie.movieStatus !== '上映中'
+            ? 'btn btn-primary'
+            : 'btn btn-outline-primary',
+        ]" :disabled="movie.movieStatus !== '上映中'" @click="downMovie('下檔', movie.movieId)"
+          :data-movie-id="movie.movieId">
           <i class="bi bi-arrow-down-circle-fill"></i>
         </button>
 
-        <RouterLink
-          type="button"
-          class="btn btn-outline-secondary"
-          :to="'/movie/edit/' + movie.movieId"
-        >
+        <RouterLink type="button" class="btn btn-outline-secondary" :to="'/movie/edit/' + movie.movieId">
           <i class="bi bi-gear"></i>
         </RouterLink>
 
         <button type="button" class="btn btn-outline-danger">
           <i class="bi bi-trash-fill" @click="deleteMovie(movie.movieId)"></i>
         </button>
-      </div>
+      </div> -->
+
+      <PageVue :totalPages="totalPages" :thePage="page + 1" @childClick="clickHandler"></PageVue>
     </div>
   </div>
 </template>
 
 <script setup>
 import SearchTextMovie from '@/components/SearchTextMovie.vue';
-import { fetchMovies, movies } from '@/services/function.js';
-import { onMounted, computed, reactive } from 'vue';
+import { loadMovies, movies, totalPages } from '@/services/MovieService.js';
+import { onMounted, computed, reactive, ref } from 'vue';
 import axios from 'axios';
+import PageVue from '@/components/PageVue.vue';
 
-//載入所有電影
+const page = ref(0); // 當前頁碼
+
+const clickHandler = (newPage) => {
+  if (newPage >= 0 && newPage <= totalPages.value) {
+    page.value = newPage;
+    loadMovies(page.value); // 取得所有電影
+  }
+};
+//載入所有電影，並取得 totalPage
 onMounted(async () => {
-  await fetchMovies();
+  await loadMovies();
+  totalPages.value;
 });
 
 //修改電影狀態
 const upMovie = async (movieStatus, movieId) => {
   const URLAPI = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/status`;
-  console.log(URLAPI);
   const response = await axios.put(URLAPI, { movieStatus, movieId });
   console.log(response);
-  fetchMovies();
+  loadMovies();
 };
 
 const downMovie = async (movieStatus, movieId) => {
   const URLAPI = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/status`;
-  console.log(URLAPI);
-  console.log(movieStatus);
-  console.log(movieId);
   const response = await axios.put(URLAPI, { movieStatus, movieId });
   console.log(response);
-  fetchMovies();
+  loadMovies();
 };
 
 //搜尋
@@ -97,8 +129,7 @@ const datas = reactive({
 
 const inputHandler = (value) => {
   datas.movieName = value;
-  // console.log(value);
-  fetchMovies();
+  loadMovies();
 };
 
 const formateMovie = computed(() => {
@@ -111,13 +142,12 @@ const formateMovie = computed(() => {
 //刪除
 const deleteMovie = async (movieId) => {
   if (window.confirm('真的要刪除嗎?')) {
-    const URLAPI = `${
-      import.meta.env.VITE_API_OSCATURL
-    }movie/delete/${movieId}`;
+    const URLAPI = `${import.meta.env.VITE_API_OSCATURL
+      }movie/delete/${movieId}`;
     const response = await axios.delete(URLAPI);
     if (response.data) {
       alert(response.data);
-      fetchMovies();
+      loadMovies();
     }
   }
 };
@@ -143,5 +173,16 @@ h1 {
   display: inline-block;
   position: relative;
   overflow: hidden;
+}
+
+.card {
+  display: inline-block;
+  /* 顯示card */
+  width: 18rem;
+  /* 設定card寬度 */
+  margin-right: 20px;
+  /* 設定card之間的右邊間距 */
+  margin-bottom: 20px;
+  /* 設定卡片之間的下間距 */
 }
 </style>

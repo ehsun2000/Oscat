@@ -239,8 +239,6 @@ const updateHandler = async (e) => {
     if (response.status === 200) {
       Swal.fire('修改成功', '電影修改成功', 'success');
       router.push('/movie');
-    } else {
-      Swal.fire('修改失敗', '電影修改失敗', 'error');
     }
   } catch (error) {
     console.error(error);

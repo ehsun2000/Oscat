@@ -167,11 +167,9 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-// import { useRouter } from 'vue-router';
 import Movie from '@/models/Movie.js';
 import Swal from 'sweetalert2';
 
-// const router = useRouter();
 const movie = ref(Movie);
 
 const previousPage = () => {
@@ -181,19 +179,63 @@ const previousPage = () => {
 const addStillsLink = () => {
   Swal.fire({
     title: '新增宣傳照連結',
-    input: 'text',
-    inputLabel: '請輸入連結',
+    html: '<input type="file" id="imageInput" accept="image/*">',
     showCancelButton: true,
     confirmButtonText: '新增',
     cancelButtonText: '取消',
-    preConfirm: (link) => {
-      if (link) {
-        const newStillsObject = { stillImageUrl: link };
-        movie.value.movieStills.push(newStillsObject);
+    preConfirm: () => {
+      const imageInput = document.getElementById('imageInput');
+      const imageUpload = imageInput.files[0];
+      if (imageUpload) {
+        const formData = new FormData(); // 創建一個FormData對象
+        formData.append('imageUpload', imageUpload); // 將圖像添加到FormData中
+        const URLAPI = `${
+          import.meta.env.VITE_OSCAT_API_ENDPOINT
+        }/movie/upload`;
+        axios
+          .post(URLAPI, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data', // 設定正確的Content-Type
+            },
+          })
+          .then((response) => {
+            // 處理後端的回應
+            const imageURL = URL.createObjectURL(imageUpload);
+            const newStillsObject = { stillImageUrl: imageURL };
+            movie.value.movieStills.push(newStillsObject);
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+            // 處理錯誤
+          });
       }
     },
   });
 };
+
+// const addStillsLink = () => {
+//   Swal.fire({
+//     title: '新增宣傳照連結',
+//     html: '<input type="file" id="imageInput" accept="image/*">',
+//     showCancelButton: true,
+//     confirmButtonText: '新增',
+//     cancelButtonText: '取消',
+//     preConfirm: () => {
+//       const imageInput = document.getElementById('imageInput');
+//       const imageFile = imageInput.files[0];
+//       if (imageFile) {
+//         const URLAPI = `${
+//           import.meta.env.VITE_OSCAT_API_ENDPOINT
+//         }/movie/upload`;
+//         axios.post(URLAPI, imageFile); //上傳到cloudinary
+//         const imageURL = URL.createObjectURL(imageFile);
+//         const newStillsObject = { stillImageUrl: imageURL };
+//         movie.value.movieStills.push(newStillsObject); //把連結加到movie.movieStills
+//       }
+//     },
+//   });
+// };
 
 const submitForm = async () => {
   try {
@@ -210,8 +252,7 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error(error);
-    // 回傳錯誤訊息
-    // 在這裡處理錯誤情況，例如顯示錯誤訊息給使用者
+    Swal.fire('新增失敗', '發生錯誤', 'error');
   }
 };
 // const restart = () => {
