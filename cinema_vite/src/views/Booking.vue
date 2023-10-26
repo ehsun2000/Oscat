@@ -1,10 +1,16 @@
 <template>
     <div class="maindiv">
-      <h1>查詢所有座位</h1>
+      <h1>訂票系統</h1>
         <select v-model="selectedCinemaId">
           <option disabled value="">------請選擇戲院------</option>
           <option v-for="cinema in cinemas" :key="cinema.id" :value="cinema.id">
             {{ cinema.name }}
+          </option>
+        </select>
+        <select v-model="selectedMovieId">
+          <option disabled value="">------請選擇電影------</option>
+          <option v-for="movie in movies" :key="movie.id" :value="movie.id">
+            {{ movie.name }}
           </option>
         </select>
       <div
@@ -17,12 +23,14 @@
   </template>
   
   <script>
-  import { ref, computed, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue';
   
   export default {
     setup() {
       const cinemas = ref([]);
       const selectedCinemaId = ref('');
+      const movies = ref([]);
+const selectedMovieId = ref('');
       const message = ref(null);
       const messageType = ref('');
   
@@ -43,13 +51,31 @@
         }
       };
 
+      const fetchMovies = async () => {
+  try {
+    const response = await fetch(`${api}/book/showing`, {
+      credentials: 'include',
+    });
+    if (response.ok) {
+      movies.value = await response.json();
+    } else {
+      console.error('Failed to fetch movies:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching movies:', error);
+  }
+};
+
       onMounted(() => {
       fetchCinemas();
+      fetchMovies();
     });
   
       return {
         cinemas,
         selectedCinemaId,
+        movies,
+        selectedMovieId,
         message,
         messageType,
       };

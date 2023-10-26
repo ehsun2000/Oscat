@@ -12,21 +12,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.dto.SearchShowDateForBook;
 import com.oscat.cinema.service.BookingService;
+import com.oscat.cinema.service.MovieService;
 
 @RestController
-@RequestMapping(path = "/book")
+@RequestMapping(path = "/api/book")
 public class BookingController {
 
 	@Autowired
 	private BookingService bookingService;
+	
+	@Autowired
+	private MovieService movService;
 
 	@GetMapping(path = "/{movieId}")
 	public List<SearchCinemaForBook> findCinemas(@PathVariable(name = "movieId") UUID movieId) {
-
 		return bookingService.findCinemas(movieId);
+	}
+	
+	@GetMapping(path = "/showing")
+	public List<MovieDTO> findShowingCinemas() {
+		return movService.getMovieShowing();
 	}
 	
 	@GetMapping(path = "/{movieId}/{cinemaId}")
@@ -47,4 +56,6 @@ public class BookingController {
 	public Map<Integer, String> gerTicketTypes(){
 		return bookingService.gerTicketTypes();
 	}
+	
+	
 }

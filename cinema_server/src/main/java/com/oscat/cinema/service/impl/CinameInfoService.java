@@ -77,7 +77,7 @@ public class CinameInfoService implements ICinameInfoService {
 		CinemaDTO dto = new CinemaDTO();
 		dto.setId(cinema.getCinemaId());
 		dto.setName(cinema.getCinemaName());
-		// 注意：其他的欄位我們在這裡沒有設定，所以它們將是預設的值或null
+		dto.setBasePrice(cinema.getBasePrice());
 		return dto;
 	}
 	

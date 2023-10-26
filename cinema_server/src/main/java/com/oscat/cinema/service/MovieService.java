@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.dto.MovieStillsDTO;
 import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.entity.MovieStills;
-import com.oscat.cinema.entity.ShowTime;
 
 @Service
 public class MovieService {
@@ -128,6 +128,19 @@ public class MovieService {
 	public boolean updateStatusById(String movieStatus, UUID movieId) {
 	 	Integer result = movRepo.updateStatuseById(movieStatus, movieId);
 	 	return result > 0;
+	}
+	
+	public MovieDTO convertToDTO(Movie movie) {
+		MovieDTO dto=new MovieDTO();
+		dto.setMovieId(movie.getMovieId());
+		dto.setMovieName(movie.getMovieName());
+		dto.setMovieStatus(movie.getMovieStatus());
+		return dto;
+	}
+	
+	public List<MovieDTO> getMovieShowing(){
+		List<Movie> movies=movRepo.findMovieShowing();
+		return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 }

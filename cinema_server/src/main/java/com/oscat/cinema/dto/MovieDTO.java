@@ -2,12 +2,13 @@ package com.oscat.cinema.dto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Data;
 
 @Data
 public class MovieDTO {
-
+	private UUID movieId;
 	private String movieName;
     private String movieType;
     private String movieStatus;

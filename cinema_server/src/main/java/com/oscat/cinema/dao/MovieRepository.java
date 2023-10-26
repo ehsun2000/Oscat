@@ -28,5 +28,8 @@ public interface MovieRepository extends JpaRepository<Movie, UUID> {
 	@Modifying
 	@Query(value = "update Movie set movieStatus = :status where movieId = :id ")
 	Integer updateStatuseById(@Param("status") String movieStatus, @Param("id") UUID movieId);
+	
+	@Query(value = "from Movie where movieStatus = '上映中'")
+	List<Movie> findMovieShowing();
 
 }
