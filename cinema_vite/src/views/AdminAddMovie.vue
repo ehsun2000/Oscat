@@ -107,6 +107,8 @@
             <option value="普遍級">普遍級</option>
             <option value="保護級">保護級</option>
             <option value="輔導級">輔導級</option>
+            <option value="輔導十二級">輔導十二級</option>
+            <option value="輔導十五級">輔導十五級</option>
             <option value="限制級">限制級</option>
           </select>
         </div>
@@ -123,12 +125,32 @@
 
         <div class="form-group mb-3">
           <label for="posterImage" class="form-label">電影海報連結</label>
+          <!-- <input type="file" @change="handleFileChange" /> -->
+          <button
+            type="button"
+            class="btn btn-outline-success"
+            style="
+              --bs-btn-padding-y: 0.25rem;
+              --bs-btn-padding-x: 0.5rem;
+              --bs-btn-font-size: 0.75rem;
+            "
+            @click="addPosterLink"
+          >
+            <i class="bi bi-plus"></i>
+          </button>
           <input
             type="text"
             class="form-control"
             id="posterImage"
             v-model="movie.posterImage"
           />
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="removePoster(index)"
+          >
+            删除
+          </button>
         </div>
 
         <div class="form-group mb-3">
@@ -146,11 +168,19 @@
             <i class="bi bi-plus"></i>
           </button>
           <div v-for="(still, index) in movie.movieStills" :key="index">
+            <!-- <input type="file" @change="handleFileChange" /> -->
             <input
               type="text"
               class="form-control"
               v-model="still.stillImageUrl"
             />
+            <button
+              type="button"
+              class="btn btn-danger"
+              @click="removeStills(index)"
+            >
+              删除
+            </button>
           </div>
         </div>
 
@@ -176,66 +206,69 @@ const previousPage = () => {
   history.back();
 };
 
-const addStillsLink = () => {
+//刪除圖片url
+const removePoster = () => {
+  movie.value.posterImage = '';
+};
+
+const removeStills = (index) => {
+  movie.value.movieStills.splice(index, 1);
+};
+
+const addPosterLink = async () => {
   Swal.fire({
-    title: '新增宣傳照連結',
-    html: '<input type="file" id="imageInput" accept="image/*">',
+    title: '新增海報連結',
+    html: '<input type="file" id="imageUpload" accept="image/*">',
     showCancelButton: true,
     confirmButtonText: '新增',
     cancelButtonText: '取消',
-    preConfirm: () => {
-      const imageInput = document.getElementById('imageInput');
+    preConfirm: async () => {
+      const imageInput = document.getElementById('imageUpload');
       const imageUpload = imageInput.files[0];
       if (imageUpload) {
-        const formData = new FormData(); // 創建一個FormData對象
-        formData.append('imageUpload', imageUpload); // 將圖像添加到FormData中
         const URLAPI = `${
           import.meta.env.VITE_OSCAT_API_ENDPOINT
         }/movie/upload`;
-        axios
-          .post(URLAPI, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data', // 設定正確的Content-Type
-            },
-          })
-          .then((response) => {
-            // 處理後端的回應
-            const imageURL = URL.createObjectURL(imageUpload);
-            const newStillsObject = { stillImageUrl: imageURL };
-            movie.value.movieStills.push(newStillsObject);
-            console.log(response);
-          })
-          .catch((error) => {
-            console.log(error);
-            // 處理錯誤
-          });
+        console.log(URLAPI);
+        // console.log(imageUpload);
+        const formData = new FormData();
+        formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
+        const response = await axios.post(URLAPI, formData); //上傳到cloudinary
+        console.log(response);
+        console.log(formData);
+        const imageURL = response.data; //獲得圖片URL
+        console.log(imageURL);
+        movie.value.posterImage = imageURL; //更新海報圖片URL
       }
     },
   });
 };
 
-// const addStillsLink = () => {
-//   Swal.fire({
-//     title: '新增宣傳照連結',
-//     html: '<input type="file" id="imageInput" accept="image/*">',
-//     showCancelButton: true,
-//     confirmButtonText: '新增',
-//     cancelButtonText: '取消',
-//     preConfirm: () => {
-//       const imageInput = document.getElementById('imageInput');
-//       const imageFile = imageInput.files[0];
-//       if (imageFile) {
-//         const URLAPI = `${
-//           import.meta.env.VITE_OSCAT_API_ENDPOINT
-//         }/movie/upload`;
-//         axios.post(URLAPI, imageFile); //上傳到cloudinary
-//         const imageURL = URL.createObjectURL(imageFile);
-//         const newStillsObject = { stillImageUrl: imageURL };
-//         movie.value.movieStills.push(newStillsObject); //把連結加到movie.movieStills
-//       }
-//     },
-//   });
-// };
+const addStillsLink = async () => {
+  Swal.fire({
+    title: '新增宣傳照連結',
+    html: '<input type="file" id="imageUpload" accept="image/*">',
+    showCancelButton: true,
+    confirmButtonText: '新增',
+    cancelButtonText: '取消',
+    preConfirm: async () => {
+      const imageInput = document.getElementById('imageUpload');
+      const imageUpload = imageInput.files[0];
+      if (imageUpload) {
+        const URLAPI = `${
+          import.meta.env.VITE_OSCAT_API_ENDPOINT
+        }/movie/upload`;
+        const formData = new FormData();
+        formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
+        const response = await axios.post(URLAPI, formData); //上傳到cloudinary
+        const imageURL = response.data;
+        const newStillsObject = { stillImageUrl: imageURL }; //把連結加到movie.movieStills
+        movie.value.movieStills.push(newStillsObject);
+        // movie.value.movieStills.splice(0, 0, newStillsObject);
+      }
+    },
+  });
+};
 
 const submitForm = async () => {
   try {

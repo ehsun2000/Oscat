@@ -32,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.oscat.cinema.dao.MovieRepository;
 import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.entity.Movie;
-import com.oscat.cinema.entity.ShowTime;
 import com.oscat.cinema.service.MovieService;
 import com.oscat.cinema.util.FileUploadUtil;
 
@@ -179,6 +178,7 @@ public class MovieController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(imgurl);
         return ResponseEntity.ok(imgurl);
     }
 }

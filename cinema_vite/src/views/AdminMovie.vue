@@ -2,7 +2,9 @@
   <div class="roll">
     <div class="box"></div>
     <h2>電影管理</h2>
-    <RouterLink class="btn btn-outline-success" to="/movie/add"><i class="bi bi-plus"></i> 新增</RouterLink>
+    <RouterLink class="btn btn-outline-success" to="/movie/add"
+      ><i class="bi bi-plus"></i> 新增</RouterLink
+    >
     <div class="row mb-3">
       <div class="col-6"></div>
       <div class="col-5">
@@ -17,30 +19,49 @@
         </div>
       </div> -->
 
-      <div v-for="movie in formateMovie" :key="movie.movieId" class="card" style="width: 18rem">
+      <div
+        v-for="movie in formateMovie"
+        :key="movie.movieId"
+        class="card"
+        style="width: 18rem"
+      >
         <a :href="movie.trailerLink">
           <img :src="movie.posterImage" class="card-img-top" alt="" />
         </a>
         <div class="card-body">
           <h1>{{ movie.movieName }}</h1>
-          <button type="button" :class="[
-            movie.movieStatus === '上映中'
-              ? 'btn btn-primary'
-              : 'btn btn-outline-primary',
-          ]" :disabled="movie.movieStatus === '上映中'" @click="upMovie('上映中', movie.movieId)"
-            :data-movie-id="movie.movieId">
+          <button
+            type="button"
+            :class="[
+              movie.movieStatus === '上映中'
+                ? 'btn btn-primary'
+                : 'btn btn-outline-primary',
+            ]"
+            :disabled="movie.movieStatus === '上映中'"
+            @click="upMovie('上映中', movie.movieId)"
+            :data-movie-id="movie.movieId"
+          >
             <i class="bi bi-arrow-up-circle-fill"></i>
           </button>
-          <button type="button" :class="[
-            movie.movieStatus !== '上映中'
-              ? 'btn btn-primary'
-              : 'btn btn-outline-primary',
-          ]" :disabled="movie.movieStatus !== '上映中'" @click="downMovie('下檔', movie.movieId)"
-            :data-movie-id="movie.movieId">
+          <button
+            type="button"
+            :class="[
+              movie.movieStatus !== '上映中'
+                ? 'btn btn-primary'
+                : 'btn btn-outline-primary',
+            ]"
+            :disabled="movie.movieStatus !== '上映中'"
+            @click="downMovie('下檔', movie.movieId)"
+            :data-movie-id="movie.movieId"
+          >
             <i class="bi bi-arrow-down-circle-fill"></i>
           </button>
 
-          <RouterLink type="button" class="btn btn-outline-secondary" :to="'/movie/edit/' + movie.movieId">
+          <RouterLink
+            type="button"
+            class="btn btn-outline-secondary"
+            :to="'/movie/edit/' + movie.movieId"
+          >
             <i class="bi bi-gear"></i>
           </RouterLink>
 
@@ -81,7 +102,11 @@
         </button>
       </div> -->
 
-      <PageVue :totalPages="totalPages" :thePage="page + 1" @childClick="clickHandler"></PageVue>
+      <PageVue
+        :totalPages="totalPages"
+        :thePage="page + 1"
+        @childClick="clickHandler"
+      ></PageVue>
     </div>
   </div>
 </template>
@@ -142,8 +167,9 @@ const formateMovie = computed(() => {
 //刪除
 const deleteMovie = async (movieId) => {
   if (window.confirm('真的要刪除嗎?')) {
-    const URLAPI = `${import.meta.env.VITE_API_OSCATURL
-      }movie/delete/${movieId}`;
+    const URLAPI = `${
+      import.meta.env.VITE_API_OSCATURL
+    }movie/delete/${movieId}`;
     const response = await axios.delete(URLAPI);
     if (response.data) {
       alert(response.data);
