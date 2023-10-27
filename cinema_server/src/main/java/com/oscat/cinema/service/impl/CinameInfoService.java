@@ -19,6 +19,7 @@ import com.oscat.cinema.entity.Facility;
 import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
+import com.oscat.cinema.mapper.FacilityMapper;
 import com.oscat.cinema.mapper.TicketTypeMapper;
 import com.oscat.cinema.service.ICinameInfoService;
 
@@ -27,15 +28,20 @@ public class CinameInfoService implements ICinameInfoService {
 	private final CinemaRepository cinemaRepo;
 	private final CinemaMapper cinemaMapper;
 	private final TicketTypeRepository typeRepository;
+	private final TicketTypeMapper ticketTypeMapper;
 	private final FacilityRepository facilityRepository;
+	private final FacilityMapper facilityMapper;
 	// 建構子注入
 	@Autowired
 	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper,
-			TicketTypeRepository typeRepository, FacilityRepository facilityRepository) {
+			TicketTypeRepository typeRepository, FacilityRepository facilityRepository,
+			TicketTypeMapper ticketTypeMapper,FacilityMapper facilityMapper) {
 		this.cinemaRepo = cinemaRepo;
 		this.cinemaMapper = cinmeMapper;
 		this.typeRepository = typeRepository;
+		this.ticketTypeMapper = ticketTypeMapper;
 		this.facilityRepository = facilityRepository;
+		this.facilityMapper = facilityMapper;
 	}
 
 	// 單筆影城查詢方法
@@ -75,6 +81,16 @@ public class CinameInfoService implements ICinameInfoService {
 		} else {
 			return false;
 		}
+	}
+
+	public List<String> findAllTicketTypes() {
+		List<TicketType> types = typeRepository.findAll();
+		return ticketTypeMapper.toStrArr(types);
+	}
+
+	public List<String> findAllFacilities() {
+		List<Facility> facilities = facilityRepository.findAll();
+		return facilityMapper.toDtos(facilities);
 	}
 
 }

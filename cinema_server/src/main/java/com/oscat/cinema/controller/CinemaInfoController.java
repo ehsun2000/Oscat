@@ -1,5 +1,8 @@
 package com.oscat.cinema.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,4 +64,19 @@ public class CinemaInfoController {
 		return ResponseEntity.notFound().build();
 	}
 
+	// 找尋全部種類資料
+	@GetMapping("/types")
+	public ResponseEntity<?> getAllTicketTypes() {
+		List<String> types = infoService.findAllTicketTypes();
+
+		return ResponseEntity.ok(types);
+	}
+
+	// 找尋全部設施資料
+	@GetMapping("/facilities")
+	public ResponseEntity<?> getAllFacilities() {
+		List<String> facilities = infoService.findAllFacilities();
+
+		return ResponseEntity.ok(facilities);
+	}
 }

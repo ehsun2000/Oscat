@@ -102,12 +102,9 @@ public interface CinemaMapper {
 			BusinessHourDto dto = inputOpenHourMap.get(openingHour.getWeekDay());
 			// 檢查 dto、openingHour 中 start 、 end 有無變更 (LocalTime)
 			// 若有，則重新 set dto 值進入 openinghour
-			System.out.println(openingHour.getStartTime().equals(dto.getStart()));
 			if (!openingHour.getStartTime().equals(dto.getStart())) {
 				openingHour.setStartTime(dto.getStart());
 			}
-			System.out.println(openingHour.getEndTime().equals(dto.getEnd()));
-
 			if (!openingHour.getEndTime().equals(dto.getEnd())) {
 				openingHour.setEndTime(dto.getEnd());
 			}
