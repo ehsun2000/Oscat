@@ -40,12 +40,6 @@ public class Cinema {
 	@Column(name = "contact_phone", nullable = false, length = 20)
 	private String contactPhone;
 
-	@Column(name = "opening_hours", nullable = false, length = 100)
-	private String openingHours;
-
-	@Column(name = "facilities", nullable = false, columnDefinition = "VARCHAR(MAX)")
-	private String facilities;
-
 	@Column(name = "base_price", nullable = false, precision = 10, scale = 5)
 	private BigDecimal basePrice;
 
@@ -60,7 +54,16 @@ public class Cinema {
 	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CinemaTicketType> ticketTypes;
 
+	@JsonManagedReference(value = "cinema-open")
+	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL)
+	private List<OpeningHour> openingHours;
+
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "cinema_product", joinColumns = @JoinColumn(name = "cinema_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private List<Product> products;
+
+	@ManyToMany
+	@JoinTable(name = "cinema_facility", joinColumns = @JoinColumn(name = "cinema_id"), inverseJoinColumns = @JoinColumn(name = "facility_id"))
+	private List<Facility> facilities;
+	
 }

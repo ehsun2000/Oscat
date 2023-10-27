@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.CinemaRepository;
 import com.oscat.cinema.dao.CinemaTicketTypeRepository;
+import com.oscat.cinema.dao.FacilityRepository;
 import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
+import com.oscat.cinema.entity.Facility;
 import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
@@ -25,16 +27,15 @@ public class CinameInfoService implements ICinameInfoService {
 	private final CinemaRepository cinemaRepo;
 	private final CinemaMapper cinemaMapper;
 	private final TicketTypeRepository typeRepository;
-	private final CinemaTicketTypeRepository cinemaTicketTypeRepo;
-
+	private final FacilityRepository facilityRepository;
 	// 建構子注入
 	@Autowired
 	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper,
-			CinemaTicketTypeRepository cinemaTicketTypeRepo, TicketTypeRepository typeRepository) {
+			TicketTypeRepository typeRepository, FacilityRepository facilityRepository) {
 		this.cinemaRepo = cinemaRepo;
-		this.cinemaTicketTypeRepo = cinemaTicketTypeRepo;
 		this.cinemaMapper = cinmeMapper;
 		this.typeRepository = typeRepository;
+		this.facilityRepository = facilityRepository;
 	}
 
 	// 單筆影城查詢方法
@@ -58,13 +59,14 @@ public class CinameInfoService implements ICinameInfoService {
 	public boolean update(CinemaDTO dto) {
 		Optional<Cinema> existingCinema = cinemaRepo.findById(dto.getId());
 		List<TicketType> types = typeRepository.findAll();
+		List<Facility> facilities = facilityRepository.findAll();
 
 //		判斷是否有找到值
 		if (existingCinema.isPresent()) {
 
 			Cinema cinema = existingCinema.get();
 //			缺少 validator
-			cinemaMapper.updateFromDto(dto, cinema, types);
+			cinemaMapper.updateFromDto(dto, cinema, types, facilities);
 			cinemaRepo.flush();
 
 			cinemaRepo.save(cinema);
