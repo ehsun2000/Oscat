@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class BookingService {
 	public List<SearchCinemaForBook> findCinemas(UUID movieId) {
 		List<SearchCinemaForBook> cinemas = cinemaRepository.findCinemasByMovieId(movieId,
 				LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0),
-				LocalDateTime.now().plusDays(2).withHour(23).withMinute(59).withSecond(59).withNano(999999999));
+				LocalDateTime.now().plusDays(7).withHour(23).withMinute(59).withSecond(59).withNano(999999999));
 
 		if (!cinemas.isEmpty()) {
 			return cinemas;
@@ -49,33 +50,28 @@ public class BookingService {
 	public Set<SearchShowDateForBook> findShowDate(UUID movieId, Integer cinemaId) {
 		Set<SearchShowDateForBook> showDates = showTimeRepository.findShowDateByMovieIdAndCinemaId(movieId, cinemaId,
 				LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0),
-				LocalDateTime.now().plusDays(2).withHour(23).withMinute(59).withSecond(59).withNano(999999999));
+				LocalDateTime.now().plusDays(7).withHour(23).withMinute(59).withSecond(59).withNano(999999999));
 		return showDates;
 	}
 
-	public Map<String, List<String>> findShowTime(UUID movieId, Integer cinemaId, String showTime) {
-
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDateTime targetDate = LocalDate.parse(showTime, dtf).atStartOfDay();
-		
-		List<Object[]> result = showTimeRepository.findShowTimeByMovieIdAndCinemaIdAndDate(movieId, cinemaId,
-				targetDate,	targetDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999));
-		
-		Map<String, List<String>> roomNameAndShowtimes = new LinkedHashMap<>();
-		
-		for(Object[] obj : result) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-			String roomName =  (String)obj[0];
-			String showtime =  formatter.format((LocalDateTime)obj[1]);
-			List<String> list = roomNameAndShowtimes.get(roomName);
-			if(list == null) {
-				roomNameAndShowtimes.put(roomName, new ArrayList<String>());
-				list = roomNameAndShowtimes.get(roomName);
-			}
-			list.add(showtime);
-		}
-		
-		return roomNameAndShowtimes;
+	public List<Map<String, Object>> findShowTime(UUID movieId, Integer cinemaId, String showTime) {
+	    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    LocalDateTime targetDate = LocalDate.parse(showTime, dtf).atStartOfDay();
+	    
+	    List<Object[]> result = showTimeRepository.findShowTimeByMovieIdAndCinemaIdAndDate(movieId, cinemaId,
+	            targetDate, targetDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999));
+	    
+	    List<Map<String, Object>> responseList = new ArrayList<>();
+	    for(Object[] obj : result) {
+	        Map<String, Object> entry = new HashMap<>();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	        entry.put("screeningRoomId", (Integer)obj[0]);
+	        entry.put("roomName", (String)obj[1]);
+	        entry.put("showtime", formatter.format((LocalDateTime)obj[2]));
+	        responseList.add(entry);
+	    }
+	    
+	    return responseList;
 	}
 
 	public Map<Integer, String> gerTicketTypes() {

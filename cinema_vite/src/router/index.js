@@ -33,6 +33,11 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/SelectMovie',
+    name: 'selectMovie',
+    component: import('@/views/Booking/SelectMovie.vue'),
+  },
 ];
 
 const router = createRouter({

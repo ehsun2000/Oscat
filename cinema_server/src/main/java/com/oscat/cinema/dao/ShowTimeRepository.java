@@ -30,7 +30,7 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 	                                              @Param("startDate") LocalDateTime startDate, 
 	                                              @Param("endDate") LocalDateTime endDate);
 
-	@Query("SELECT sr.roomName, st.showDateAndTime " +
+	@Query("SELECT sr.id, sr.roomName, st.showDateAndTime " +
 	        "FROM ShowTime st " +
 	        "JOIN st.screeningRoom sr " +
 	        "JOIN sr.cinema c " +

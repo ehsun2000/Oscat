@@ -24,7 +24,6 @@ public class BookingController {
 
 	@Autowired
 	private BookingService bookingService;
-	
 	@Autowired
 	private MovieService movService;
 
@@ -46,7 +45,7 @@ public class BookingController {
 	}
 	
 	@GetMapping(path = "/{movieId}/{cinemaId}/findtime")
-	public Map<String, List<String>> findShowTimes(@PathVariable(name = "movieId") UUID movieId,
+	public List<Map<String, Object>> findShowTimes(@PathVariable(name = "movieId") UUID movieId,
 			@PathVariable(name = "cinemaId") Integer cinemaId,
 			@RequestParam(name = "selectDate") String showTime){
 		return bookingService.findShowTime(movieId,cinemaId,showTime);
