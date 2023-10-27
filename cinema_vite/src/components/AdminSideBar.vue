@@ -46,7 +46,7 @@ const menus = [
     title: '影城管理',
     icon: 'bi-building', // Bootstrap icon
     items: [
-      { name: '資訊設定', path: '/cinema-info' },
+      { name: '資訊設定', path: '/cinema-select' },
       { name: '座位設定', path: '/cinema-seat' },
       { name: '販售設定', path: '/cinema-product' },
     ],

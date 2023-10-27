@@ -27,8 +27,8 @@ const routes = [
         component: import('@/views/MemberAdUpdate.vue'),
       },
       {
-        path: '/cinema-info',
-        name: 'CinemaInfo',
+        path: '/cinema-select',
+        name: 'CinemaSelect',
         component: import('@/views/CinemaSelect.vue'),
       },
       {
