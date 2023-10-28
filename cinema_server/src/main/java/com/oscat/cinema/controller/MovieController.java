@@ -48,6 +48,10 @@ public class MovieController {
 	@Autowired
 	private MovieService movieService;
 
+	@Autowired
+	FileUploadUtil fileUploadUtil;
+	
+	// 新增電影
 	@PostMapping("/add")
 	public ResponseEntity<?> postAddMovie(@RequestBody Movie movie) {
 
@@ -77,6 +81,7 @@ public class MovieController {
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
+	// 根據id查詢電影
 	@GetMapping("/{movieId}")
 	public ResponseEntity<?> findById(@PathVariable UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
@@ -88,30 +93,25 @@ public class MovieController {
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
+	// 查詢所有電影
 	@GetMapping("/")
 	public List<Movie> findAllMovie() {
 		return movRepo.findAll();
 	}
-
-//	@DeleteMapping("/delete")
-//	public String deleteMovieById(@RequestParam UUID movieId) {
-//		Optional<Movie> optional = movRepo.findById(movieId);
-//
-//		if (optional.isEmpty()) {
-//			return "無此筆資料";
-//		}
-//
-//		movRepo.deleteById(movieId);
-//
-//		return "已刪除";
-//	}
-
-	@DeleteMapping("/delete/{movieId}")
-	public String deleteMovieById(@PathVariable UUID movieId) {
-		String result = movieService.deleteMovie(movieId);
-		return result;
+	
+	// 根據上映狀態查詢電影
+	@GetMapping("/showing")
+	public List<MovieDTO> getMovieShowing(){
+		return movieService.getMovieShowing();
 	}
 
+	// 根據id刪除電影
+	@DeleteMapping("/delete/{movieId}")
+	public String deleteMovieById(@PathVariable UUID movieId) {
+		return movieService.deleteMovie(movieId);
+	}
+
+	// 根據id修改電影
 	@Transactional
 	@PutMapping("/update/{movieId}")
 	public String updateMovieById(@PathVariable UUID movieId, @RequestBody MovieDTO newMovieDTO) {
@@ -141,6 +141,7 @@ public class MovieController {
 		return movRepo.findMovieByNameLike(name);
 	}
 	
+	// 根據id修改電影狀態
 	@PutMapping("/status")
 	public ResponseEntity<String> updateStatusById(@RequestBody String json) throws JSONException {
 		System.out.println(json);
@@ -155,30 +156,25 @@ public class MovieController {
 		return new ResponseEntity<String>("更新失敗", null, HttpStatus.BAD_REQUEST);
 	}
 	
-	
+	// 分頁所有電影
 	@GetMapping("/page")
     public ResponseEntity<Page<Movie>> getAllMovies(Pageable pageable) {
         Page<Movie> movies = movRepo.findAll(pageable);
         return ResponseEntity.ok(movies);
     }
 	
-	@Resource
-	FileUploadUtil fileUploadUtil;
 	
+	// 上傳圖檔到雲端圖庫
 	@PostMapping("/upload")
     public ResponseEntity<String> upload(@RequestParam("imageUpload") MultipartFile imageFile) {
 		String imgurl = "";
 		try {
 			imgurl = fileUploadUtil.uploadFile(imageFile);
-			// TODO
-//			Movie movie = new Movie();
-//			movie.setPosterImage(imgurl);
-//			movRepo.save(movie);
-			// TODO
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		System.out.println(imgurl);
         return ResponseEntity.ok(imgurl);
     }
+	
 }

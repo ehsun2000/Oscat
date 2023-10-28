@@ -43,25 +43,11 @@ const routes = [
       },
     ],
   },
-  // {
-
-  //     path: '/movie',
-  //     name: 'Movie',
-  //     component: import('@/views/AdminMovie.vue'),
-  //     children: [
-  //       {
-  //         path: 'add',
-  //         name: 'Add'
-  //         component: import('@/views/AdminAddMovie.vue'),
-  //       },
-  //       {
-  //         path: 'edit/:movieId',
-  //         name: 'Edit',
-  //         component: import('@/views/AdminEditMovie.vue'),
-  //       },
-  //     ]
-
-  // },
+  { path: '/', component: import('@/views/HomeVue.vue') },
+  { path: '/signin', component: import('@/components/SignIn.vue') },
+  { path: '/forgotPwd', component: import('@/components/ForgotPwd.vue') },
+  { path: '/signup', component: import('@/components/SignUp.vue') },
+  { path: '/agreement', component: import('@/components/PrivacyPolicy.vue') },
 ];
 
 const router = createRouter({

@@ -21,7 +21,7 @@ export async function loadMovies(page) {
   try {
     const response = await axios.get(url);
     movies.value = response.data.content;
-    totalPages.value = response.data.totalPages - 1; // 設定總頁數
+    totalPages.value = response.data.totalPages; // 設定總頁數
   } catch (error) {
     console.error('無法獲取電影數據：', error);
   }

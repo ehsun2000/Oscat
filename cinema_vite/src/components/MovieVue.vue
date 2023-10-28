@@ -24,7 +24,6 @@
 </template>
 
 <script setup>
-// 引入 Axios
 import axios from 'axios';
 import { ref } from 'vue';
 
@@ -40,6 +39,4 @@ const loadMovies = async () => {
 loadMovies();
 </script>
 
-<style>
-/* 这里可以添加组件的样式 */
-</style>
+<style scoped></style>

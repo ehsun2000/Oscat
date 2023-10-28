@@ -9,7 +9,7 @@ import com.oscat.cinema.entity.CinemaTicketType;
 
 //使用 mapstruct 轉換 dto
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface CinemaTicketTypeMapper { 
+public interface CinemaTicketTypeMapper {
 
 	// 將 TicketType 映射到 TicketTypeDTO
 //	@Mapping(target = "type", source = "ticketType.ticketTypeName")

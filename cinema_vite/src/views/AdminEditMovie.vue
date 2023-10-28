@@ -14,6 +14,7 @@
               />
             </div>
             <div v-for="(movieStill, index) in movie.movieStills" :key="index">
+              {{ index + 1 }}
               <img :src="movieStill.stillImageUrl" alt="" class="movieStill" />
             </div>
           </div>
@@ -119,12 +120,31 @@
               </div>
               <div class="mb-3">
                 <label for="posterImage" class="form-label">電影海報連結</label>
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  style="
+                    --bs-btn-padding-y: 0.25rem;
+                    --bs-btn-padding-x: 0.5rem;
+                    --bs-btn-font-size: 0.75rem;
+                  "
+                  @click="addPosterLink"
+                >
+                  <i class="bi bi-plus"></i>
+                </button>
                 <input
                   type="text"
                   class="form-control"
                   id="posterImage"
                   v-model="movie.posterImage"
                 />
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  @click="removePoster(index)"
+                >
+                  删除
+                </button>
               </div>
 
               <table class="table table-bordered">
@@ -148,7 +168,8 @@
                     :key="still.stillId"
                   >
                     <td>
-                      <input
+                      {{ index + 1
+                      }}<input
                         class="form-control"
                         v-model="movie.movieStills[index].stillImageUrl"
                         rows="4"
@@ -192,8 +213,20 @@ const route = useRoute();
 const router = useRouter();
 const movie = ref(Movie);
 
+// 返回
 const previousPage = () => {
   history.back();
+};
+
+// 刪除圖片url
+const removePoster = () => {
+  movie.value.posterImage = '';
+};
+
+const removeStillsLink = (index) => {
+  if (confirm('真的要刪除嗎?')) {
+    movie.value.movieStills.splice(index, 1);
+  }
 };
 
 const loadData = async () => {
@@ -204,29 +237,63 @@ const loadData = async () => {
   movie.value = data;
 };
 
-const addStillsLink = () => {
+// 上傳圖片
+const addPosterLink = async () => {
   Swal.fire({
-    title: '新增宣傳照連結',
-    input: 'text',
-    inputLabel: '請輸入連結',
+    title: '上傳海報',
+    html: '<input type="file" id="imageUpload" accept="image/*">',
     showCancelButton: true,
     confirmButtonText: '新增',
     cancelButtonText: '取消',
-    preConfirm: (link) => {
-      if (link) {
-        const newStillsObject = { stillImageUrl: link };
-        movie.value.movieStills.push(newStillsObject);
+    preConfirm: async () => {
+      const imageInput = document.getElementById('imageUpload');
+      const imageUpload = imageInput.files[0];
+      if (imageUpload) {
+        const URLAPI = `${
+          import.meta.env.VITE_OSCAT_API_ENDPOINT
+        }/movie/upload`;
+        console.log(URLAPI);
+        // console.log(imageUpload);
+        const formData = new FormData();
+        formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
+        const response = await axios.post(URLAPI, formData); //上傳到cloudinary
+        console.log(response);
+        console.log(formData);
+        const imageURL = response.data; //獲得圖片URL
+        console.log(imageURL);
+        movie.value.posterImage = imageURL; //更新海報圖片URL
       }
     },
   });
 };
 
-const removeStillsLink = (index) => {
-  if (confirm('真的要刪除嗎?')) {
-    movie.value.movieStills.splice(index, 1);
-  }
+const addStillsLink = async () => {
+  Swal.fire({
+    title: '上傳宣傳照',
+    html: '<input type="file" id="imageUpload" accept="image/*">',
+    showCancelButton: true,
+    confirmButtonText: '新增',
+    cancelButtonText: '取消',
+    preConfirm: async () => {
+      const imageInput = document.getElementById('imageUpload');
+      const imageUpload = imageInput.files[0];
+      if (imageUpload) {
+        const URLAPI = `${
+          import.meta.env.VITE_OSCAT_API_ENDPOINT
+        }/movie/upload`;
+        const formData = new FormData();
+        formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
+        const response = await axios.post(URLAPI, formData); //上傳到cloudinary
+        const imageURL = response.data;
+        const newStillsObject = { stillImageUrl: imageURL }; //把連結加到movie.movieStills
+        movie.value.movieStills.push(newStillsObject);
+        // movie.value.movieStills.splice(0, 0, newStillsObject);
+      }
+    },
+  });
 };
 
+// 修改
 const updateHandler = async (e) => {
   const id = route.params.movieId;
   const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/update/${id}`;
@@ -253,13 +320,10 @@ loadData();
   width: 500px;
   height: auto;
   margin-right: 20px;
-  /* padding-bottom: 30%; */
 }
 
 .movieStill {
   width: 50%;
-  /*height: auto;
-  margin-right: 20px;*/
   padding-top: 20px;
 }
 

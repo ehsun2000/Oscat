@@ -1,34 +1,50 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <router-link to="/" class="navbar-brand">Ostcat</router-link>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link to="/" class="nav-link active" aria-current="page"
+  <div class="container">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <div class="mb-auto">
+        <div>
+          <router-link to="/"
+            ><h3 class="float-md-start mb-0">OSCAT</h3></router-link
+          >
+          <nav class="nav nav-masthead justify-content-center float-md-end">
+            <router-link
+              to="/"
+              class="nav-link fw-bold py-1 px-0 active"
+              aria-current="page"
               >首頁</router-link
             >
-          </li>
-          <li class="nav-item">
-            <router-link to="/movie" class="nav-link">電影管理</router-link>
-          </li>
-        </ul>
+            <router-link to="/signin" class="nav-link fw-bold py-1 px-0"
+              >登入</router-link
+            >
+            <router-link to="/signup" class="nav-link fw-bold py-1 px-0"
+              >註冊</router-link
+            >
+          </nav>
+        </div>
       </div>
     </div>
-  </nav>
+  </div>
 </template>
 
 <script setup></script>
 
-<style scoped></style>
+<style scoped>
+.nav-masthead .nav-link {
+  color: rgba(255, 255, 255, 0.5);
+  border-bottom: 0.25rem solid transparent;
+}
+
+.nav-masthead .nav-link:hover,
+.nav-masthead .nav-link:focus {
+  border-bottom-color: rgba(255, 255, 255, 0.25);
+}
+
+.nav-masthead .nav-link + .nav-link {
+  margin-left: 1rem;
+}
+
+.nav-masthead .active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+</style>

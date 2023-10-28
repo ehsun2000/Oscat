@@ -168,7 +168,6 @@
             <i class="bi bi-plus"></i>
           </button>
           <div v-for="(still, index) in movie.movieStills" :key="index">
-            <!-- <input type="file" @change="handleFileChange" /> -->
             <input
               type="text"
               class="form-control"
@@ -206,7 +205,7 @@ const previousPage = () => {
   history.back();
 };
 
-//刪除圖片url
+// 刪除圖片url
 const removePoster = () => {
   movie.value.posterImage = '';
 };
@@ -215,6 +214,7 @@ const removeStills = (index) => {
   movie.value.movieStills.splice(index, 1);
 };
 
+// 上傳圖片
 const addPosterLink = async () => {
   Swal.fire({
     title: '新增海報連結',
@@ -279,17 +279,10 @@ const submitForm = async () => {
     if (response.status === 200) {
       Swal.fire('新增成功', '成功新增電影', 'success');
       movie.value = ref(Movie);
-      // setTimeout(() => {
-      //   router.push('/movie');
-      // }, 500);
     }
   } catch (error) {
     console.error(error);
     Swal.fire('新增失敗', '發生錯誤', 'error');
   }
 };
-// const restart = () => {
-//   movie.value = ref(Movie);
-// };
-// restart();
 </script>

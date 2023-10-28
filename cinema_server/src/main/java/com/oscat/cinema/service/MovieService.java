@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,7 @@ public class MovieService {
 		return movRepo.save(addMovie);
 	}
 
+	// 未完成
 //	public Movie addMovie(Movie movie) {
 //
 //		if (movie.getMovieName() == null || movie.getMovieName().isEmpty()) {
@@ -128,6 +130,31 @@ public class MovieService {
 	public boolean updateStatusById(String movieStatus, UUID movieId) {
 	 	Integer result = movRepo.updateStatuseById(movieStatus, movieId);
 	 	return result > 0;
+	}
+	
+	// 轉換moviedto by ann (未完成)
+	public MovieDTO convertToDTO(Movie movie) {
+		MovieDTO dto = new MovieDTO();
+		dto.setMovieId(movie.getMovieId());
+		dto.setMovieName(movie.getMovieName());
+		dto.setMovieType(movie.getMovieType());
+		dto.setMovieStatus(movie.getMovieStatus());
+		dto.setDirector(movie.getDirector());
+		dto.setWriterList(movie.getWriterList());
+		dto.setActorList(movie.getActorList());
+		dto.setPlotSummary(movie.getPlotSummary());
+		dto.setReleaseDate(movie.getReleaseDate());
+		dto.setDuration(movie.getDuration());
+		dto.setClassification(movie.getClassification());
+		dto.setTrailerLink(movie.getTrailerLink());
+		dto.setPosterImage(movie.getPosterImage());
+		return dto;
+	}
+	
+	// 查詢所有上映中的movie by ann
+	public List<MovieDTO> getMovieShowing(){
+		List<Movie> movies=movRepo.findMovieShowing();
+		return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 }
