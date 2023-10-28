@@ -10,6 +10,7 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/AdminDashboard.vue'),
+    meta: { requiresAuth: true },
     children: [
       {
         path: '/member',
@@ -43,6 +44,29 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach(async (to) => {
+  const requiresAuth = to.meta.requiresAuth;
+
+  if (requiresAuth) {
+    try {
+      // 發送 API 請求來檢查用戶身份
+      const response = await fetch(
+        `${import.meta.env.VITE_CHECK_API_ENDPOINT}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        },
+      );
+
+      if (response.status != 200) {
+        return { name: 'Login' }; // 身份驗證失敗，導向登入頁
+      }
+    } catch (error) {
+      return { name: 'Login' }; // API 請求失敗，導向登入頁
+    }
+  }
 });
 
 export default router;
