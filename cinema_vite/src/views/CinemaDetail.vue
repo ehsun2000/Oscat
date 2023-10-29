@@ -9,6 +9,7 @@ const router = useRouter();
 const isEditing = ref(false);
 const allTicketTypes = ref([]);
 const allFacilities = ref([]);
+const fileInput = ref(null);
 
 onMounted(async () => {
   try {
@@ -102,7 +103,6 @@ const showFacilities = async () => {
   );
   allFacilities.value = await response.json();
 
-  // 生成 checkbox 的 HTML 字符串
   const checkboxesHtml = allFacilities.value
     .map((facility) => {
       const checked = cinema.value.facilities.includes(facility)
@@ -146,20 +146,35 @@ const submitEdit = async () => {
 
   // 如果使用者確認，則繼續執行
   if (isConfirmed) {
+    Swal.fire({
+      title: '請稍等',
+      text: '正在更新影城資訊...',
+      allowOutsideClick: false, // 點擊外面不會關閉對話框
+      didOpen: () => {
+        Swal.showLoading(); // 顯示加載指示器
+      },
+    });
     try {
-      // 定義要傳送到後端的資料，這裡以 cinema 為例
-      const data = cinema.value;
+      const formData = new FormData();
 
-      // 發送跨域 POST 請求
+      formData.append(
+        'cinema',
+        new Blob([JSON.stringify(cinema.value)], {
+          type: 'application/json',
+        }),
+      );
+
+      if (typeof fileInput.value.files[0] !== 'undefined') {
+        formData.append('file', fileInput.value.files[0]);
+      }
+
+      // 發送跨域 PUT 請求
       const response = await fetch(
         `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/cinemas/`,
         {
           method: 'PUT',
           credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: formData,
         },
       );
 
@@ -172,6 +187,17 @@ const submitEdit = async () => {
       console.error('提交出錯:', error);
     }
   }
+};
+
+// 觸發文件輸入元素的點擊事件
+const triggerFileInput = () => {
+  fileInput.value.click();
+};
+
+const handleFileChange = (event) => {
+  const selectedFile = event.target.files[0];
+  cinema.value.img = URL.createObjectURL(selectedFile);
+  console.log(selectedFile);
 };
 </script>
 
@@ -286,9 +312,17 @@ const submitEdit = async () => {
       <div class="row">
         <!-- 左側：影城圖片 -->
         <div class="col-md-4 text-center">
+          <input
+            type="file"
+            accept="image/*"
+            ref="fileInput"
+            @change="handleFileChange"
+            style="display: none"
+          />
           <img
             :src="cinema.img"
             alt="Cinema Image"
+            @click="triggerFileInput"
             class="img-fluid img-thumbnail rounded"
           />
         </div>
@@ -447,4 +481,9 @@ const submitEdit = async () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+img {
+  width: 300px;
+  height: 300px;
+}
+</style>
