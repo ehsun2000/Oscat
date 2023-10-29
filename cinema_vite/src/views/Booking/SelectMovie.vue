@@ -28,9 +28,11 @@
     />
     <div v-for="(times, date) in organizedShowTimes" :key="date">
       {{ date }}
+      <br />
       <div v-for="time in times" :key="time">
-        {{ time }}
-        <!-- 這裡可以加入你的按鈕或其他元素 -->
+        <button>
+          {{ time }}
+        </button>
       </div>
     </div>
     <div

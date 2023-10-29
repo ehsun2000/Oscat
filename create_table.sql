@@ -48,9 +48,37 @@ CREATE TABLE cinema
     cinema_address VARCHAR(255) NOT NULL,
     cinema_img     VARCHAR(255) NOT NULL,   -- 新增影城圖片
     contact_phone  VARCHAR(20) NOT NULL,
-    opening_hours  VARCHAR(100) NOT NULL,
-    facilities     VARCHAR(MAX) NOT NULL,
     base_price     DECIMAL(10, 2) NOT NULL  -- 新增的基礎票價
+);
+
+-- 建立營業時間(OpeningHour)資料表
+CREATE TABLE opening_hour
+(
+    hour_id      INT IDENTITY(1,1) PRIMARY KEY,  -- 主鍵
+    cinema_id    INT NOT NULL,                   -- 影城ID, 外鍵連結到cinema資料表
+    week_day     INT NOT NULL,                   -- 星期幾
+    start_time   TIME NOT NULL,           -- 開始時間
+    end_time     TIME NOT NULL,           -- 結束時間
+    FOREIGN KEY (cinema_id) REFERENCES cinema(cinema_id) -- 定義外鍵
+);
+
+-- 建立設施(Facility)資料表
+CREATE TABLE facility
+(
+    facility_id      INT IDENTITY(1,1) PRIMARY KEY,           -- 主鍵
+    facility_name    VARCHAR(255) NOT NULL,       -- 設施名稱
+    facility_img     VARCHAR(255)  NOT NULL,      -- 設施圖片
+    description      VARCHAR(255)                 -- 描述
+);
+
+-- 建立影城和設施的關聯表格(CinemaToFacility)
+CREATE TABLE cinema_facility
+(
+    cinema_id      INT NOT NULL,                  -- 影城ID
+    facility_id    INT NOT NULL,                  -- 設施ID
+    PRIMARY KEY (cinema_id, facility_id),         -- 定義組合主鍵
+    FOREIGN KEY (cinema_id) REFERENCES cinema(cinema_id),    -- 影城外鍵
+    FOREIGN KEY (facility_id) REFERENCES facility(facility_id)-- 設施外鍵
 );
 
 -- 建立放映廳 (ScreeningRoom)資料表

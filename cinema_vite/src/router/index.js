@@ -31,6 +31,21 @@ const routes = [
         name: 'seat',
         component: import('@/views/SeatController.vue'),
       },
+      {
+        path: '/movie',
+        name: 'Movie',
+        component: import('@/views/AdminMovie.vue'),
+      },
+      {
+        path: '/movie/add',
+        name: 'Add',
+        component: import('@/views/AdminAddMovie.vue'),
+      },
+      {
+        path: '/movie/edit/:movieId',
+        name: 'Edit',
+        component: import('@/views/AdminEditMovie.vue'),
+      },
     ],
   },
   {
@@ -38,6 +53,11 @@ const routes = [
     name: 'selectMovie',
     component: import('@/views/Booking/SelectMovie.vue'),
   },
+  { path: '/', component: import('@/views/HomeVue.vue') },
+  { path: '/signin', component: import('@/components/SignIn.vue') },
+  { path: '/forgotPwd', component: import('@/components/ForgotPwd.vue') },
+  { path: '/signup', component: import('@/components/SignUp.vue') },
+  { path: '/agreement', component: import('@/components/PrivacyPolicy.vue') },
 ];
 
 const router = createRouter({
