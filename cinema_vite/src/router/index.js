@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const routes = [
   {
@@ -61,10 +62,26 @@ router.beforeEach(async (to) => {
       );
 
       if (response.status != 200) {
-        return { name: 'Login' }; // 身份驗證失敗，導向登入頁
+        const { isConfirmed } = await Swal.fire({
+          title: '驗證失效',
+          text: '您的驗證已失效，請重新登入',
+          icon: 'info',
+          confirmButtonText: '回到登入頁面',
+        });
+        if (isConfirmed) {
+          return { name: 'Login' }; // 身份驗證失敗，導向登入頁
+        }
       }
     } catch (error) {
-      return { name: 'Login' }; // API 請求失敗，導向登入頁
+      const { isConfirmed } = await Swal.fire({
+        title: '驗證失效',
+        text: '您的驗證已失效，請重新登入',
+        icon: 'info',
+        confirmButtonText: '回到登入頁面',
+      });
+      if (isConfirmed) {
+        return { name: 'Login' }; // API 請求失敗，導向登入頁
+      }
     }
   }
 });

@@ -10,6 +10,7 @@ import '@sweetalert2/theme-dark/dark.css';
 import App from './App.vue';
 import router from './router';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 axios.defaults.withCredentials = true;
 document.body.setAttribute('data-bs-theme', 'dark');
@@ -35,11 +36,28 @@ setInterval(async () => {
       );
 
       if (response.status != 200) {
-        // 如果用戶未登入，則重定向到登入頁面
-        router.push('/adminlogin');
+        const { isConfirmed } = await Swal.fire({
+          title: '驗證失效',
+          text: '您的驗證已失效，請重新登入',
+          icon: 'info',
+          confirmButtonText: '回到登入頁面',
+        });
+
+        if (isConfirmed) {
+          router.push('/adminlogin');
+        }
       }
     } catch (error) {
-      router.push('/adminlogin');
+      const { isConfirmed } = await Swal.fire({
+        title: '驗證失效',
+        text: '您的驗證已失效，請重新登入',
+        icon: 'info',
+        confirmButtonText: '回到登入頁面',
+      });
+
+      if (isConfirmed) {
+        router.push('/adminlogin');
+      }
     }
   }
-}, 120000);
+}, 10000);
