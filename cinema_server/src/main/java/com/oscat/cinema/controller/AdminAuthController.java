@@ -19,12 +19,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-public class AdminLoginController {
+public class AdminAuthController {
 
 	private final AuthenticationManager authenticationManager; // 自動注入 AuthenticationManager
 
 	@Autowired
-	public AdminLoginController(AuthenticationManager authenticationManager) {
+	public AdminAuthController(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
 	}
 
