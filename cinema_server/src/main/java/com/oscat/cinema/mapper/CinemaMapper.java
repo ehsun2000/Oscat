@@ -45,8 +45,8 @@ public interface CinemaMapper {
 	@Mapping(target = "products", ignore = true)
 	@Mapping(target = "openingHours", ignore = true)
 	@Mapping(target = "facilities", ignore = true)
+	@Mapping(target = "cinemaImg", ignore = true)
 	@Mapping(target = "cinemaName", source = "dto.name")
-	@Mapping(target = "cinemaImg", source = "dto.img")
 	@Mapping(target = "cinemaAddress", source = "dto.address")
 	@Mapping(target = "contactPhone", source = "dto.phone")
 	void updateFromDto(CinemaDTO dto, @MappingTarget Cinema cinema, List<TicketType> ticketTypes,
