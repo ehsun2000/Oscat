@@ -30,8 +30,8 @@ public class SeatService {
         // 循環生成和插入座位
         for (int row = 1; row <= numRows; row++) {
             for (int seatNum = 1; seatNum <= numSeatsPerRow; seatNum++) {
-                // 生成座位名稱，例如：A1, A2, B1, B2, ...
-                String seatName = seatNames[row - 1] + seatNum;
+                // 生成座位名稱，例如：A01, A02, B01, B02, ...
+            	String seatName = String.format("%s%02d", seatNames[row - 1], seatNum);
 
                 // 創建 Seat 對象並設置屬性
                 Seat seat = new Seat();
@@ -57,8 +57,8 @@ public class SeatService {
         String[] seatNames = {"A", "B", "C", "D", "E", "F", "G","H","I","J","K","L","M","N"};
 
         for (int row = 1; row <= numRows; row++) {
-            for (int seatNum = 1; seatNum <= numSeatsPerRow; seatNum++) {
-                String seatName = seatNames[row - 1] + seatNum;
+            for (int seatNum = 01; seatNum <= numSeatsPerRow; seatNum++) {
+            	String seatName = String.format("%s%02d", seatNames[row - 1], seatNum);
 
                 Seat seat = new Seat();
                 seat.setSeatName(seatName);
@@ -80,6 +80,11 @@ public class SeatService {
     public boolean updateSeatStatusBySeatNameAndRoomId(String seatName, Integer roomId, String status) {
         int updatedRows = seatRepository.updateSeatStatusBySeatNameAndRoomId(status, seatName, roomId);
         return updatedRows > 0;
+    }
+    
+    public boolean updateSeatStatusBySeatId(String status,UUID id) {
+    	int updatedRows = seatRepository.updateSeatStatusById(status, id);
+    	return updatedRows > 0;
     }
     
     public void deleteSeatById(UUID id) {

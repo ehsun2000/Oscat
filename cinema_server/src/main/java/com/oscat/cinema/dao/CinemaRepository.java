@@ -2,8 +2,11 @@ package com.oscat.cinema.dao;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.entity.Cinema;
-import com.oscat.cinema.entity.Product;
 
 @Repository
 public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
@@ -25,10 +27,14 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 	List<SearchCinemaForBook> findCinemasByMovieId(@Param("movieId") UUID movieId, 
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate);
+
+	// 查詢單筆 cinema 資料 JPQL
+	@Query("FROM Cinema WHERE cinemaId = :id")
+	Cinema findCinemaById(@Param("id") Integer id);
 	
-	@Query("SELECT cinemaId,cinemaName FROM Cinema")
-	List<Cinema> findAllCinema();
+	// 查詢分頁 cinema 資料 JPQL
+	Page<Cinema> findAll(Pageable pageable);
 	
-	@Query("SELECT cp.product FROM CinemaProduct cp WHERE cp.cinema.cinemaId = :cinemaId")
-	List<Product> findProductByCinemaId(@Param("cinemaId")Integer cinemaId);
+	//根據影城名稱找影城
+	Optional<Cinema> findByCinemaName(String cinemaName);
 }

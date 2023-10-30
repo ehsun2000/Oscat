@@ -47,53 +47,53 @@ public class CinemaController {
 //		return resultcinema;
 //	}
 	
-	//新增  
-	@PostMapping("/cinema/add")
-	public Cinema addCinema(@RequestBody Cinema cinema) {
-		cinemaService.insert(cinema);
-		return cinema;
-	}
-	
-	//查詢 
-	@GetMapping("/cinema/{id}")
-	public ResponseEntity<?> findById(@PathVariable Integer id){
-		Cinema cinema = cinemaService.findById(id);
-		
-		if(cinema!=null) {
-			return new ResponseEntity<>(cinema,HttpStatus.OK);
-		}
-		return new ResponseEntity<String>("沒有這筆資料",HttpStatus.NOT_FOUND);
-	}
-	 
-	//查詢全部 
-	@GetMapping("/cinemas")
-	public List<Cinema> findAll(){
-		return	cinemaService.findAll();
-	}
-	
-	//修改
-	@PutMapping("/cinema/update")
-	public String updateCinemaById(@RequestParam("cId") Integer cinemaId,
-			 					  @RequestParam("newName") String newName){
-			Cinema cinema = cinemaService.findById(cinemaId);
-		if(cinema!=null) {
-			cinema.setCinemaName(newName);
-			cinemaService.insert(cinema);
-			return "修改OK";
-		}
-		
-		return "沒有這筆資料";
-	}
-	
-	//刪除 
-	@DeleteMapping("/cinema/delete")
-	public ResponseEntity<String> deleteById(@RequestParam Integer id) {
-		 boolean deleteById = cinemaService.deleteById(id);
-		 
-		 if(deleteById) {
-			 return new ResponseEntity<>("刪除成功", HttpStatus.OK);
-		 }else {
-			 return new ResponseEntity<>("沒有這家影城",HttpStatus.NOT_FOUND);
-		 }
-	}
+//	//新增  
+//	@PostMapping("/cinema/add")
+//	public Cinema addCinema(@RequestBody Cinema cinema) {
+//		cinemaService.insert(cinema);
+//		return cinema;
+//	}
+//	
+//	//查詢 
+//	@GetMapping("/cinema/{id}")
+//	public ResponseEntity<?> findById(@PathVariable Integer id){
+//		Cinema cinema = cinemaService.findById(id);
+//		
+//		if(cinema!=null) {
+//			return new ResponseEntity<>(cinema,HttpStatus.OK);
+//		}
+//		return new ResponseEntity<String>("沒有這筆資料",HttpStatus.NOT_FOUND);
+//	}
+//	 
+//	//查詢全部 
+//	@GetMapping("/cinemas")
+//	public List<Cinema> findAll(){
+//		return	cinemaService.findAll();
+//	}
+//	
+//	//修改
+//	@PutMapping("/cinema/update")
+//	public String updateCinemaById(@RequestParam("cId") Integer cinemaId,
+//			 					  @RequestParam("newName") String newName){
+//			Cinema cinema = cinemaService.findById(cinemaId);
+//		if(cinema!=null) {
+//			cinema.setCinemaName(newName);
+//			cinemaService.insert(cinema);
+//			return "修改OK";
+//		}
+//		
+//		return "沒有這筆資料";
+//	}
+//	
+//	//刪除 
+//	@DeleteMapping("/cinema/delete")
+//	public ResponseEntity<String> deleteById(@RequestParam Integer id) {
+//		 boolean deleteById = cinemaService.deleteById(id);
+//		 
+//		 if(deleteById) {
+//			 return new ResponseEntity<>("刪除成功", HttpStatus.OK);
+//		 }else {
+//			 return new ResponseEntity<>("沒有這家影城",HttpStatus.NOT_FOUND);
+//		 }
+//	}
 }

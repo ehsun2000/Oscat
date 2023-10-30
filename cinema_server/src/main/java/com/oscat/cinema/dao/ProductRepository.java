@@ -1,27 +1,28 @@
 package com.oscat.cinema.dao;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.oscat.cinema.entity.Product;
 
-@Repository
+
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 	
-//	//模糊查詢
-//	@Query(value = "FROM Product p WHERE ProductName LIKE %:n%")
-//	List<Product> findProductByNameLike(@Param("n")String productName);
-//	
-//	//JPQL 查詢 查詢特定影城的所有產品
-//	@Query("SELECT p FROM p" +
-//			"JOIN p.cinemaProducts cp" +
-//			"WHERE cp.cinema.cinemaId =: cinemaId")
-//	List<Product> findProuductByCinemaId(@Param("cinemaId")Integer cinemaId);
-	
+	//用產品名稱去查詢
 	Optional<Product> findByProductName(String productName);
-
-
+	
+	//刪除指定名稱的產品
+	public String deleteByProductName(String productName);
+	
+	@Query("from Product p order by p.productType asc")
+	public List<Product>findAll();
+	
+	//查詢產品分頁
+	Page<Product> findAll(Pageable pageable);
 }
