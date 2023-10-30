@@ -1,29 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import MemberAdmin from '../views/yuho/MemberAdmin.vue';
-import MemberAdInsert from '../views/yuho/MemberAdInsert.vue';
-import MemberAdUpdate from '../views/yuho/MemberAdUpdate.vue';
-import HelloWorld from '../components/HelloWorld.vue';
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: HelloWorld,
+    path: '/adminlogin',
+    name: 'Login',
+    component: () => import('@/views/AdminLogin.vue'),
   },
   {
-    path: '/member',
-    name: 'Member',
-    component: MemberAdmin,
-  },
-  {
-    path: '/member/insert',
-    name: 'Insert',
-    component: MemberAdInsert,
-  },
-  {
-    path: '/member/update/:memberId',
-    name: 'Update',
-    component: MemberAdUpdate,
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/views/AdminDashboard.vue'),
+    children: [
+      {
+        path: '/member',
+        name: 'Member',
+        component: import('@/views/MemberAdmin.vue'),
+      },
+      {
+        path: '/member/insert',
+        name: 'Insert',
+        component: import('@/views/MemberAdInsert.vue'),
+      },
+      {
+        path: '/member/update/:memberId',
+        name: 'Update',
+        component: import('@/views/MemberAdUpdate.vue'),
+      },
+      {
+        path: '/member-report',
+        name: 'Analysis',
+        component: import('@/views/MemberAnalysis.vue'),
+      },
+    ],
   },
 ];
 
