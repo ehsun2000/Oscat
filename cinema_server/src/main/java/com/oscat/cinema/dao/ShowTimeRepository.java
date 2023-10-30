@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +25,6 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 			+ "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId "
 			+ "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate "
 			+ "ORDER BY st.showDateAndTime ASC")
-
 	Set<SearchShowDateForBook> findShowDateByMovieIdAndCinemaId(@Param("movieId") UUID movieId,
 			@Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate);
@@ -45,6 +46,14 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 
 	@Query("SELECT s FROM ShowTime s " + "WHERE s.showDateAndTime BETWEEN :startDateTime AND :endDateTime "
 			+ "AND s.screeningRoom.roomId = :roomId")
-	List<ShowTime> findConflictingShowTimesByRoomId(@Param("startDateTime") LocalDateTime startDateTime,
+	List<ShowTime> findAfterConflictingShowTimesByRoomId(@Param("startDateTime") LocalDateTime startDateTime,
 			@Param("endDateTime") LocalDateTime endDateTime, @Param("roomId") Integer roomId);
+
+	@Query("SELECT s FROM ShowTime s WHERE s.showDateAndTime < :targetDateTime "
+			+ "AND s.screeningRoom.roomId = :roomId ORDER BY s.showDateAndTime DESC LIMIT 1")
+	ShowTime findLatestShowTimeBefore(@Param("targetDateTime") LocalDateTime targetDateTime,
+			@Param("roomId") Integer roomId);
+
+	@Query("SELECT s FROM ShowTime s " + "WHERE s.screeningRoom.roomId = :roomId")
+	Page<ShowTime> findAllByRoomId(Pageable pageable, @Param("roomId") Integer roomId);
 }

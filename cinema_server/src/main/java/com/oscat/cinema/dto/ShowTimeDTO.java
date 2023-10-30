@@ -12,6 +12,4 @@ public class ShowTimeDTO {
 	private Integer roomId;
 	private String filmType;
 	private LocalDateTime showDateAndTime;
-	private List<ShowTimeDTO> showTimes;
-
 }

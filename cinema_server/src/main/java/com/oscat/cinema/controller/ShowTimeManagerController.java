@@ -1,12 +1,13 @@
 package com.oscat.cinema.controller;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,18 +32,21 @@ public class ShowTimeManagerController {
 
 	@PostMapping("/add")
 	public ResponseEntity<?> addShowTime(@RequestBody ShowTimeDTO showTimeDTO) {
+		if (stmService.isShowTimeValid(showTimeDTO)) {
+			if (stmService.isShowTimeAvailable(showTimeDTO)) {
+				Optional<ShowTime> optional = stmService.convertToEntity(showTimeDTO);
 
-		if (stmService.isShowTimeAvailable(showTimeDTO)) {
-			Optional<ShowTime> optional = stmService.convertToEntity(showTimeDTO);
+				if (optional.isPresent()) {
+					ShowTime createdShowTime = stmService.addShowTime(optional.get());
+					return new ResponseEntity<>(createdShowTime, HttpStatus.OK);
+				}
+				return new ResponseEntity<>("新增失敗", HttpStatus.BAD_REQUEST);
 
-			if (optional.isPresent()) {
-				ShowTime createdShowTime = stmService.addShowTime(optional.get());
-				return new ResponseEntity<>(createdShowTime, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>("時間與其他場次衝突!!", HttpStatus.BAD_REQUEST);
 			}
-			return new ResponseEntity<>("新增失敗", HttpStatus.BAD_REQUEST);
-
 		} else {
-			return new ResponseEntity<>("在片長後30分鐘內已經有其他場次!!", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("沒有在營業時間內!", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -65,8 +69,8 @@ public class ShowTimeManagerController {
 	}
 
 	@GetMapping("/findAll")
-	public List<ShowTime> findAllShowTimes() {
-		return stmService.findAll();
+	public Page<ShowTime> findAllShowTimes(Pageable pageable, Integer roomId) {
+		return stmService.findAll(pageable, roomId);
 	}
 
 	@GetMapping("/find/{id}")

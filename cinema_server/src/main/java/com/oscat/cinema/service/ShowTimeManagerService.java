@@ -5,18 +5,25 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.MovieRepository;
 import com.oscat.cinema.dao.ScreeningRoomRepository;
 import com.oscat.cinema.dao.ShowTimeRepository;
 import com.oscat.cinema.dto.ShowTimeDTO;
+import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.entity.Movie;
+import com.oscat.cinema.entity.OpeningHour;
 import com.oscat.cinema.entity.ScreeningRoom;
 import com.oscat.cinema.entity.ShowTime;
 
@@ -43,9 +50,9 @@ public class ShowTimeManagerService {
 
 	// 新增場次
 	public ShowTime addShowTime(ShowTime showTime) {
-		showTimeRepository.save(showTime);
 		showTimeRepository.flush();
-		return showTimeRepository.save(showTime);
+		ShowTime save = showTimeRepository.saveAndFlush(showTime);
+		return save;
 	}
 
 	// 新增場次，片長超過規定須格外加價
@@ -81,18 +88,61 @@ public class ShowTimeManagerService {
 		if (movie.isPresent()) {
 			// 從電影資訊中獲取電影時長
 			int movieDuration = movie.get().getDuration();
-			LocalDateTime showEndTime = showDateTime.plusMinutes(movieDuration); // 計算場次結束時間
-			LocalDateTime bookingEndTime = showEndTime.plusMinutes(30); // 計算允許添加的截止時間
+			LocalDateTime showEndTime = showDateTime.plusMinutes(movieDuration + 30); // 計算場次結束時間
 
 			// 獲取相同roomId的場次
-			List<ShowTime> conflictingShowTimes = showTimeRepository.findConflictingShowTimesByRoomId(showDateTime,
-					bookingEndTime, showTimeDTO.getRoomId());
+			List<ShowTime> conflictingShowTimesAfter = showTimeRepository
+					.findAfterConflictingShowTimesByRoomId(showDateTime, showEndTime, showTimeDTO.getRoomId());
 
-			return conflictingShowTimes.isEmpty();
-		} else {
+			ShowTime findLatestShowTimeBefore = showTimeRepository.findLatestShowTimeBefore(showDateTime,
+					showTimeDTO.getRoomId());
 
-			return false;
+			if (findLatestShowTimeBefore == null) {
+				if (conflictingShowTimesAfter.isEmpty()) {
+					return true;
+				}
+			} else {
+				LocalDateTime lastShowTime = findLatestShowTimeBefore.getShowDateAndTime();
+				Integer duration = findLatestShowTimeBefore.getMovie().getDuration();
+
+				LocalDateTime lastShowTimeEnd = lastShowTime.plusMinutes(duration + 30);
+
+				if (!showDateTime.isBefore(lastShowTimeEnd) && conflictingShowTimesAfter.isEmpty()) {
+					return true;
+				}
+			}
+
 		}
+
+		return false;
+	}
+
+	// 根據 ShowTimeDTO 和影城的營業時間判斷場次是否有效
+	public boolean isShowTimeValid(ShowTimeDTO showTimeDTO) {
+		LocalDateTime showDateTime = showTimeDTO.getShowDateAndTime();
+		Optional<ScreeningRoom> roomOpt = roomRepo.findById(showTimeDTO.getRoomId());
+
+		if (roomOpt.isPresent()) {
+			Cinema cinema = roomOpt.get().getCinema();
+
+			// 獲取影城的營業時間
+			List<OpeningHour> OpeningHours = cinema.getOpeningHours();
+			Map<Integer, OpeningHour> openingMap = OpeningHours.stream()
+					.collect(Collectors.toMap(OpeningHour::getWeekDay, Function.identity()));
+
+			// 找出當天營業、閉店時間
+			OpeningHour openingHour = openingMap.get(showTimeDTO.getShowDateAndTime().getDayOfWeek().getValue());
+			LocalTime openingTime = openingHour.getStartTime();
+			LocalTime closingTime = openingHour.getEndTime();
+
+			// 檢查場次時間是否在營業時間內
+			if (showDateTime.toLocalTime().isBefore(openingTime) || showDateTime.toLocalTime().isAfter(closingTime)) {
+				return false; // 場次時間不在營業時間內
+
+			}
+		}
+
+		return true;
 	}
 
 	// 新增多筆場次
@@ -112,9 +162,9 @@ public class ShowTimeManagerService {
 	}
 
 	// 找全部
-	public List<ShowTime> findAll() {
+	public Page<ShowTime> findAll(Pageable pageable, Integer roomId) {
 		// 調用相應的 ShowTimeRepository 方法來查找所有 show times
-		return showTimeRepository.findAll();
+		return showTimeRepository.findAllByRoomId(pageable, roomId);
 	}
 
 	// 透過ID找場次
