@@ -35,7 +35,7 @@ public class ShowTimeManagerController {
 		return stmService.findAll();
 	}
 
-	@GetMapping("/find/{id}")
+	@GetMapping("/find/{showTimeId}")
 	public Optional<ShowTime> findShowTimeById(@PathVariable UUID showTimeId) {
 		return stmService.findShowTimeById(showTimeId);
 	}

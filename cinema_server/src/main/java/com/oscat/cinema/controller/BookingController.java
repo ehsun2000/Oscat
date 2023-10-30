@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.dto.SearchShowDateForBook;
+import com.oscat.cinema.dto.TicketTypeDTO;
 import com.oscat.cinema.service.BookingService;
 import com.oscat.cinema.service.MovieService;
 
@@ -33,7 +33,7 @@ public class BookingController {
 	}
 	
 	@GetMapping(path = "/showing")
-	public List<MovieDTO> findShowingCinemas() {
+	public List<MovieDTO> findShowingMovies() {
 		return movService.getMovieShowing();
 	}
 	
@@ -46,14 +46,13 @@ public class BookingController {
 	
 	@GetMapping(path = "/{movieId}/{cinemaId}/findtime")
 	public List<Map<String, Object>> findShowTimes(@PathVariable(name = "movieId") UUID movieId,
-			@PathVariable(name = "cinemaId") Integer cinemaId,
-			@RequestParam(name = "selectDate") String showTime){
-		return bookingService.findShowTime(movieId,cinemaId,showTime);
+	        @PathVariable(name = "cinemaId") Integer cinemaId) {
+	    return bookingService.findShowTime(movieId, cinemaId);
 	}
 	
 	@GetMapping(path = "/ticketTypes")
-	public Map<Integer, String> gerTicketTypes(){
-		return bookingService.gerTicketTypes();
+	public List<TicketTypeDTO> gerTicketTypes(){
+		return bookingService.getTicketTypesList();
 	}
 	
 	

@@ -1,185 +1,176 @@
 <template>
-  <div class="maindiv">
-    <h1>訂票系統</h1>
-    <select v-model="selectedCinemaId">
-      <option disabled value="">------請選擇戲院------</option>
-      <option v-for="cinema in cinemas" :key="cinema.id" :value="cinema.id">
-        {{ cinema.name }}
-      </option>
-    </select>
-    <select v-model="selectedMovieId">
-      <option disabled value="">------請選擇電影------</option>
-      <option
-        v-for="movie in movies"
-        :key="movie.movieId"
-        :value="movie.movieId"
-      >
-        {{ movie.movieName }}
-      </option>
-    </select>
-    <br />
-    <label for="datePicker">選擇日期：</label>
-    <input
-      type="date"
-      id="datePicker"
-      v-model="selectedDate"
-      :min="minDate"
-      :max="maxDate"
-    />
-    <div v-for="(times, date) in organizedShowTimes" :key="date">
-      {{ date }}
-      <br />
-      <div v-for="time in times" :key="time">
-        <button>
-          {{ time }}
-        </button>
+  <div class="container">
+    <div class="roll">
+      <div class="row">
+        <div class="col-md-6">
+          <img :src="movie.posterImage" class="card-img-top" alt="" />
+          <h5>{{ movie.movieName }}</h5>
+          <p>{{ movie.plotSummary }}</p>
+          <iframe
+            width="560"
+            height="315"
+            :src="youtubeEmbedLink"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <div class="col-md-6">
+          <select v-model="selectedCinemaId">
+            <option disabled value="">------請選擇戲院------</option>
+            <option
+              v-for="cinema in cinemas"
+              :key="cinema.id"
+              :value="cinema.id"
+            >
+              {{ cinema.name }}
+            </option>
+          </select>
+          <div v-for="(times, date) in organizedShowTimes" :key="date">
+            {{ date }}
+            <br />
+            <div class="button-container">
+              <div v-for="time in times" :key="time">
+                <button
+                  :disabled="shouldDisableButton(date + ' ' + time)"
+                  @click="goToTicketType(date, time)"
+                >
+                  {{ time }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <p>溫馨提醒：電影開始前30分鐘將無法線上訂票</p>
+        </div>
       </div>
-    </div>
-    <div
-      v-if="message"
-      :class="[messageType === 'error' ? 'error-message' : 'success-message']"
-    >
-      {{ message }}
+      <footer class="mt-auto text-white-50">
+        <p>
+          Cover 模板供
+          <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>
+          使用，由
+          <a href="https://twitter.com/mdo" class="text-white">@mdo</a> 開發。
+        </p>
+      </footer>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, watch } from 'vue';
+import axios from 'axios';
+import { useRoute, useRouter } from 'vue-router';
 
-export default {
-  setup() {
-    const cinemas = ref([]);
-    const selectedCinemaId = ref('');
-    const movies = ref([]);
-    const selectedMovieId = ref('');
-    const message = ref(null);
-    const messageType = ref('');
-    const selectedDate = ref(null);
-    const showTimes = ref([]);
-    const organizedShowTimes = ref({});
+const route = useRoute();
+const router = useRouter();
+const movie = ref({}); // 初始化空的 movie 對象
+const cinemas = ref([]);
+const selectedCinemaId = ref('');
+const organizedShowTimes = ref({});
+const youtubeEmbedLink = ref('');
 
-    const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
+const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
 
-    const fetchCinemas = async () => {
-      try {
-        const response = await fetch(`${api}/cinemas/all`, {
-          credentials: 'include',
-        });
-        if (response.ok) {
-          cinemas.value = await response.json();
-        } else {
-          console.error('Failed to fetch cinemas:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching cinemas:', error);
-      }
-    };
+onMounted(async () => {
+  const movieId = route.params.movieId;
 
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch(`${api}/book/showing`, {
-          credentials: 'include',
-        });
-        if (response.ok) {
-          movies.value = await response.json();
-        } else {
-          console.error('Failed to fetch movies:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching movies:', error);
-      }
-    };
+  try {
+    const response = await axios.get(`${api}/movie/${movieId}`);
 
-    const today = new Date();
-    const minDate = ref(
-      `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
-        2,
-        '0',
-      )}-${String(today.getDate()).padStart(2, '0')}`,
-    );
+    movie.value = response.data;
+  } catch (error) {
+    console.error('無法獲取電影資料：', error);
+  }
+});
 
-    const sevenDaysFromNow = new Date(today);
-    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-    const maxDate = ref(
-      `${sevenDaysFromNow.getFullYear()}-${String(
-        sevenDaysFromNow.getMonth() + 1,
-      ).padStart(2, '0')}-${String(sevenDaysFromNow.getDate()).padStart(
-        2,
-        '0',
-      )}`,
-    );
-
-    const fetchShowTimes = async () => {
-      if (
-        !selectedCinemaId.value ||
-        !selectedMovieId.value ||
-        !selectedDate.value
-      ) {
-        return;
-      }
-      try {
-        const response = await fetch(
-          `${api}/book/${selectedMovieId.value}/${selectedCinemaId.value}/findtime?selectDate=${selectedDate.value}`,
-          {
-            credentials: 'include',
-          },
-        );
-        if (response.ok) {
-          const data = await response.json();
-          const tempTimes = {};
-
-          data.forEach((item) => {
-            const [date, hour] = item.showtime.split(' ');
-            if (!tempTimes[date]) {
-              tempTimes[date] = [];
-            }
-            tempTimes[date].push(hour);
-          });
-
-          organizedShowTimes.value = tempTimes;
-        } else {
-          console.error('Failed to fetch show times:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching show times:', error);
-      }
-    };
-
-    onMounted(() => {
-      fetchCinemas();
-      fetchMovies();
+const fetchCinemas = async () => {
+  try {
+    const response = await fetch(`${api}/cinemas/all`, {
+      credentials: 'include',
     });
-
-    watch([selectedCinemaId, selectedMovieId, selectedDate], fetchShowTimes, {
-      deep: true,
-    });
-
-    return {
-      cinemas,
-      selectedCinemaId,
-      movies,
-      selectedMovieId,
-      message,
-      messageType,
-      selectedDate,
-      minDate,
-      maxDate,
-      showTimes,
-      organizedShowTimes,
-    };
-  },
+    if (response.ok) {
+      cinemas.value = await response.json();
+    } else {
+      console.error('Failed to fetch cinemas:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching cinemas:', error);
+  }
 };
+
+const fetchShowTimes = async () => {
+  if (!selectedCinemaId.value || !movie.value.movieId) {
+    return;
+  }
+  try {
+    const response = await fetch(
+      `${api}/book/${movie.value.movieId}/${selectedCinemaId.value}/findtime`,
+      {
+        credentials: 'include',
+      },
+    );
+    if (response.ok) {
+      const data = await response.json();
+      const tempTimes = {};
+
+      data.forEach((item) => {
+        const [date, hour] = item.showtime.split(' ');
+        if (!tempTimes[date]) {
+          tempTimes[date] = [];
+        }
+        tempTimes[date].push(hour);
+      });
+
+      organizedShowTimes.value = tempTimes;
+    } else {
+      console.error('Failed to fetch show times:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching show times:', error);
+  }
+};
+
+const shouldDisableButton = (showtime) => {
+  const now = new Date();
+  const thresholdTime = new Date(now.getTime() + 30 * 60 * 1000); // 加30分鐘
+
+  const [date, time] = showtime.split(' ');
+  const [hours, minutes] = time.split(':');
+  const showDateTime = new Date(date + 'T' + hours + ':' + minutes);
+
+  return showDateTime <= thresholdTime;
+};
+
+const goToTicketType = (date, time) => {
+  router.push({
+    name: 'TicketType',
+    params: {
+      movieId: movie.value.movieId,
+      cinemaId: selectedCinemaId.value,
+      date: date,
+      time: time,
+    },
+  });
+};
+
+onMounted(() => {
+  fetchCinemas();
+});
+
+watch(selectedCinemaId, fetchShowTimes);
+
+watch(movie, (newMovie) => {
+  if (newMovie.trailerLink) {
+    youtubeEmbedLink.value = newMovie.trailerLink.replace('watch?v=', 'embed/');
+  }
+});
 </script>
 
 <style scoped>
-.maindiv {
-  text-align: center;
+img {
+  width: 300px;
 }
-.success-message {
-  color: green;
-}
-.error-message {
-  color: red;
+.button-container {
+  display: flex;
+  gap: 10px; /* 這將添加每個按鈕之間的間距 */
 }
 </style>

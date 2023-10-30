@@ -2,10 +2,13 @@ package com.oscat.cinema.dto;
 
 import java.math.BigDecimal;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class TicketTypeDTO {
-	private String type;
-	private BigDecimal different;
+	private Integer typeId;
+	private String typeName;
+	private BigDecimal price;
 }

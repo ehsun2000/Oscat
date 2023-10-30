@@ -18,7 +18,11 @@
               <h6>上映日 {{ movie.releaseDate }}</h6>
             </div>
             <div class="modal-footer text-center">
-              <button type="button" class="btn btn-primary w-100 py-2">
+              <button
+                type="button"
+                class="btn btn-primary w-100 py-2"
+                @click="goToSelectMovie(movie)"
+              >
                 前往訂票
               </button>
             </div>
@@ -41,8 +45,10 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 const movies = ref([]);
+const router = useRouter();
 
 const loadMovies = async () => {
   const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/`;
@@ -53,6 +59,16 @@ const loadMovies = async () => {
     console.error('無法獲取電影數據：', error);
   }
 };
+
+const goToSelectMovie = (movie) => {
+  router.push({
+    name: 'SelectMovie',
+    params: {
+      movieId: movie.movieId,
+    },
+  });
+};
+
 loadMovies();
 </script>
 
