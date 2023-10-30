@@ -43,13 +43,12 @@ public class ShowTimeManagerService {
 
 	// 新增場次
 	public ShowTime addShowTime(ShowTime showTime) {
-		System.out.println(showTime);
 		showTimeRepository.save(showTime);
 		showTimeRepository.flush();
 		return showTimeRepository.save(showTime);
 	}
 
-	// 新增場次
+	// 新增場次，片長超過規定須格外加價
 	public Optional<ShowTime> convertToEntity(ShowTimeDTO showTimeDTO) {
 		ShowTime showTime = new ShowTime();
 		showTime.setFilmType(showTimeDTO.getFilmType());
@@ -70,6 +69,30 @@ public class ShowTimeManagerService {
 			return Optional.empty();
 		}
 
+	}
+
+	// 電影片長的30分鐘內，不得再新增場次
+	public boolean isShowTimeAvailable(ShowTimeDTO showTimeDTO) {
+		LocalDateTime showDateTime = showTimeDTO.getShowDateAndTime();
+
+		// 獲取電影資訊
+		Optional<Movie> movie = movieRepository.findById(showTimeDTO.getMovieId());
+
+		if (movie.isPresent()) {
+			// 從電影資訊中獲取電影時長
+			int movieDuration = movie.get().getDuration();
+			LocalDateTime showEndTime = showDateTime.plusMinutes(movieDuration); // 計算場次結束時間
+			LocalDateTime bookingEndTime = showEndTime.plusMinutes(30); // 計算允許添加的截止時間
+
+			// 獲取相同roomId的場次
+			List<ShowTime> conflictingShowTimes = showTimeRepository.findConflictingShowTimesByRoomId(showDateTime,
+					bookingEndTime, showTimeDTO.getRoomId());
+
+			return conflictingShowTimes.isEmpty();
+		} else {
+
+			return false;
+		}
 	}
 
 	// 新增多筆場次

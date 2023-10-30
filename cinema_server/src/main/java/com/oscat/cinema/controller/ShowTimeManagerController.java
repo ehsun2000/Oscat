@@ -32,13 +32,18 @@ public class ShowTimeManagerController {
 	@PostMapping("/add")
 	public ResponseEntity<?> addShowTime(@RequestBody ShowTimeDTO showTimeDTO) {
 
-		Optional<ShowTime> optional = stmService.convertToEntity(showTimeDTO);
-		if (optional.isPresent()) {
-			ShowTime createdShowTime = stmService.addShowTime(optional.get());
-			return new ResponseEntity<>(createdShowTime, HttpStatus.OK);
-		}
-		return new ResponseEntity<>("新增失敗", HttpStatus.BAD_REQUEST);
+		if (stmService.isShowTimeAvailable(showTimeDTO)) {
+			Optional<ShowTime> optional = stmService.convertToEntity(showTimeDTO);
 
+			if (optional.isPresent()) {
+				ShowTime createdShowTime = stmService.addShowTime(optional.get());
+				return new ResponseEntity<>(createdShowTime, HttpStatus.OK);
+			}
+			return new ResponseEntity<>("新增失敗", HttpStatus.BAD_REQUEST);
+
+		} else {
+			return new ResponseEntity<>("在片長後30分鐘內已經有其他場次!!", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@PostMapping("/addMore")

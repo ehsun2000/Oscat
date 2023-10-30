@@ -43,5 +43,8 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 			@Param("Price") Double price, @Param("NumberOfShowsToAdd") Integer numberOfShowsToAdd,
 			@Param("Interval") Integer interval);
 
-//	List<Object[]> findShowTimesBetweenDates(LocalDate startDate, LocalDate endDate);
+	@Query("SELECT s FROM ShowTime s " + "WHERE s.showDateAndTime BETWEEN :startDateTime AND :endDateTime "
+			+ "AND s.screeningRoom.roomId = :roomId")
+	List<ShowTime> findConflictingShowTimesByRoomId(@Param("startDateTime") LocalDateTime startDateTime,
+			@Param("endDateTime") LocalDateTime endDateTime, @Param("roomId") Integer roomId);
 }
