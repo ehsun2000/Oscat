@@ -59,7 +59,7 @@ const routes = [
     component: import('@/views/Booking/SelectMovie.vue'),
   },
   {
-    path: '/select-movie/:movieId/ticket',
+    path: '/ticket-type',
     name: 'TicketType',
     component: import('@/views/Booking/TicketType.vue'),
   },
