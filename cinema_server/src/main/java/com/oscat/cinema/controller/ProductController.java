@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -109,6 +107,13 @@ public class ProductController {
 		System.out.println(imgurl);
 		return ResponseEntity.ok(imgurl);
 		
+	}
+	
+	// 用產品類別做模糊查詢
+	@GetMapping("/byType")
+	public ResponseEntity<List<Product>> findProductByType(@RequestParam("type")String productType){
+		List<Product> result = productService.findProductByType(productType);
+		return ResponseEntity.ok(result);
 	}
 	
 }

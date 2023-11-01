@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.oscat.cinema.entity.Product;
 
@@ -20,9 +20,12 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 	//刪除指定名稱的產品
 	public String deleteByProductName(String productName);
 	
-	@Query("from Product p order by p.productType asc")
+//	@Query("from Product p order by p.productType asc")
 	public List<Product>findAll();
 	
 	//查詢產品分頁
 	Page<Product> findAll(Pageable pageable);
+	
+	//用產品類別模糊查詢
+	List<Product>findProductByProductTypeLike(@Param("n")String productType);
 }
