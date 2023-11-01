@@ -65,8 +65,8 @@ public class ScreeningRoomService {
 		return dto;
 	}
 	
-	public List<ScreeningRoomDTO> getAllScreeningRoomById(Integer cinemaId) {
-		List<ScreeningRoom> screeningRooms = screeningroomRepo.findScreeningRoomByCinemaIdOrderById(cinemaId);
+	public List<ScreeningRoomDTO> getAllScreeningRoomById(Integer id) {
+		List<ScreeningRoom> screeningRooms = screeningroomRepo.findScreeningRoomByCinemaIdOrderById(id);
 		return screeningRooms.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 	

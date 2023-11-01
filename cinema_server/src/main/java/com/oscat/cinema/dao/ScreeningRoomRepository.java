@@ -13,5 +13,5 @@ import com.oscat.cinema.entity.ScreeningRoom;
 public interface ScreeningRoomRepository extends JpaRepository<ScreeningRoom, Integer> {
 
 	@Query("SELECT s FROM ScreeningRoom s WHERE s.cinema.cinemaId = :cinemaId ORDER BY s.roomId")
-	List<ScreeningRoom> findScreeningRoomByCinemaIdOrderById(@Param("cinemaId") Integer cinemaId);
+	List<ScreeningRoom> findScreeningRoomByCinemaIdOrderById(@Param("cinemaId") Integer id);
 }
