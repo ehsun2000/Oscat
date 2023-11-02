@@ -128,7 +128,7 @@ export default {
     const navigateToSelectSeats = () => {
       router.push({
         name: 'SelectSeats',
-        params: {
+        query: {
           movieName: movieName.value,
           cinemaName: cinemaName.value,
           screenRoomName: screenRoomName.value,

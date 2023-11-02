@@ -12,15 +12,26 @@
     <div id="result" class="scrollable-container">
       <div class="seats-container" :style="gridStyle">
         <div v-for="seat in seats" :key="seat.seatId">
-          <button @click="toggleSeatStatus(seat)" class="seat-button">
-            <i v-if="seat.tempStatus === 'Normal'" class="bi bi-box2"></i>
-            <i v-else disable class="bi bi-box2-fill"></i><br />
+          <button
+            @click="toggleSeatStatus(seat)"
+            class="seat-button"
+            :disabled="seat.tempStatus == 'Maintenance'"
+          >
+            <i
+              v-if="seat.tempStatus === 'Maintenance'"
+              class="bi bi-box2-fill"
+            ></i>
+            <i
+              v-else-if="seat.tempStatus === 'Selected'"
+              class="bi bi-box2-fill"
+            ></i>
+            <i v-else class="bi bi-box2"></i><br />
             {{ seat.seatName }}
           </button>
         </div>
       </div>
     </div>
-    可選座位數：{{ totalTicketCount }} 總價：{{ totalPrice }}
+    可選座位數：{{ remainingSeats }} 總價：{{ totalPrice }}
   </div>
 </template>
 
@@ -33,19 +44,20 @@ export default {
     const route = useRoute();
 
     const seats = ref([]);
-    const movieName = ref(route.params.movieName);
-    const cinemaName = ref(route.params.cinemaName);
-    const screenRoomName = ref(route.params.screenRoomName);
-    const filmType = ref(route.params.filmType);
-    const showDateAndTime = ref(route.params.showDateAndTime);
-    const totalPrice = ref(route.params.totalPrice);
-    const totalTicketCount = ref(route.params.totalTicketCount);
-    const showtimeId = ref(route.params.showtimeId);
+    const movieName = ref(route.query.movieName);
+    const cinemaName = ref(route.query.cinemaName);
+    const screenRoomName = ref(route.query.screenRoomName);
+    const filmType = ref(route.query.filmType);
+    const showDateAndTime = ref(route.query.showDateAndTime);
+    const totalPrice = ref(route.query.totalPrice);
+    const totalTicketCount = ref(route.query.totalTicketCount);
+    const showtimeId = ref(route.query.showtimeId);
     const roomId = ref(null);
     const showSeats = ref(false);
     const showButtons = ref(false);
     const message = ref('');
     const messageType = ref('');
+    const selectedSeatsCount = ref(0);
 
     const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
 
@@ -104,8 +116,21 @@ export default {
     };
 
     const toggleSeatStatus = (seat) => {
-      seat.tempStatus = seat.tempStatus === 'Normal' ? 'Maintenance' : 'Normal';
+      if (
+        seat.tempStatus === 'Normal' &&
+        selectedSeatsCount.value < totalTicketCount.value
+      ) {
+        seat.tempStatus = 'Selected';
+        selectedSeatsCount.value++;
+      } else if (seat.tempStatus === 'Selected') {
+        seat.tempStatus = 'Normal';
+        selectedSeatsCount.value--;
+      }
     };
+
+    const remainingSeats = computed(() => {
+      return totalTicketCount.value - selectedSeatsCount.value;
+    });
 
     const maxSeatsPerRow = computed(() => {
       let maxSeats = 0;
@@ -149,6 +174,7 @@ export default {
       totalPrice,
       totalTicketCount,
       showtimeId,
+      remainingSeats,
     };
   },
 };
