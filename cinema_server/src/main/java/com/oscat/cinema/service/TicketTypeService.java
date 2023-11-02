@@ -42,11 +42,11 @@ public class TicketTypeService {
 	
 	// 刪除
 	public boolean deleteTicketType(Integer ticketTypeId) {
-	    // 检查票种是否存在
+	    // 檢查票種是否存在
 	    Optional<TicketType> optionalTicketType = tickettypeRepo.findById(ticketTypeId);
 
 	    if (optionalTicketType.isPresent()) {
-	        // 删除票种
+	        // 删除票種
 	    	tickettypeRepo.deleteById(ticketTypeId);
 	        return true;
 	    }
