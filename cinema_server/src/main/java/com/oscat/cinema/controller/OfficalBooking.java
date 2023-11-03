@@ -2,14 +2,18 @@ package com.oscat.cinema.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,13 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.oscat.cinema.dao.MovieRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.dto.MovieDTO;
+import com.oscat.cinema.dto.OrderDTO;
 import com.oscat.cinema.dto.ScreeningRoomDTO;
 import com.oscat.cinema.dto.SeatDTO;
 import com.oscat.cinema.dto.TicketTypeDTO;
 import com.oscat.cinema.entity.Movie;
+import com.oscat.cinema.entity.Seat;
 import com.oscat.cinema.entity.ShowTime;
+import com.oscat.cinema.entity.Ticket;
 import com.oscat.cinema.service.BookingService;
 import com.oscat.cinema.service.MovieService;
+import com.oscat.cinema.service.OrderService;
 import com.oscat.cinema.service.ScreeningRoomService;
 import com.oscat.cinema.service.SeatService;
 import com.oscat.cinema.service.ShowTimeManagerService;
@@ -47,6 +55,8 @@ public class OfficalBooking {
 	private SeatService seatService;
 	@Autowired
 	private ScreeningRoomService srService;
+    @Autowired
+    private OrderService orderService;
 	
 	@GetMapping("/allCinema")
 	public ResponseEntity<List<CinemaDTO>> getCinemaIdAndName() {
@@ -87,13 +97,52 @@ public class OfficalBooking {
 	}
 	
 	@GetMapping("/find/{showTimeId}")
-	public Optional<ShowTime> findShowTimeById(@PathVariable UUID showTimeId) {
-		return stmService.findShowTimeById(showTimeId);
+	public ResponseEntity<Map<String, Object>> findShowTimeById(@PathVariable UUID showTimeId) {
+	    Optional<ShowTime> optionalShowTime = stmService.findShowTimeById(showTimeId);
+	    if (optionalShowTime.isPresent()) {
+	        ShowTime showTime = optionalShowTime.get();
+	        Integer roomId = showTime.getScreeningRoom().getRoomId(); // 取得roomId
+
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("showTimeId", showTime.getShowTimeId());
+	        response.put("filmType", showTime.getFilmType());
+	        response.put("extraFee", showTime.getExtraFee());
+	        response.put("showDateAndTime", showTime.getShowDateAndTime());
+	        response.put("roomId", roomId);  // 加入roomId
+	        response.put("transOrders", showTime.getTransOrders());
+
+	        return ResponseEntity.ok(response);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
 	}
 	
 	@GetMapping("/findAllSeatByRoomId")
 	public List<SeatDTO> getSeatsByRoomId(@RequestParam Integer roomId) {
 		return seatService.getAllSeatsByRoomIdSortedByName(roomId);
 	}
+	
+	@GetMapping("/showtime/{showtimeId}/seatIds")
+	public ResponseEntity<List<UUID>> getSeatIdsByShowtimeId(@PathVariable String showtimeId) {
+	    UUID uuid = UUID.fromString(showtimeId);
+	    List<Ticket> tickets = bookingService.getTicketsByShowtimeId(uuid);
+	    
+	    List<UUID> seatIds = tickets.stream()
+	        .map(Ticket::getSeat)
+	        .map(Seat::getSeatId)
+	        .collect(Collectors.toList());
+	    
+	    return new ResponseEntity<>(seatIds, HttpStatus.OK);
+	}
+	
+    @PostMapping("/booking")
+    public ResponseEntity<String> createOrder(@RequestBody OrderDTO orderDTO) {
+        try {
+            orderService.createOrder(orderDTO);
+            return new ResponseEntity<>("Order created successfully.", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error creating order: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

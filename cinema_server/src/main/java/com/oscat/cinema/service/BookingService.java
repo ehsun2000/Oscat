@@ -5,10 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,10 +16,12 @@ import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.CinemaRepository;
 import com.oscat.cinema.dao.ShowTimeRepository;
+import com.oscat.cinema.dao.TicketRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.dto.SearchShowDateForBook;
 import com.oscat.cinema.dto.TicketTypeDTO;
+import com.oscat.cinema.entity.Ticket;
 
 @Service
 public class BookingService {
@@ -28,14 +29,17 @@ public class BookingService {
 	private CinemaRepository cinemaRepository;
 	private ShowTimeRepository showTimeRepository;
 	private TicketTypeRepository ticketTypeRepository;
+    private TicketRepository ticketRepository;
 
 	@Autowired
 	public BookingService(CinemaRepository cinemaRepository, 
 						ShowTimeRepository showTimeRepository,
-						TicketTypeRepository ticketTypeRepository) {
+						TicketTypeRepository ticketTypeRepository,
+						TicketRepository ticketRepository) {
 		this.cinemaRepository = cinemaRepository;
 		this.showTimeRepository = showTimeRepository;
 		this.ticketTypeRepository = ticketTypeRepository;
+		this.ticketRepository = ticketRepository;
 	}
 
 	public List<SearchCinemaForBook> findCinemas(UUID movieId) {
@@ -90,5 +94,9 @@ public class BookingService {
 
 	    return ticketTypeList;
 	}
+	
+    public List<Ticket> getTicketsByShowtimeId(UUID showTimeId) {
+        return ticketRepository.findByTransOrder_ShowTime_ShowTimeId(showTimeId);
+    }
 
 }
