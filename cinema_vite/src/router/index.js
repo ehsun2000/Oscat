@@ -68,6 +68,12 @@ const routes = [
     name: 'SelectSeats',
     component: import('@/views/Booking/SelectSeats.vue'),
   },
+  {
+    path: '/book-checkout',
+    name: 'BookCheckout',
+    component: import('@/views/Booking/BookCheckout.vue'),
+    props: true,
+  },
 ];
 
 const router = createRouter({

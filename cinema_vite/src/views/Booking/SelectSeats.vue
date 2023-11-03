@@ -15,7 +15,9 @@
           <button
             @click="toggleSeatStatus(seat)"
             class="seat-button"
-            :disabled="seat.tempStatus == 'Maintenance'"
+            :disabled="
+              seat.tempStatus == 'Maintenance' || seat.tempStatus == 'Booked'
+            "
           >
             <i
               v-if="seat.tempStatus === 'Maintenance'"
@@ -25,23 +27,29 @@
               v-else-if="seat.tempStatus === 'Selected'"
               class="bi bi-box2-fill"
             ></i>
+            <i
+              v-else-if="seat.tempStatus === 'Booked'"
+              class="bi bi-box2-fill"
+            ></i>
             <i v-else class="bi bi-box2"></i><br />
             {{ seat.seatName }}
           </button>
         </div>
       </div>
     </div>
-    可選座位數：{{ remainingSeats }} 總價：{{ totalPrice }}
+    可選座位數：{{ remainingSeats }} 總價：{{ totalPrice }}<br />
+    <button @click="goToCheckout">下一步-結帳</button>
   </div>
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   setup() {
     const route = useRoute();
+    const router = useRouter();
 
     const seats = ref([]);
     const movieName = ref(route.query.movieName);
@@ -58,13 +66,15 @@ export default {
     const message = ref('');
     const messageType = ref('');
     const selectedSeatsCount = ref(0);
+    const bookedSeatIds = ref([]);
+    const selectedSeats = ref([]);
 
     const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
 
     const getShowtimeDetails = async () => {
       try {
         const response = await fetch(
-          `${api}/showtime/find/${showtimeId.value}`,
+          `${api}/offical/find/${showtimeId.value}`,
           {
             credentials: 'include',
           },
@@ -96,7 +106,7 @@ export default {
           const data = await response.json();
           seats.value = data.map((seat) => ({
             ...seat,
-            tempStatus: seat.seatStatus,
+            tempStatus: seat.seatStatus || 'Normal', // 確保每個seat都有tempStatus屬性
           }));
           if (seats.value.length > 0) {
             showSeats.value = true;
@@ -113,6 +123,37 @@ export default {
         message.value = '請求失敗：' + error.message;
         messageType.value = 'error';
       }
+      await fetchBookedSeats();
+    };
+
+    const fetchBookedSeats = async () => {
+      try {
+        const response = await fetch(
+          `${api}/offical/showtime/${showtimeId.value}/seatIds`,
+          {
+            credentials: 'include',
+          },
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            bookedSeatIds.value = data;
+          } else {
+            console.error('從API返回的數據不是數組:', data);
+          }
+        } else {
+          console.error('請求預訂的座位ID失敗:', response.statusText);
+        }
+      } catch (error) {
+        console.error('請求預訂的座位ID時出錯:', error.message);
+      }
+      if (bookedSeatIds.value.length > 0) {
+        seats.value.forEach((seat) => {
+          if (bookedSeatIds.value.includes(seat.seatId)) {
+            seat.tempStatus = 'Booked';
+          }
+        });
+      }
     };
 
     const toggleSeatStatus = (seat) => {
@@ -121,9 +162,16 @@ export default {
         selectedSeatsCount.value < totalTicketCount.value
       ) {
         seat.tempStatus = 'Selected';
+        selectedSeats.value.push(seat); // 添加選中的座位到 selectedSeats 陣列
         selectedSeatsCount.value++;
       } else if (seat.tempStatus === 'Selected') {
         seat.tempStatus = 'Normal';
+        const index = selectedSeats.value.findIndex(
+          (s) => s.seatId === seat.seatId,
+        );
+        if (index !== -1) {
+          selectedSeats.value.splice(index, 1); // 從 selectedSeats 陣列中移除座位
+        }
         selectedSeatsCount.value--;
       }
     };
@@ -156,10 +204,44 @@ export default {
       };
     });
 
+    const selectedTickets = {};
+    Object.keys(route.query).forEach((key) => {
+      if (key.startsWith('ticket_')) {
+        const typeId = key.split('_')[1];
+        selectedTickets[typeId] = route.query[key];
+      }
+    });
+
     onMounted(async () => {
       await getShowtimeDetails();
       await getSeatStatus();
     });
+
+    const goToCheckout = () => {
+      let ticketQueryParams = {};
+      Object.entries(selectedTickets).forEach(([typeId, count]) => {
+        ticketQueryParams[`ticket_${typeId}`] = count;
+      });
+
+      const selectedSeatNames = selectedSeats.value
+        .map((seat) => seat.seatName)
+        .join(',');
+
+      router.push({
+        name: 'BookCheckout',
+        query: {
+          ...ticketQueryParams,
+          movieName: movieName.value,
+          cinemaName: cinemaName.value,
+          screenRoomName: screenRoomName.value,
+          filmType: filmType.value,
+          showDateAndTime: showDateAndTime.value,
+          totalPrice: totalPrice.value,
+          selectedSeatNames: selectedSeatNames,
+          showtimeId: showtimeId.value,
+        },
+      });
+    };
 
     return {
       seats,
@@ -175,6 +257,9 @@ export default {
       totalTicketCount,
       showtimeId,
       remainingSeats,
+      goToCheckout,
+      selectedSeats,
+      selectedTickets,
     };
   },
 };

@@ -126,9 +126,19 @@ export default {
     };
 
     const navigateToSelectSeats = () => {
+      const selectedTicketsQuery = Object.entries(ticketCounts.value).reduce(
+        (acc, [typeId, count]) => {
+          if (count > 0) {
+            return { ...acc, [`ticket_${typeId}`]: count };
+          }
+          return acc;
+        },
+        {},
+      );
       router.push({
         name: 'SelectSeats',
         query: {
+          ...selectedTicketsQuery,
           movieName: movieName.value,
           cinemaName: cinemaName.value,
           screenRoomName: screenRoomName.value,
