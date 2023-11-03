@@ -1,8 +1,11 @@
 package com.oscat.cinema.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,6 +51,11 @@ public class FacilityController {
 		} else {
 			return ResponseEntity.badRequest().body("刪除失敗");
 		}
+	}
+
+	@GetMapping("/all")
+	public List<Facility> getAllFacilities() {
+		return facilityService.getAllFacilities();
 	}
 
 }

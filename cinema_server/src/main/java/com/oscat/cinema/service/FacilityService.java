@@ -1,5 +1,6 @@
 package com.oscat.cinema.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,11 @@ public class FacilityService {
 			return true;
 		}
 		return false;
+	}
+
+	// 找全部
+	public List<Facility> getAllFacilities() {
+		return facilityRepo.findAll();
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.oscat.cinema.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,46 +15,47 @@ public class TicketTypeService {
 	@Autowired
 	private TicketTypeRepository tickettypeRepo;
 
-	
 	// 新增
 	public TicketType createTicketType(TicketType ticketType) {
 		return tickettypeRepo.save(ticketType);
 	}
-	
-	
+
 	// 更新
 	public boolean updateTicketType(TicketType updatedTicketType) {
-	    // 根據票種ID查找現有的票種資料
-	    TicketType existingTicketType = tickettypeRepo.findById(updatedTicketType.getTicketTypeId()).orElse(null);
+		// 根據票種ID查找現有的票種資料
+		TicketType existingTicketType = tickettypeRepo.findById(updatedTicketType.getTicketTypeId()).orElse(null);
 
-	    if (existingTicketType != null) {
-	        // 更新票種資訊
-	        existingTicketType.setTicketTypeName(updatedTicketType.getTicketTypeName());
-	        existingTicketType.setPriceDifference(updatedTicketType.getPriceDifference());
+		if (existingTicketType != null) {
+			// 更新票種資訊
+			existingTicketType.setTicketTypeName(updatedTicketType.getTicketTypeName());
+			existingTicketType.setPriceDifference(updatedTicketType.getPriceDifference());
 
-	        // 保存更新後的票種訊息
-	        tickettypeRepo.save(existingTicketType);
+			// 保存更新後的票種訊息
+			tickettypeRepo.save(existingTicketType);
 
-	        return true;
-	    }
+			return true;
+		}
 
-	    return false;
+		return false;
 	}
-	
+
 	// 刪除
 	public boolean deleteTicketType(Integer ticketTypeId) {
-	    // 檢查票種是否存在
-	    Optional<TicketType> optionalTicketType = tickettypeRepo.findById(ticketTypeId);
+		// 檢查票種是否存在
+		Optional<TicketType> optionalTicketType = tickettypeRepo.findById(ticketTypeId);
 
-	    if (optionalTicketType.isPresent()) {
-	        // 删除票種
-	    	tickettypeRepo.deleteById(ticketTypeId);
-	        return true;
-	    }
+		if (optionalTicketType.isPresent()) {
+			// 删除票種
+			tickettypeRepo.deleteById(ticketTypeId);
+			return true;
+		}
 
-	    return false;
+		return false;
 	}
 
-
+	// 找全部
+	public List<TicketType> getAllTicketTypes() {
+		return tickettypeRepo.findAll();
+	}
 
 }
