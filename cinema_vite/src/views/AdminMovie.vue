@@ -1,13 +1,11 @@
 <template>
-  <div class="roll">
-    <div class="box"></div>
+  <div class="container">
     <h2>電影管理</h2>
-    <RouterLink class="btn btn-outline-success" to="/movie/add"
+    <RouterLink class="mb-3 btn btn-success" to="/movie/add"
       ><i class="bi bi-plus"></i> 新增</RouterLink
     >
     <div class="row mb-3">
-      <div class="col-6"></div>
-      <div class="col-5">
+      <div class="col-4">
         <SearchTextMovie
           v-model="datas.movieName"
           @searchInput="inputHandler"
@@ -66,7 +64,6 @@
           </button>
         </div>
       </div>
-
       <PageVue
         :totalPages="totalPages"
         :thePage="currentPage"

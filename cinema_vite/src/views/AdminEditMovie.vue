@@ -2,20 +2,58 @@
   <div class="container">
     <div class="roll">
       <div class="box"></div>
-      <form @submit="updateHandler">
+      <form @submit.prevent="updateHandler">
         <div class="row">
           <div class="article">
             <div class="col-3">
-              <img
-                :src="movie.posterImage"
-                :alt="movie.movieName"
-                :title="movie.movieName"
-                class="img"
-              />
+              <div class="card" style="width: 18rem">
+                <img
+                  :src="movie.posterImage"
+                  class="card-img-top"
+                  :alt="movie.movieName"
+                  :title="movie.movieName"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">電影海報</h5>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    @click="addPosterLink"
+                  >
+                    修改
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm mx-2"
+                    @click="viewPoster"
+                  >
+                    檢視
+                  </button>
+                </div>
+              </div>
             </div>
-            <div v-for="(movieStill, index) in movie.movieStills" :key="index">
-              {{ index + 1 }}
-              <img :src="movieStill.stillImageUrl" alt="" class="movieStill" />
+
+            <div
+              v-for="(movieStill, index) in movie.movieStills"
+              :key="index"
+              class="card"
+              style="width: 18rem"
+            >
+              <img
+                :src="movieStill.stillImageUrl"
+                class="card-img-top"
+                :alt="movie.movieName"
+              />
+              <div class="card-body">
+                <h5 class="card-title">({{ index + 1 }}) 宣傳照</h5>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="viewStills(index)"
+                >
+                  檢視
+                </button>
+              </div>
             </div>
           </div>
           <div class="col-6">
@@ -27,7 +65,6 @@
                 id="movieName"
                 v-model="movie.movieName"
               />
-
               <div class="mb-3">
                 <label for="movieType" class="form-label">電影類型</label>
                 <input
@@ -134,7 +171,7 @@
                 </button>
                 <input
                   type="text"
-                  class="form-control"
+                  class="mb-2 form-control"
                   id="posterImage"
                   v-model="movie.posterImage"
                 />
@@ -168,8 +205,7 @@
                     :key="still.stillId"
                   >
                     <td>
-                      {{ index + 1
-                      }}<input
+                      <input
                         class="form-control"
                         v-model="movie.movieStills[index].stillImageUrl"
                         rows="4"
@@ -186,10 +222,10 @@
                   </tr>
                 </tbody>
               </table>
-              <button class="btn btn-secondary mx-2" type="submit">修改</button
+              <button class="btn btn-secondary" type="submit">修改</button
               ><button
                 type="button"
-                class="btn btn-primary"
+                class="btn btn-primary mx-2"
                 @click="previousPage"
               >
                 返回
@@ -218,14 +254,38 @@ const previousPage = () => {
   history.back();
 };
 
+// 檢視圖片
+const viewPoster = () => {
+  Swal.fire({
+    imageUrl: movie.value.posterImage,
+    imageWidth: 400,
+    imageHeight: 600,
+  });
+};
+
+const viewStills = (index) => {
+  Swal.fire({
+    imageUrl: movie.value.movieStills[index].stillImageUrl,
+    imageWidth: 450,
+    imageHeight: 250,
+  });
+};
+
 // 刪除圖片url
 const removePoster = () => {
-  movie.value.posterImage = '';
+  if (confirm('真的要刪除嗎?')) {
+    movie.value.posterImage = '';
+  } else {
+    return false;
+  }
 };
 
 const removeStillsLink = (index) => {
   if (confirm('真的要刪除嗎?')) {
     movie.value.movieStills.splice(index, 1);
+  } else {
+    index.preventDefault();
+    return false;
   }
 };
 
@@ -253,14 +313,10 @@ const addPosterLink = async () => {
           import.meta.env.VITE_OSCAT_API_ENDPOINT
         }/movie/upload`;
         console.log(URLAPI);
-        // console.log(imageUpload);
         const formData = new FormData();
         formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
         const response = await axios.post(URLAPI, formData); //上傳到cloudinary
-        console.log(response);
-        console.log(formData);
         const imageURL = response.data; //獲得圖片URL
-        console.log(imageURL);
         movie.value.posterImage = imageURL; //更新海報圖片URL
       }
     },
@@ -287,7 +343,6 @@ const addStillsLink = async () => {
         const imageURL = response.data;
         const newStillsObject = { stillImageUrl: imageURL }; //把連結加到movie.movieStills
         movie.value.movieStills.push(newStillsObject);
-        // movie.value.movieStills.splice(0, 0, newStillsObject);
       }
     },
   });
@@ -299,7 +354,6 @@ const updateHandler = async (e) => {
   const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/update/${id}`;
   console.log(movie.value);
   const movieData = { ...movie.value }; // 獲得實際的物件值
-  // console.log(movieData);
   e.preventDefault();
   try {
     const response = await axios.put(url, movieData);
@@ -328,7 +382,7 @@ loadData();
 }
 
 .article {
-  width: 50%;
+  width: 30%;
   float: right;
 }
 </style>

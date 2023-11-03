@@ -22,10 +22,12 @@ public class MovieService {
 	@Autowired
 	private MovieRepository movRepo;
 
+	// 查詢所有電影
 	public List<Movie> getAllMovies() {
 		return movRepo.findAll();
 	}
 
+	// 新增電影
 	public Movie saveMovie(Movie movie) {
 		Movie addMovie = new Movie();
 		addMovie.setMovieName(movie.getMovieName());
@@ -52,16 +54,7 @@ public class MovieService {
 		return movRepo.save(addMovie);
 	}
 
-	// 未完成
-//	public Movie addMovie(Movie movie) {
-//
-//		if (movie.getMovieName() == null || movie.getMovieName().isEmpty()) {
-//			throw new IllegalArgumentException("Movie name cannot be empty.");
-//		}
-//
-//		return movRepo.save(movie);
-//	}
-
+	// 根據 id 查詢所有電影
 	public Movie getMovieById(UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
 		Movie movie = null;
@@ -73,6 +66,7 @@ public class MovieService {
 		return movie;
 	}
 
+	// 根據名字查詢電影
 	public Movie getMovieByName(String movieName) {
 		Optional<Movie> optional = movRepo.findBymovieName(movieName);
 
@@ -80,11 +74,12 @@ public class MovieService {
 		if (optional.isPresent()) {
 			movie = optional.get();
 		} else {
-			throw new RuntimeException("Movie not found for name ::" + movieName);
+			throw new RuntimeException("Movie not found for name :" + movieName);
 		}
 		return movie;
 	}
 
+	// 根據 id 刪除電影
 	public String deleteMovie(UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
 		if(optional.isPresent()) {
@@ -94,6 +89,7 @@ public class MovieService {
 		return "沒有這筆資料";
 	}
 
+	// 修改電影
 	public Optional<Movie> updateMovie(UUID movieId, MovieDTO movieDTO) {
 	    Optional<Movie> optional = movRepo.findById(movieId);
 	    if (optional.isPresent()) {
@@ -127,6 +123,7 @@ public class MovieService {
 	    return Optional.empty();
 	}
 	
+	// 修改電影狀態
 	public boolean updateStatusById(String movieStatus, UUID movieId) {
 	 	Integer result = movRepo.updateStatuseById(movieStatus, movieId);
 	 	return result > 0;

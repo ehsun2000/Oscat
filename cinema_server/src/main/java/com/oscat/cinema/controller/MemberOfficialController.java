@@ -5,10 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,17 +24,22 @@ import com.oscat.cinema.dto.LoginDto;
 
 import com.oscat.cinema.entity.Member;
 import com.oscat.cinema.service.impl.MemberService;
+import com.oscat.cinema.util.JWTUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/official/member")
 public class MemberOfficialController {
 
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+	private JWTUtil jwtUtil;
 
 //	@Autowired
 //	private MemberValidator memberValidator;
@@ -69,25 +78,17 @@ public class MemberOfficialController {
 		}
 	}
 	
-//	public boolean checkEmailExists() {
-//		
-//	}
-
-//	@PostMapping("/member/login")
-//	public ResponseEntity<String> login(@RequestParam("email") String email, @RequestParam("password") String password, HttpSession session) {
-//		Member loginMember = memberService.checkLogin(email, password);
-//		if (loginMember != null) {
-//			session.setAttribute("loginMember", loginMember);
-//			List<String> list = new ArrayList<>();
-//			list.add(session.getId());
-//			list.add(loginMember.getMemberName());
-//			ApiResponse<List<String>> successResponse = new ApiResponse<>("success", "登入成功", list);
-//			return ResponseEntity.ok("登入成功");
-//		} else {
-//			ApiResponse<List<String>> errorResponse = new ApiResponse<>("error", "帳號密碼錯誤", null);
-//			return ResponseEntity.badRequest().body("登入失敗");
-//		}
-//	}
+	// 確認 email 是否已經存在
+	@PostMapping("/check")
+	public ResponseEntity<String> checkEmailExists(@RequestBody String request) throws JSONException {
+		JSONObject json = new JSONObject(request);
+		String email = json.getString("email");
+		Member member = memberService.findByEmail(email);
+		if(member != null) {
+			return ResponseEntity.badRequest().body("email已經被註冊");
+		}
+		return ResponseEntity.ok("email沒有註冊過");
+	}
 	
 	// 會員登入
 	@PostMapping("/login")
@@ -99,13 +100,23 @@ public class MemberOfficialController {
 	    
 	    if (loggedInMember != null) {
 	        session.setAttribute("loggedInMember", loggedInMember);
-	        return ResponseEntity.ok("登入成功");
+	        return ResponseEntity.ok("登入成功"); //登入成功 再多一個api getsessionS
 	    }
 	    return ResponseEntity.badRequest().body("登入失敗");
 	}
 
+	// 查詢會員資料
+	@PostMapping("/find")
+	public ResponseEntity<?> findMember(HttpSession session){
+		Member member = (Member) session.getAttribute("loggedInMember");
+		if(member != null) {
+			return ResponseEntity.ok(member);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("找不到會員");
+	}
+	
 	// 會員修改
-	@PutMapping("/userUpdate")
+	@PutMapping("/update")
 	public ResponseEntity<ApiResponse<?>> updateUser(@Valid @RequestBody Member newMember, BindingResult result,
 			HttpSession session) {
 
@@ -147,5 +158,13 @@ public class MemberOfficialController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 		}
 	}
-
+	
+	// 會員登出
+	@PostMapping("/logout")
+	public ResponseEntity<String>  logout(HttpServletRequest request) {
+	    HttpSession session = request.getSession();
+	    session.removeAttribute("loginMember");
+//	    session.invalidate();
+	    return ResponseEntity.ok("登出");
+	}    
 }

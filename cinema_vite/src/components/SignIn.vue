@@ -31,10 +31,8 @@
     </div>
     <div class="text-start my-3">
       <RouterLink :to="'/forgotPwd'">
-        <button class="btn-text-only" role="button">
-          忘記密碼
-        </button></RouterLink
-      >
+        <button class="btn-text-only" role="button">忘記密碼</button>
+      </RouterLink>
     </div>
     <button class="btn btn-primary w-100 py-2" type="submit" @click="signin">
       登入
@@ -76,13 +74,16 @@ const checkPwdBlur = () => {
 // 登入
 const signin = async () => {
   try {
-    const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/member/login`;
+    const url = `${
+      import.meta.env.VITE_OSCAT_API_ENDPOINT
+    }/official/member/login`;
     const response = await axios.post(url, {
       email: email.value,
       password: password.value,
     });
-    console.log(response);
+    console.log(response.data);
     if (response.status === 200) {
+      sessionStorage.setItem('isLogin', 'true');
       await Swal.fire({
         title: '登入成功',
         icon: 'success',
@@ -90,7 +91,12 @@ const signin = async () => {
         showConfirmButton: false,
       });
       // 導到首頁
-      router.push('/');
+      if (sessionStorage.getItem('isLogin') === 'true') {
+        router.push('/');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1);
+      }
     } else {
       await Swal.fire({
         title: '登入失敗',
@@ -119,6 +125,7 @@ const signin = async () => {
   color: inherit;
   text-decoration: none;
 }
+
 .btn-text-only:focus,
 .btn-text-only:hover {
   background-color: transparent;

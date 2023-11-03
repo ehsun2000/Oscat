@@ -81,7 +81,7 @@ public class MovieController {
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
-	// 根據id查詢電影
+	// 根據 id 查詢電影
 	@GetMapping("/{movieId}")
 	public ResponseEntity<?> findById(@PathVariable UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
@@ -105,13 +105,13 @@ public class MovieController {
 		return movieService.getMovieShowing();
 	}
 
-	// 根據id刪除電影
+	// 根據 id 刪除電影
 	@DeleteMapping("/delete/{movieId}")
 	public String deleteMovieById(@PathVariable UUID movieId) {
 		return movieService.deleteMovie(movieId);
 	}
 
-	// 根據id修改電影
+	// 根據 id 修改電影
 	@Transactional
 	@PutMapping("/update/{movieId}")
 	public String updateMovieById(@PathVariable UUID movieId, @RequestBody MovieDTO newMovieDTO) {

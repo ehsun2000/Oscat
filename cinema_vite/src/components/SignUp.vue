@@ -3,7 +3,7 @@
     <div class="card">
       <h5 class="card-header">註冊會員</h5>
       <div class="card-body">
-        <form class="needs-validation" novalidate>
+        <form class="needs-validation" @submit.prevent="onSubmit">
           <div class="row g-3">
             <div class="col-sm-6">
               <label for="memberName" class="form-label">姓名</label>
@@ -62,7 +62,7 @@
               <div class="input-group has-validation">
                 <input
                   type="password"
-                  class="form-control"
+                  class="mb-2 form-control"
                   id="password"
                   aria-describedby="inputGroupPrepend"
                   :class="{ 'is-invalid': pwdError }"
@@ -80,7 +80,7 @@
                 <label for="birthDate" class="form-label">生日</label>
                 <input
                   type="date"
-                  class="form-control"
+                  class="mb-2 form-control"
                   id="birthDate"
                   v-model="member.birthDate"
                   required
@@ -135,9 +135,19 @@
 
 <script setup>
 import Member from '@/models/member.js';
+import axios from 'axios';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const member = ref(Member);
+const router = useRouter();
+
+// 防止表單預設提交
+const onSubmit = (event) => {
+  event.preventDefault(); // 防止表單預設提交行為
+  register();
+};
 
 // 驗證姓名
 const nameError = ref(false);
@@ -186,14 +196,16 @@ const checkPhone = () => {
   }
 };
 
-// 驗證 email 確認信箱是否重複
+// 驗證 email
 const emailError = ref(false);
 const emailErrMsg = ref('');
 
-const checkEmailBlur = () => {
+const checkEmailBlur = async () => {
   if (!member.value.email) {
     emailError.value = true;
     emailErrMsg.value = '不可空白，請輸入信箱';
+  } else {
+    await checkEmailRepeat(); // 驗證 email 是否已存在
   }
 };
 
@@ -211,27 +223,27 @@ const checkEmail = () => {
   }
 };
 
-// const emailExists = ref(false);
+// 驗證 email 是否重複
+const emailExists = ref(false);
 
-// const checkEmailRepeat = async () => {
-//   const checkEmail_url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT
-//     }/member/add/${member.value.email}`;
-//   try {
-//     const response = await axios.get(checkEmail_url);
-
-//     if (response.data == 'Y') {
-//       emailExists.value = true;
-//       emailErrMsg.value = '該信箱已被註冊';
-//     } else {
-//       emailExists.value = false;
-//       emailErrMsg.value = '';
-//     }
-//   } catch (error) {
-//     emailExists.value = true;
-//     emailErrMsg.value = '該信箱已被註冊';
-//     throw error;
-//   }
-// };
+const checkEmailRepeat = async () => {
+  const url = `${
+    import.meta.env.VITE_OSCAT_API_ENDPOINT
+  }/official/member/check`;
+  try {
+    const response = await axios.post(url, { email: member.value.email });
+    // console.log(member.value.email);
+    // console.log(response);
+    if (response.status === 200) {
+      emailExists.value = false;
+      emailErrMsg.value = '';
+    }
+  } catch (error) {
+    emailExists.value = true;
+    emailErrMsg.value = '該信箱已被註冊';
+    // console.log(error);
+  }
+};
 
 // 驗證密碼
 const pwdError = ref(false);
@@ -260,6 +272,44 @@ const checkPwd = () => {
     pwdErrMsg.value = '';
   }
 };
+
+// 註冊會員
+const register = async () => {
+  await checkEmailRepeat();
+  if (emailExists.value) {
+    alert('新增失敗 - 該信箱已被註冊');
+    return; // 不提交表單
+  }
+  try {
+    const url = `${
+      import.meta.env.VITE_OSCAT_API_ENDPOINT
+    }/official/member/register`;
+    const response = await axios.post(url, member.value);
+    if (response.status === 200) {
+      await Swal.fire({
+        title: '註冊成功',
+        icon: 'success',
+        timer: 1500, // 1.5秒後關閉畫面
+        showConfirmButton: false,
+      });
+      // 導到首頁
+      router.push('/');
+    } else {
+      await Swal.fire({
+        title: '註冊失敗',
+        text: '請檢查輸入格式',
+        icon: 'error',
+      });
+    }
+  } catch (error) {
+    console.error('註冊出錯：', error);
+  }
+};
+
+const restart = () => {
+  member.value = ref(Member);
+};
+restart();
 </script>
 
 <style scoped>

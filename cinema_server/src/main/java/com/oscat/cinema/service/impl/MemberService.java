@@ -39,6 +39,12 @@ public class MemberService implements IMemberService {
 		member.setPassword(encodedPwd);
 		return memberRepo.save(member);
 	}
+	
+	// 加密
+	@Transactional
+	public String encodePassword(String password) {
+		return pwdEncoder.encode(password);
+	}
 
 	// 確認email是否存在
 	public boolean checkIfEmailExist(String email) {
