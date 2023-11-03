@@ -28,8 +28,8 @@ const menus = [
     title: '電影管理',
     icon: 'bi-film', // Bootstrap icon
     items: [
-      { name: '場次設定', path: '/showtime' },
       { name: '電影設定', path: '/movie' },
+      { name: '場次設定', path: '/showtime' },
     ],
   },
   {

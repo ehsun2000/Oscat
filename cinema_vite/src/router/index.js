@@ -38,6 +38,11 @@ const routes = [
         name: 'CinemaDetail',
         component: import('@/views/CinemaDetail.vue'),
       },
+      {
+        path: '/showtime',
+        name: 'ShowTimeManager',
+        component: import('@/views/ShowTimeManager.vue'),
+      },
     ],
   },
 ];
