@@ -207,7 +207,6 @@ const checkEmailBlur = () => {
 };
 
 const checkEmail = () => {
-  console.log(123);
   let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!email.value) {
     emailError.value = true;
@@ -223,21 +222,21 @@ const checkEmail = () => {
 
 // 信箱是否重複
 
+const newEmail = ref('');
+const oldEmail = ref('');
+
 watch(
-  () => email.value,
-  (newEmail, oldEmail) => {
-    console.log(`newEmail:${newEmail}`);
-    console.log(`oldEmail:${oldEmail}`);
+  () => member.value.email,
+  (newValue, oldValue) => {
+    oldEmail.value = oldValue;
+    newEmail.value = newValue;
   },
 );
-
-const newEmail = ref('newEmail');
-const oldEmail = ref('oldEmail');
 
 const emailExists = ref(false);
 
 const checkEmailRepeat = async () => {
-  if ((oldEmail.value !== null) | (newEmail.value !== oldEmail.value)) {
+  if (oldEmail.value && newEmail.value !== oldEmail.value) {
     const checkEmail_url = `${
       import.meta.env.VITE_OSCAT_API_ENDPOINT
     }/member/add/${member.value.email}`;
@@ -347,4 +346,3 @@ h2 {
   margin-right: 20px;
 }
 </style>
-@/models/Member.js

@@ -69,7 +69,7 @@
 
 <script setup>
 import axios from 'axios';
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import SearchBox from '@/views/SearchBox.vue';
 import Page from '@/views/SearchPage.vue';
 

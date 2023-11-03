@@ -1,12 +1,30 @@
 <template>
-  <div class="roll">
-    <!-- 只有當 loaded 為 true 時才渲染 Pie 組件 -->
-    <Pie
-      v-if="loaded"
-      class="my-chart-id"
-      :options="chartOptions"
-      :data="chartData"
-    ></Pie>
+  <div
+    class="card-body"
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 450px;
+    "
+  >
+    <div class="roll" style="width: 100%; height: 100%">
+      <!-- 只有當 loaded 為 true 時才渲染 Pie 組件 -->
+      <div v-if="loaded" class="chart-container">
+        <Pie
+          v-if="loaded"
+          class="my-chart-id"
+          :options="chartOptions"
+          :data="chartData"
+          style="max-width: 100%; max-height: 100%; overflow: hidden"
+        ></Pie>
+        <div class="data-display">
+          <div v-for="(label, index) in chartData.labels" :key="index">
+            {{ label }}: {{ chartData.datasets[0].data[index] }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -60,7 +78,7 @@ export default {
             '#FFCE56',
             '#750075',
             '#00EC00',
-            '	#804040',
+            '#804040',
           ],
           data: [],
         },
@@ -68,6 +86,15 @@ export default {
     });
     const chartOptions = ref({
       responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          // position: 'bottom', // 調整圖例位置
+        },
+      },
+      cutout: '60%', // 調整中心孔大小
+      borderWidth: 2, // 調整圓餅圖的邊框寬度
+      borderColor: 'white', // 設置邊框顏色
     });
 
     // 數據加載
@@ -105,5 +132,12 @@ export default {
 </script>
 
 <style scoped>
-/* 你的樣式 */
+.card-body {
+  overflow: auto;
+  width: 350px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+}
 </style>

@@ -1,34 +1,41 @@
 <template>
-  <div class="text-center centered-card">
-    <div class="card-header">
-      <div class="btn-group" role="group" aria-label="比例">
-        <button class="btn btn-primary" @click="showGenderPie">性別比</button>
-        <button class="btn btn-primary" @click="showAgePie">年齡比</button>
+  <div class="container">
+    <div class="text-center centered-card">
+      <div class="card-header">
+        <div class="btn-group" role="group" aria-label="比例">
+          <button class="btn btn-primary" @click="showGenderPie">性別比</button>
+          <button class="btn btn-primary" @click="showAgePie">年齡比</button>
+        </div>
       </div>
-    </div>
-    <div class="card-body">
       <component :is="currentComponent"></component>
     </div>
-  </div>
-  <!-- <div class="card text-center">
-    <div class="card-header">
-      <div class="btn-group" role="group" aria-label="比例">
-        <button class="btn btn-primary">加入時間比</button>
+    <div class="text-center centered-card2">
+      <div class="card-header">
+        <div class="btn-group" role="group" aria-label="比例">
+          <button class="btn btn-primary" @click="showJoinDateBar">
+            加入時間比
+          </button>
+          <button class="btn btn-primary" @click="showBirthDateBar">
+            生日月份比
+          </button>
+        </div>
+      </div>
+      <div class="card-body2">
+        <component :is="barComponent"></component>
       </div>
     </div>
-    <div class="card-body">
-      <JoinDateLine></JoinDateLine> -->
-  <!-- </div>
-  </div> -->
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import GenderPie from '@/views/GenderPie.vue';
 import AgePie from '@/views/AgePie.vue';
-// import JoinDateLine from '@/views/JoinDateLine.vue';
+import JoinDateBar from '@/views/JoinDateBar.vue';
+import birthDateBar from '@/views/BirthDateBar.vue';
 
 const currentComponent = ref(GenderPie);
+const barComponent = ref(JoinDateBar);
 
 const showGenderPie = () => {
   currentComponent.value = GenderPie;
@@ -37,6 +44,13 @@ const showGenderPie = () => {
 const showAgePie = () => {
   currentComponent.value = AgePie;
 };
+
+const showJoinDateBar = () => {
+  barComponent.value = JoinDateBar;
+};
+const showBirthDateBar = () => {
+  barComponent.value = birthDateBar;
+};
 </script>
 
 <style scoped>
@@ -44,11 +58,17 @@ const showAgePie = () => {
   margin-right: 10px;
   margin-left: 10px;
 }
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+}
 
 .centered-card {
-  width: 80%;
-  height: 50%;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  margin: auto 0; /*調整上邊距離*/
   padding: 20px;
   box-sizing: border-box;
   display: flex;
@@ -57,18 +77,30 @@ const showAgePie = () => {
   justify-content: center; /*垂直置中*/
 }
 
+.centered-card2 {
+  width: 70%;
+  height: 50%;
+  margin: 3vh auto 0;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .card-header {
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
 }
-
-.card-body {
+.card-body2 {
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
-  height: auto;
-  position: relative;
+  height: 550px;
+  width: 450px;
+  margin-top: 10px;
 }
 
 .component {
