@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class MemberAdminDto {
+public class MemberAdminDTO {
 	
 	private UUID memberId;
 	private String memberName;

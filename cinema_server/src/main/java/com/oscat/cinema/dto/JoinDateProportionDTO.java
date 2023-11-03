@@ -5,10 +5,11 @@ import lombok.Data;
 
 @Data
 public class JoinDateProportionDTO {
-
-	private long totalNumber;
-	private long weekCountNumber;
-	private long monthCountNumber;
-	private long yearCountNumber;
-
+	
+	private long thisYearMonthCount;
+	private long thisHalfYearCount;
+	private long thisYearCount;
+	private long lastYearMonthCount;
+	private long lastHalfYearCount;
+	private long lastYearCount;
 }

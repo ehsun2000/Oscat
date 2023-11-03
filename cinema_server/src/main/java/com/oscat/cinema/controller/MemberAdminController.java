@@ -2,24 +2,18 @@ package com.oscat.cinema.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,12 +68,11 @@ public class MemberAdminController {
 
 	// 頁面
 	@GetMapping("/page")
-    public ResponseEntity<Page<Member>> getPage(Pageable pageable) {
-        Page<Member> pagination = mService.findPage(pageable);
-        return ResponseEntity.ok(pagination);
-    }
+	public ResponseEntity<Page<Member>> getPage(Pageable pageable) {
+		Page<Member> pagination = mService.findPage(pageable);
+		return ResponseEntity.ok(pagination);
+	}
 
-	
 	// 檢查信箱是否被註冊過
 	@GetMapping("/add/{email}")
 	public ResponseEntity<?> checkEmailRegistered(@PathVariable String email) {
@@ -208,23 +201,31 @@ public class MemberAdminController {
 
 	// 性別比
 	@GetMapping("/genderProportion")
-	public ResponseEntity<GenderProportionDTO> getGenderProportion(){
+	public ResponseEntity<GenderProportionDTO> getGenderProportion() {
 		GenderProportionDTO genderProportion = mService.calculateGender();
 		return ResponseEntity.ok(genderProportion);
 	}
-	
+
 	// 年齡比
 	@GetMapping("/ageProportion")
-	public ResponseEntity<AgeProportionDTO> getAgePtoportion(){
+	public ResponseEntity<AgeProportionDTO> getAgePtoportion() {
 		AgeProportionDTO ageProportion = mService.calculateAge();
 		return ResponseEntity.ok(ageProportion);
 	}
 
 	// 加入時間比
 	@GetMapping("/joinProportion")
-	public ResponseEntity<JoinDateProportionDTO> getJoinDateProportion(){
+	public ResponseEntity<JoinDateProportionDTO> getJoinDateProportion() {
 		JoinDateProportionDTO joinDateProportion = mService.calculateJoinDate();
 		return ResponseEntity.ok(joinDateProportion);
 	}
-	
+
+	// 生日月份比
+	@GetMapping("/birthProportion")
+	public ResponseEntity<Map<Integer, Long>> getBirthDateProportion() {
+		Map<Integer, Long> birthDateProportion = mService.calculateBirthDate();
+		return ResponseEntity.ok(birthDateProportion);
+
+	}
+
 }
