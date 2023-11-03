@@ -11,16 +11,22 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscat.cinema.dao.CinemaRepository;
 import com.oscat.cinema.dao.MovieRepository;
 import com.oscat.cinema.dao.ScreeningRoomRepository;
 import com.oscat.cinema.dao.ShowTimeRepository;
+import com.oscat.cinema.dto.RequestShowTime;
+import com.oscat.cinema.dto.ResponseCinemaForShowTime;
+import com.oscat.cinema.dto.ScreeningRoomDTO;
 import com.oscat.cinema.dto.ShowTimeDTO;
+import com.oscat.cinema.dto.ShowTimeForPut;
 import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.entity.OpeningHour;
@@ -39,6 +45,8 @@ public class ShowTimeManagerService {
 	private MovieRepository movieRepository;
 	@Autowired
 	private ScreeningRoomRepository roomRepo;
+	@Autowired
+	private CinemaRepository cinemaRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -141,60 +149,13 @@ public class ShowTimeManagerService {
 			}
 		}
 
-		return true; 
-	}
-
-	// 新增多筆場次
-	public List<ShowTime> addMoreShowTime(List<ShowTimeDTO> showTimeDTOs) {
-		List<ShowTime> createdShowTimes = new ArrayList<>();
-
-		for (ShowTimeDTO showTimeDTO : showTimeDTOs) {
-			Optional<ShowTime> optionalShowTime = convertToEntity(showTimeDTO);
-
-			if (optionalShowTime.isPresent()) {
-				ShowTime createdShowTime = addShowTime(optionalShowTime.get());
-				createdShowTimes.add(createdShowTime);
-			}
-		}
-
-		return createdShowTimes;
+		return true;
 	}
 
 	// 找全部
 	public Page<ShowTime> findAll(Pageable pageable, Integer roomId) {
 		// 調用相應的 ShowTimeRepository 方法來查找所有 show times
 		return showTimeRepository.findAllByRoomId(pageable, roomId);
-	}
-
-	// 透過ID找場次
-	public Optional<ShowTime> findShowTimeById(UUID id) {
-		// 調用相應的 ShowTimeRepository 方法來查找特定 ID 的 show time
-		return showTimeRepository.findById(id);
-	}
-
-	// 更新場次資料
-	public ShowTime updateShowTime(UUID showTimeId, ShowTimeDTO showTimeDTO) {
-		// 先檢查要更新的ShowTime是否存在
-		Optional<ShowTime> existingShowTime = showTimeRepository.findById(showTimeId);
-		if (existingShowTime.isPresent()) {
-			ShowTime showTime = existingShowTime.get();
-
-			// 創建或查找ScreeningRoom對象，然後設置到ShowTime中
-			Integer roomId = showTimeDTO.getRoomId();
-			ScreeningRoom screeningRoom = roomRepo.findById(roomId).orElse(null);
-			showTime.setScreeningRoom(screeningRoom);
-
-			// 更新ShowTime實體的其他屬性，使用DTO的值
-			showTime.setShowDateAndTime(showTimeDTO.getShowDateAndTime());
-
-			// 保存更新後的ShowTime實體
-			ShowTime updated = showTimeRepository.save(showTime);
-
-			return updated;
-		} else {
-			// 如果找不到要更新的ShowTime，返回null或拋出自定義異常
-			return null;
-		}
 	}
 
 	// 刪除單筆場次
@@ -252,6 +213,165 @@ public class ShowTimeManagerService {
 		}
 
 		return showTimesForNextWeek;
+	}
+
+	public List<ResponseCinemaForShowTime> findAllCinemas() {
+		List<Cinema> cinemas = cinemaRepository.findAll();
+		List<ResponseCinemaForShowTime> cinemaList = cinemas.stream().map(cinema -> toCinemasDto(cinema)).toList();
+
+		return cinemaList;
+	}
+
+	private ResponseCinemaForShowTime toCinemasDto(Cinema cinema) {
+		ResponseCinemaForShowTime dto = new ResponseCinemaForShowTime();
+
+		dto.setCinema(cinema.getCinemaName());
+		dto.setRooms(cinema.getScreeningRooms().stream().map(room -> toScreeningRoomDTO(room)).toList());
+
+		return dto;
+	}
+
+	private ScreeningRoomDTO toScreeningRoomDTO(ScreeningRoom room) {
+		ScreeningRoomDTO dto = new ScreeningRoomDTO();
+
+		dto.setRoomId(room.getRoomId());
+		dto.setRoomName(room.getRoomName());
+		dto.setType(room.getType());
+
+		return dto;
+	}
+
+	public List<Map<String, String>> findMovies() {
+		List<Movie> movies = movieRepository.findAll();
+		List<Map<String, String>> dtoList = movies.stream().map(movie -> toMovieDto(movie)).toList();
+
+		return dtoList;
+	}
+
+	private Map<String, String> toMovieDto(Movie movie) {
+		Map<String, String> dto = new HashMap<>();
+
+		dto.put("movie", movie.getMovieName());
+		dto.put("id", movie.getMovieId().toString());
+
+		return dto;
+	}
+
+	public List<Map<String, String>> findShowTimes(RequestShowTime req) {
+		List<ShowTime> showtimes = showTimeRepository.findByStartAndEnd(req.getRoomId(), req.getStart(), req.getEnd());
+		List<Map<String, String>> dtoList = showtimes.stream().map(showtime -> toShowTimeDto(showtime)).toList();
+
+		return dtoList;
+	}
+
+	private Map<String, String> toShowTimeDto(ShowTime showTime) {
+		Map<String, String> dto = new HashMap<>();
+
+		dto.put("showTimeId", showTime.getShowTimeId().toString());
+		dto.put("movieName", showTime.getMovie().getMovieName());
+		dto.put("showtime", showTime.getShowDateAndTime().toString());
+		dto.put("flimType", showTime.getFilmType());
+		dto.put("duration", showTime.getMovie().getDuration().toString());
+
+		return dto;
+	}
+
+	// 透過ID找場次
+	public Map<String, String> findShowTimeById(UUID id) {
+		Optional<ShowTime> showtimeOpt = showTimeRepository.findById(id);
+		if (showtimeOpt.isPresent()) {
+			return toShowTimeDto(showtimeOpt.get());
+		}
+
+		return null;
+	}
+
+	// 更新場次
+	public String updateShowTime(ShowTimeForPut dto) {
+		Optional<ShowTime> oldShowTimeOpt = showTimeRepository.findById(dto.getShowtimeId());
+		Optional<Movie> movieOpt = movieRepository.findById(dto.getMovieId());
+
+		if (oldShowTimeOpt.isPresent() && movieOpt.isPresent()) {
+			ShowTime showTime = oldShowTimeOpt.get();
+			Movie movie = movieOpt.get();
+
+			List<OpeningHour> openingHours = showTime.getScreeningRoom().getCinema().getOpeningHours();
+			Integer duration = movie.getDuration();
+
+			boolean inOpening = inOpening(openingHours, dto.getShowDateAndTime(), duration);
+
+			if (inOpening) {
+				if (isAvailable(dto.getRoomId(), showTime.getShowTimeId(), dto.getShowDateAndTime(), duration)) {
+					showTime.setFilmType(dto.getFilmType());
+					showTime.setShowDateAndTime(dto.getShowDateAndTime());
+					showTime.setMovie(movie);
+
+					showTimeRepository.flush();
+					showTimeRepository.saveAndFlush(showTime);
+					return "success";
+				} else {
+					return "與其他場次發生衝突";
+				}
+			} else {
+				return "沒有在營業時間內";
+			}
+		}
+
+		return "查無電影 or 場次";
+	}
+
+	// 判斷是否衝突場次
+	private boolean isAvailable(Integer roomId, UUID oldShowTimeId, LocalDateTime startTime, Integer duration) {
+		// 所需屬性: roomId、oldShowTimeId、startTime、duration
+		// 找出原本場次以外，播放時間之後的第一筆資料，若有，判斷結束時間是否在其開始之前
+		ShowTime afterShow = showTimeRepository.findAfterShow(roomId, oldShowTimeId, startTime);
+		if (afterShow != null) {
+			System.out.println("afterShow:" + afterShow.getShowDateAndTime().toString());
+			if (startTime.plusMinutes(duration + 30).isAfter(afterShow.getShowDateAndTime())) {
+				return false;
+			}
+		}
+
+		// 找出原本場次以外，之前的最後一筆資料，若有，判斷新時間是否在其結束之後
+		ShowTime beforeShow = showTimeRepository.findBeforeShow(roomId, oldShowTimeId, startTime);
+		System.out.println("beforeShow:" + beforeShow.getShowDateAndTime().toString());
+		if (beforeShow != null) {
+			Integer beforeDuration = beforeShow.getMovie().getDuration() + 30;
+			System.out.println(
+					"beforeShow:" + startTime.isBefore(beforeShow.getShowDateAndTime().plusMinutes(beforeDuration)));
+			if (startTime.isBefore(beforeShow.getShowDateAndTime().plusMinutes(beforeDuration))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	// 判斷是否在營業時間內
+	private boolean inOpening(List<OpeningHour> openingHours, LocalDateTime showTime, Integer duration) {
+
+		// 獲取影城的營業時間
+		List<OpeningHour> OpeningHours = openingHours;
+		Map<Integer, OpeningHour> openingMap = OpeningHours.stream()
+				.collect(Collectors.toMap(OpeningHour::getWeekDay, Function.identity()));
+
+		// 找出當天營業、閉店時間
+		OpeningHour openingHour = openingMap.get(showTime.getDayOfWeek().getValue());
+		LocalTime openingTime = openingHour.getStartTime();
+		LocalTime closingTime = openingHour.getEndTime();
+
+		// 檢查場次時間是否在營業時間內
+		if (showTime.toLocalTime().isBefore(openingTime)
+				|| showTime.toLocalTime().plusMinutes(duration).isAfter(closingTime)) {
+			return false;
+		}
+		return true;
+	}
+
+	private void overtimeFee(Integer duration, ShowTime showTime) {
+		if (duration > 110) {
+			showTime.setExtraFee(new BigDecimal(30));
+		}
 	}
 
 }
