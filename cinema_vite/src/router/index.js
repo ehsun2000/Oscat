@@ -48,6 +48,21 @@ const routes = [
         name: 'ShowTimeManager',
         component: import('@/views/ShowTimeManager.vue'),
       },
+      {
+        path: '/cinema-product',
+        name: 'ProductManager',
+        component: import('@/views/ProductController.vue'),
+      },
+      {
+        path: '/product/add',
+        name: 'ProductAdd',
+        component: import('@/views/AddProduct.vue'),
+      },
+      {
+        path: '/product/update/:productName',
+        name: 'ProductUpdate',
+        component: import('@/views/UpdateProduct.vue'),
+      },
     ],
   },
 ];

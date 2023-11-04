@@ -2,46 +2,55 @@ package com.oscat.cinema.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.entity.Product;
 
+
+
 @Service
 public class ProductService {
-
-	private ProductRepository productRepo;
-
+	
 	@Autowired
-	public ProductService(ProductRepository productRepo) {
-		this.productRepo = productRepo;
-	}
-
-	// 新增產品
-	public Product addProduct(Product product) {
-		// 先檢查是否有相同的名稱的產品
-		Optional<Product> existingProductOptinal = productRepo.findByProductName(product.getProductName());
-		if (existingProductOptinal.isPresent()) {
-			// 有相同名稱 則告知已經有相同的產品名稱
-			throw new IllegalArgumentException("Already have the same product name");
-		} else {
-			// 沒有則進行新增
-			return productRepo.save(product);
-		}
-
-	}
-
-	// 查詢全部產品
+	private ProductRepository productRepo;
+	
+	// 新增商品
+	  public Product addProduct(Product product) {
+	      String productName = product.getProductName();
+	      
+	      //檢查是否有相同名稱的商品
+	      Optional<Product> existingProduct = productRepo.findByProductName(productName);
+	      if(existingProduct.isPresent()) {
+	    	throw new RuntimeException("已有相同名稱的商品");
+	      }
+	      
+	      return productRepo.save(product);
+	  }
+	  
+	  
+	// 查詢全部商品
 	public List<Product> findAllProducts() {
 		return productRepo.findAll();
 	}
+	
+	// 用名稱查詢單筆商品
+	public Optional<Product> findProductByProductName(String productName ) {
+		return productRepo.findByProductName(productName);
+	}
+	
 
-	// 刪除產品
-	public void deletePrroductById(UUID productId) {
-		productRepo.deleteById(productId);
+	// 刪除商品
+	@Transactional
+	public void deleteProductByName(String productName) {
+		productRepo.deleteByProductName(productName);;
 	}
 
 	// 更新產品資料
@@ -59,4 +68,12 @@ public class ProductService {
 			return Optional.empty();
 		}
 	}
+	
+	//查詢分頁
+	public Page<Product> findByPage(Integer pageNumber){
+		Pageable pgb = PageRequest.of(pageNumber-1,4,Sort.Direction.DESC,"productId");
+		Page<Product> page = productRepo.findAll(pgb);
+		return page;
+	}
+	
 }
