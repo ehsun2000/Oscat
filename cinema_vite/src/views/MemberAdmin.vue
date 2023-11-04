@@ -10,7 +10,7 @@
       <div class="col-6"></div>
       <div class="col-3"></div>
     </div>
-    <SearchBox @searchInput="inputHandLer"></SearchBox>
+    <SearchBox class="searchBox" @searchInput="inputHandLer"></SearchBox>
     <table class="table table-hover">
       <thead>
         <tr>
@@ -59,6 +59,11 @@
         </tr>
       </tbody>
     </table>
+    <Page
+      :totalPages="totalPages"
+      :thePage="currentPage"
+      @childClick="clickHandler"
+    ></Page>
   </div>
 </template>
 
@@ -66,14 +71,34 @@
 import axios from 'axios';
 import { ref, reactive, computed } from 'vue';
 import SearchBox from '@/views/SearchBox.vue';
+import Page from '@/views/SearchPage.vue';
 
+const totalPages = ref(1);
+totalPages.value;
 const members = ref([]);
+const currentPage = ref(0); //當前頁碼
 
-// 載入所有會員
-const loadMembers = async () => {
-  const member_url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/member/all`;
-  const response = await axios.get(member_url);
-  members.value = response.data;
+// 分頁
+const loadMembers = async (page) => {
+  const member_url = `${
+    import.meta.env.VITE_OSCAT_API_ENDPOINT
+  }/member/page?page=${page - 1}&size=8&sort=joinDate,desc`;
+  try {
+    const response = await axios.get(member_url);
+    members.value = response.data.content;
+    totalPages.value = response.data.totalPages;
+  } catch (error) {
+    console.log('錯誤', error);
+  }
+};
+
+// 不同頁數
+const clickHandler = (newPage) => {
+  if (newPage >= 1 && newPage <= totalPages.value) {
+    currentPage.value = newPage;
+
+    loadMembers(currentPage.value);
+  }
 };
 
 // 搜尋功能
@@ -81,7 +106,7 @@ const datas = reactive({
   email: '',
 });
 
-// 傳入參數重新仔入
+// 傳入參數重新載入
 const inputHandLer = (value) => {
   datas.email = value;
   loadMembers();
@@ -128,4 +153,8 @@ const deleteHandler = async (memberId) => {
 loadMembers();
 </script>
 
-<style scoped></style>
+<style scoped>
+.searchBox {
+  width: 400px;
+}
+</style>

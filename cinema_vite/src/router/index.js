@@ -29,6 +29,11 @@ const routes = [
         component: import('@/views/MemberAdUpdate.vue'),
       },
       {
+        path: '/member-report',
+        name: 'Analysis',
+        component: import('@/views/MemberAnalysis.vue'),
+      },
+      {
         path: '/cinema-select',
         name: 'CinemaSelect',
         component: import('@/views/CinemaSelect.vue'),

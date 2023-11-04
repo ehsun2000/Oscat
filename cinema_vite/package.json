@@ -22,10 +22,12 @@
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.1",
+    "chart.js": "^4.4.0",
     "pinia": "^2.1.6",
     "sweetalert2": "^11.7.32",
     "v-calendar": "^3.1.2",
     "vue": "^3.3.4",
+    "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
