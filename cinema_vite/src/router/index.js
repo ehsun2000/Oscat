@@ -63,6 +63,11 @@ const routes = [
         name: 'ProductUpdate',
         component: import('@/views/UpdateProduct.vue'),
       },
+      {
+        path: '/cinema-seat',
+        name: 'SeatManager',
+        component: import('@/views/SeatController.vue'),
+      },
     ],
   },
 ];
