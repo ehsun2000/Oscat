@@ -111,7 +111,7 @@ public class ProductController {
 	
 	// 用產品類別做模糊查詢
 	@GetMapping("/byType")
-	public ResponseEntity<List<Product>> findProductByType(@RequestParam("type")String productType){
+	public ResponseEntity<List<Product>> findProductByType(@RequestParam("productType")String productType){
 		List<Product> result = productService.findProductByType(productType);
 		return ResponseEntity.ok(result);
 	}
