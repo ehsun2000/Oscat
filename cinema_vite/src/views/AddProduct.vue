@@ -15,23 +15,23 @@
       <div class="mb-3">
         <label for="unitPrice" class="form-label">單價</label>
         <input
-          type="number"
+          type="text"
           class="form-control"
           id="unitPrice"
           v-model="product.unitPrice"
-          min="30"
-          max="1000"
-          @wheel="handleUnitPriceChange"
         />
       </div>
       <div class="mb-3">
-        <label for="productType" class="form-label">類型</label>
-        <input
-          type="text"
+        <label for="productType" class="form-label">類別</label>
+        <select
           class="form-control"
           id="productType"
           v-model="product.productType"
-        />
+        >
+          <option v-for="type in productTypeOptions" :key="type" :value="type">
+            {{ type }}
+          </option>
+        </select>
       </div>
       <div class="form-group mb-3">
         <label for="productImg" class="form-label">照片</label>
@@ -54,6 +54,14 @@
           v-model="product.productImg"
           readonly
         />
+
+        <!-- 圖片預覽 -->
+        <img
+          v-if="previewImage"
+          :src="previewImage"
+          alt="預覽"
+          style="max-width: 100px; max-height: 100px"
+        />
       </div>
       <div class="button-container">
         <div class="row">
@@ -61,18 +69,18 @@
             <button
               class="btn btn-primary ml-2"
               type="button"
-              @click="retrunHandler"
-            >
-              返回
-            </button>
-          </div>
-          <div class="col">
-            <button
-              class="btn btn-primary ml-2"
-              type="button"
               @click="addHandler"
             >
               新增
+            </button>
+          </div>
+          <div class="col text-end">
+            <button
+              class="btn btn-primary ml-2"
+              type="button"
+              @click="retrunHandler"
+            >
+              取消
             </button>
           </div>
         </div>
@@ -83,7 +91,7 @@
 </template>
 
 <script setup>
-import { ref, toRef } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Product from '@/models/Product.js';
@@ -91,14 +99,16 @@ import Swal from 'sweetalert2';
 
 const router = useRouter();
 const product = ref(Product);
-const unitPriceRef = toRef(product, 'unitPrice');
+const previewImage = ref(null);
+const productTypeOptions = ref(['飲品', '炸物', '爆米花', '熟食']); // 商品類型選項
+const products = ref([]); // 指定 products 變數的類型為 Product 數組
 
 const URL = import.meta.env.VITE_OSCAT_API_ENDPOINT;
 
 const retrunHandler = async () => {
   const confirmed = await Swal.fire({
-    title: '確認返回',
-    text: '確定要返回嗎？未儲存的更改將會遺失。',
+    title: '確認取消',
+    text: '在新增過程中選擇取消，尚未儲存的資料將會遺失',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: '確定',
@@ -123,6 +133,9 @@ const addHandler = async () => {
         showConfirmButton: false,
         timer: 1500, // 自動關閉訊息框
       });
+
+      products.value.push(product.value);
+
       router.push('/cinema-product');
 
       product.value = ref(Product);
@@ -145,45 +158,34 @@ const openUploadDialog = async () => {
     cancelButtonText: '取消',
     preConfirm: async () => {
       const imageInput = document.getElementById('imageUpload');
-      const imageUpload = imageInput.files[0];
-      if (imageUpload) {
-        const upload_url = `${
-          import.meta.env.VITE_OSCAT_API_ENDPOINT
-        }/product/upload`;
-        console.log(upload_url);
-        const formData = new FormData();
-        formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
-        const response = await axios.post(upload_url, formData); //上傳到cloudinary
-        console.log(response);
-        console.log(formData);
-        const imageURL = response.data; //獲得圖片URL
-        console.log(imageURL);
-        product.value.productImg = imageURL;
+      if (imageInput) {
+        const imageUpload = imageInput.files[0];
+        if (imageUpload) {
+          const upload_url = `${
+            import.meta.env.VITE_OSCAT_API_ENDPOINT
+          }/product/upload`;
+          console.log(upload_url);
+          const formData = new FormData();
+          formData.append('imageUpload', imageUpload); // 將圖像文件附加到 FormData
+          const response = await axios.post(upload_url, formData); //上傳到cloudinary
+          console.log(response);
+          console.log(formData);
+          const imageURL = response.data; //獲得圖片URL
+          console.log(imageURL);
+          product.value.productImg = imageURL;
+
+          previewImage.value = imageURL;
+        }
       }
     },
   });
 };
 
-const handleUnitPriceChange = (event) => {
-  event.preventDefault();
-
-  const step = event.deltaY > 0 ? 10 : -10; // 設定滾動一次的增量
-  const newValue = parseInt(unitPriceRef.value) + step;
-
-  if (newValue >= 30 && newValue <= 1000) {
-    unitPriceRef.value = newValue;
-  }
-};
-
 const loadAddProduct = () => {
   product.value = ref(Product);
 };
+
 loadAddProduct();
 </script>
 
-<style scoped>
-.button-container {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>
+<style scoped></style>

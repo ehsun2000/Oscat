@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.service.ProductService;
 import com.oscat.cinema.util.aijie.FileUploadUtil;
-
 import jakarta.annotation.Resource;
 
 @RestController
@@ -107,6 +106,13 @@ public class ProductController {
 		System.out.println(imgurl);
 		return ResponseEntity.ok(imgurl);
 		
+	}
+	
+	// 用產品類別做模糊查詢
+	@GetMapping("/byType")
+	public ResponseEntity<List<Product>> findProductByType(@RequestParam("productType")String productType){
+		List<Product> result = productService.findProductByType(productType);
+		return ResponseEntity.ok(result);
 	}
 	
 }

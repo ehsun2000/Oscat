@@ -69,11 +69,15 @@ public class ProductService {
 		}
 	}
 	
-	//查詢分頁
+	//分頁
 	public Page<Product> findByPage(Integer pageNumber){
-		Pageable pgb = PageRequest.of(pageNumber-1,4,Sort.Direction.DESC,"productId");
-		Page<Product> page = productRepo.findAll(pgb);
+		Pageable pgb = PageRequest.of(pageNumber-1,6,Sort.Direction.ASC,"productId");
+		Page<Product> page = productRepo.findAll(pgb);		    
 		return page;
 	}
 	
+	// 用產品類別模糊查詢
+	public List<Product> findProductByType(String ProductType){
+		return productRepo.findProductByProductTypeLike(ProductType);
+	}
 }
