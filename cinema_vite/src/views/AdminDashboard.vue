@@ -1,7 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import AdminSideBar from '@/components/AdminSideBar.vue';
-import AdminHeader from '@/components/AdminHeader.vue';
 </script>
 
 <template>
@@ -30,8 +29,7 @@ import AdminHeader from '@/components/AdminHeader.vue';
       <div class="col-2 d-flex flex-column p-3">
         <AdminSideBar />
       </div>
-      <div class="col-10">
-        <AdminHeader />
+      <div class="col-10 mt-3">
         <router-view />
       </div>
     </div>
