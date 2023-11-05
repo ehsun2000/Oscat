@@ -51,7 +51,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping(path = "/api/offical")
+@RequestMapping(path = "/api/official")
 public class OfficalBooking {
 	
 	@Autowired
@@ -109,7 +109,7 @@ public class OfficalBooking {
 		return bookingService.getTicketTypesList();
 	}
 	
-	@GetMapping("/find/{showTimeId}")
+	@GetMapping("/findshowtime/{showTimeId}")
 	public ResponseEntity<Map<String, Object>> findShowTimeById(@PathVariable UUID showTimeId) {
 	    Optional<ShowTime> optionalShowTime = stmService.findShowTimeById(showTimeId);
 	    if (optionalShowTime.isPresent()) {

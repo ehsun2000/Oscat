@@ -142,7 +142,7 @@ public class MemberOfficialController {
 	}
 
 	// 查詢會員資料
-	@PostMapping("/")
+	@PostMapping("/find")
 	public ResponseEntity<?> findMember(HttpSession session){
 		Member member = (Member) session.getAttribute("loginMember");
 		if(member != null) {

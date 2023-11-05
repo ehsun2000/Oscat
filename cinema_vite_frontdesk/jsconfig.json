@@ -1,0 +1,10 @@
+{
+  // 讓 AutoCompiler 知道 @/ == src/
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

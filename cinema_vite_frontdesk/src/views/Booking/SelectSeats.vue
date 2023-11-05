@@ -69,12 +69,12 @@ export default {
     const bookedSeatIds = ref([]);
     const selectedSeats = ref([]);
 
-    const api = import.meta.env.VITE_OSCAT_API_ENDPOINT;
+    const api = import.meta.env.VITE_OSCATOfficial_API_ENDPOINT;
 
     const getShowtimeDetails = async () => {
       try {
         const response = await fetch(
-          `${api}/offical/findshowtime/${showtimeId.value}`,
+          `${api}/findshowtime/${showtimeId.value}`,
           {
             credentials: 'include',
           },
@@ -96,7 +96,7 @@ export default {
 
       try {
         const response = await fetch(
-          `${api}/seat/findAllSeatByRoomId?roomId=${roomId.value}`,
+          `${api}/findAllSeatByRoomId?roomId=${roomId.value}`,
           {
             credentials: 'include',
           },
@@ -129,7 +129,7 @@ export default {
     const fetchBookedSeats = async () => {
       try {
         const response = await fetch(
-          `${api}/offical/showtime/${showtimeId.value}/seatIds`,
+          `${api}/showtime/${showtimeId.value}/seatIds`,
           {
             credentials: 'include',
           },
