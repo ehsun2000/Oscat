@@ -74,6 +74,15 @@ const routes = [
     component: import('@/views/Booking/BookCheckout.vue'),
     props: true,
   },
+  {
+    path: '/agreement',
+    component: () => import('@/components/PrivacyPolicy.vue'),
+  },
+  {
+    path: '/member-center',
+    name: 'MemberCenter',
+    component: () => import('@/views/OfficialMember.vue'),
+  },
 ];
 
 const router = createRouter({

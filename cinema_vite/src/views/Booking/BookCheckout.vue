@@ -12,7 +12,6 @@
     <div>
       <h2>選擇的座位：{{ selectedSeatNames.join(', ') }}</h2>
       <h2>票種：{{ ticketDisplays.join(', ') }}</h2>
-      <h2>場次ID：{{ showtimeId }}</h2>
     </div>
     <div class="buttons-container">
       <button @click="onSiteCheckout">現場結帳</button>
@@ -53,37 +52,78 @@ export default {
       ticket_4: '軍警票',
     };
 
-    let counts = [0, 0, 0, 0];
-
     onMounted(() => {
       movieName.value = route.query.movieName;
       cinemaName.value = route.query.cinemaName;
       screenRoomName.value = route.query.screenRoomName;
       filmType.value = route.query.filmType;
       showDateAndTime.value = route.query.showDateAndTime;
-      totalPrice.value = route.query.totalPrice;
-      selectedSeatIds.value = JSON.parse(route.query.selectedSeatIds || '[]');
-      Object.keys(ticketTypesMapping).forEach((ticketKey, index) => {
+      totalPrice.value = parseFloat(route.query.totalPrice);
+      showtimeId.value = route.query.showtimeId;
+
+      if (route.query.selectedSeatIds) {
+        selectedSeatIds.value = JSON.parse(route.query.selectedSeatIds);
+      }
+
+      Object.keys(ticketTypesMapping).forEach((ticketKey) => {
         if (route.query[ticketKey]) {
           ticketDisplays.value.push(
-            `${ticketTypesMapping[ticketKey]} * ${route.query[ticketKey]}`,
+            `${ticketTypesMapping[ticketKey]} x ${route.query[ticketKey]}`,
           );
-          counts[index] = route.query[ticketKey];
+          for (let i = 0; i < parseInt(route.query[ticketKey], 10); i++) {
+            ticketTypeIds.value.push(ticketKey.replace('ticket_', ''));
+          }
         }
       });
-      console.log(counts);
+
       showtimeId.value = route.query.showtimeId;
       selectedSeatNames.value = route.query.selectedSeatNames
         ? route.query.selectedSeatNames.split(',')
         : [];
+
+      ticketDisplays.value.forEach((display) => {
+        const matchedKey = Object.keys(ticketTypesMapping).find((key) =>
+          display.includes(ticketTypesMapping[key]),
+        );
+        if (matchedKey) {
+          const typeId = parseInt(matchedKey.split('_')[1]);
+          const count = parseInt(display.split(' x ')[1]);
+          for (let i = 0; i < count; i++) {
+            ticketTypeIds.value.push(typeId);
+          }
+        }
+      });
     });
 
-    console.log(route.query.ticketQueryParams);
-
     const onSiteCheckout = async () => {
+      // 從API獲取已被預訂的座位ID
+      let bookedSeatIds = [];
+      try {
+        const response = await axios.get(
+          `${api}/offical/showtime/${showtimeId.value}/seatIds`,
+        );
+        bookedSeatIds = response.data;
+      } catch (error) {
+        console.error('獲取已預訂座位ID失敗:', error);
+        alert('無法獲取座位資訊，請稍後再試。');
+        return;
+      }
+
+      // 檢查用戶選擇的座位是否已被預訂
+      const isAnySeatBooked = selectedSeatIds.value.some((seatId) =>
+        bookedSeatIds.includes(seatId),
+      );
+
+      if (isAnySeatBooked) {
+        // 如果有座位已被預訂，通知用戶並返回選座位頁面
+        alert('座位已被預訂，請重新預定');
+        router.go(-1); // 將用戶踢回前一頁
+        return;
+      }
+
+      // 如果座位檢查通過，則進行訂票操作
       const postData = {
         showtimeId: showtimeId.value,
-        memberId: '11800689-C733-8E66-5583-78A648C13257',
         paymentMethod: '現場付款',
         totalPrice: parseFloat(totalPrice.value),
         tickets: selectedSeatIds.value.map((seatId, index) => ({
@@ -91,13 +131,10 @@ export default {
           seatId: seatId,
         })),
       };
-
       try {
         const response = await axios.post(`${api}/offical/booking`, postData);
-
-        if (response.status === 200) {
+        if (response.status === 201) {
           alert('訂票成功!');
-          // 使用 Vue Router 導向首頁
           router.push('/');
         }
       } catch (error) {
@@ -105,12 +142,33 @@ export default {
       }
     };
 
-    const greenWorldCheckout = () => {
-      // 綠界結帳的邏輯
+    const greenWorldCheckout = async () => {
+      const postData = {
+        totalPrice: totalPrice.value.toString(),
+        tradeDesc: ticketDisplays.value.join(', '),
+      };
+
+      try {
+        const response = await axios.post(`${api}/offical/goECPay`, postData);
+        // 假設後端現在返回一個含有重導URL的JSON物件
+        if (response.data && response.data.redirectUrl) {
+          // 如果是一個URL，就可以直接重導
+          window.location.href = response.data.redirectUrl;
+        } else {
+          // 如果後端返回的是HTML，則需要以其他方式處理
+          // 例如，將HTML插入到頁面中，並自動提交表單
+          document.body.innerHTML += response.data; // 假設response.data是HTML表單
+          document.forms[0].submit(); // 自動提交第一個表單
+        }
+      } catch (error) {
+        console.error('綠界結帳失敗:', error);
+      }
     };
 
     const cancelOrder = () => {
-      // 取消訂單的邏輯
+      if (confirm('真的要取消訂單嗎？')) {
+        router.push('/');
+      }
     };
 
     return {

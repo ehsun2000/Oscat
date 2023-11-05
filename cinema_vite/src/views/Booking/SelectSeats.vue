@@ -223,6 +223,8 @@ export default {
         ticketQueryParams[`ticket_${typeId}`] = count;
       });
 
+      const selectedSeatIds = selectedSeats.value.map((seat) => seat.seatId);
+
       const selectedSeatNames = selectedSeats.value
         .map((seat) => seat.seatName)
         .join(',');
@@ -238,6 +240,7 @@ export default {
           showDateAndTime: showDateAndTime.value,
           totalPrice: totalPrice.value,
           selectedSeatNames: selectedSeatNames,
+          selectedSeatIds: JSON.stringify(selectedSeatIds),
           showtimeId: showtimeId.value,
         },
       });
