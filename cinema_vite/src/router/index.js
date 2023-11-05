@@ -68,6 +68,21 @@ const routes = [
         name: 'SeatManager',
         component: import('@/views/SeatController.vue'),
       },
+      {
+        path: '/movie',
+        name: 'Movie',
+        component: import('@/views/AdminMovie.vue'),
+      },
+      {
+        path: '/movie/add',
+        name: 'Add',
+        component: import('@/views/AdminAddMovie.vue'),
+      },
+      {
+        path: '/movie/edit/:movieId',
+        name: 'Edit',
+        component: import('@/views/AdminEditMovie.vue'),
+      },
     ],
   },
 ];
