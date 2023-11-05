@@ -123,6 +123,7 @@ import Member from '@/models/Member.js';
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const member = ref(Member);
@@ -271,6 +272,9 @@ const checkPhone = () => {
   } else if (!phonePattern.test(phone.value)) {
     phoneError.value = true;
     phoneErrMsg.value = '手機格式錯誤';
+  } else if (phone.value.replace(/[^0-9]/g, '').length > 10) {
+    phoneError.value = true;
+    phoneErrMsg.value = '號碼不可超過10位數字';
   } else {
     phoneError.value = false;
     phoneErrMsg.value = '';
@@ -282,34 +286,51 @@ const addHandler = async () => {
   // 先檢查信箱是否重複
   await checkEmailRepeat();
   if (emailExists.value) {
-    alert('新增失敗 - 該信箱已被註冊');
+    Swal.fire({
+      title: '該信箱已被註冊',
+      icon: 'error',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: '好的',
+    });
     return; // 不提交表單
   }
 
-  const insert_url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/member/add`;
-  try {
-    const response = await axios.post(insert_url, member.value);
-    if (response.status === 200) {
-      alert('新增成功');
-      router.push('/member');
-    } else {
-      alert('新增失敗');
+  Swal.fire({
+    title: '確定要新增嗎?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const update_url = `${
+        import.meta.env.VITE_OSCAT_API_ENDPOINT
+      }/member/add`;
+      axios
+        .post(update_url, member.value)
+        .then((response) => {
+          if (response.status === 200) {
+            Swal.fire('新增成功', '', 'success').then(() => {
+              router.push('/member');
+            });
+          } else {
+            Swal.fire('新增失敗', '', 'error');
+          }
+        })
+        .catch((error) => {
+          Swal.fire('新增大失敗', error.message, 'error');
+        });
     }
-  } catch (error) {
-    if (error.response) {
-      console.error('Error status', error.response.status);
-      console.error('Error body', error.response.data);
-      alert(`${error.response.data.message}\r\n${error.response.data.data}`);
-    }
-  }
+  });
 };
 
+// 回到首頁，清空上一筆新增的資料
 const restart = () => {
   member.value = ref(Member);
 };
 restart();
-
-// 回到首頁，清空上一筆新增的資料
 </script>
 
 <style scoped>
