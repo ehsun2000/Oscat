@@ -1,26 +1,8 @@
-<template>
-  <router-link
-    to="/"
-    class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none text-light"
-  >
-    <span class="fs-4">Oscat Admin</span>
-  </router-link>
-  <hr />
-  <ul class="nav nav-pills flex-column mb-auto">
-    <CollapseMenu
-      v-for="menu in menus"
-      :key="menu.id"
-      :title="menu.title"
-      :icon="menu.icon"
-      :items="menu.items"
-    ></CollapseMenu>
-  </ul>
-  <hr />
-</template>
-
 <script setup>
 import CollapseMenu from './CollapseMenu.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 // 加入圖標和選單資料
 const menus = [
   {
@@ -52,7 +34,46 @@ const menus = [
     ],
   },
 ];
+
+
+const logout = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_OUT_API_ENDPOINT}`, {
+        credentials: 'include',
+        method: 'GET'
+      });
+
+      if (response.ok) {
+        await router.push('/adminlogin');
+      } else {
+        console.error('登出未成功!');
+      }
+    } catch (error) {
+      console.error('登出過程中發生錯誤:', error);
+    }
+  };
 </script>
+
+<template>
+  <router-link
+    to="/dashboard"
+    class="d-flex justify-content-center align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none text-light"
+  >
+    <span class="fs-4 text-center">Oscat Admin</span>
+  </router-link>
+  <hr />
+  <ul class="nav nav-pills flex-column mb-auto">
+    <CollapseMenu
+      v-for="menu in menus"
+      :key="menu.id"
+      :title="menu.title"
+      :icon="menu.icon"
+      :items="menu.items"
+    ></CollapseMenu>
+  </ul>
+  <hr />
+  <span class="d-flex justify-content-center align-items-end mb-3 mb-md-0 me-md-auto text-decoration-none text-light" @click="logout">登出</span>
+</template>
 
 <style scoped>
 .collapse-custom {
