@@ -79,7 +79,7 @@ public class Member {
 	private Date joinDate;
 
 	@JsonManagedReference(value = "member-order")
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<TransOrder> transOrders;
 
 	@PrePersist
