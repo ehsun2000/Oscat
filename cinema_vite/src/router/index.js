@@ -43,6 +43,7 @@ const routes = [
       },
     ],
   },
+  { path: '/productList', component: import('@/views/ProductList.vue') },
 ];
 
 const router = createRouter({
