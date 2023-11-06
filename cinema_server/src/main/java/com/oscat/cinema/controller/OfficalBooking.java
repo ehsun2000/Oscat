@@ -188,15 +188,13 @@ public class OfficalBooking {
     /*商品名稱*/
     aioCheck.setItemName("MovieTicket");
     /*特店交易編號*/
-    Random rand = new Random();
-    int randomNumber = rand.nextInt(900000) + 100000; // 這將保證生成的是一個六位數的數字
-    aioCheck.setMerchantTradeNo("testSpeakitup" + randomNumber);
+    aioCheck.setMerchantTradeNo("testSpeakitup");
     /*付款完成通知回傳網址*/
     aioCheck.setReturnURL("http://localhost:8080/api/offical/returnURL");
     /*Client端回傳付款網址*/
 //  setClientBackURL
-//    aioCheck.setOrderResultURL();
-//    aioCheck.setClientBackURL();
+//  aioCheck.setOrderResultURL();
+    aioCheck.setClientBackURL("http://localhost:8082/");
 //  輸出畫面
     PrintWriter out = response.getWriter();
     response.setContentType("text/html");
