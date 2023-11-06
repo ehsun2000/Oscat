@@ -2,6 +2,7 @@ package com.oscat.cinema.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,11 +37,11 @@ public class CinameInfoService implements ICinameInfoService {
 	private final FacilityRepository facilityRepository;
 	private final FacilityMapper facilityMapper;
 	private final CloudinaryUtil cloudinaryUtil;
+
 	// 建構子注入
 	@Autowired
-	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper,
-			TicketTypeRepository typeRepository, FacilityRepository facilityRepository,
-			TicketTypeMapper ticketTypeMapper,FacilityMapper facilityMapper,
+	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper, TicketTypeRepository typeRepository,
+			FacilityRepository facilityRepository, TicketTypeMapper ticketTypeMapper, FacilityMapper facilityMapper,
 			CloudinaryUtil cloudinaryUtil) {
 		this.cinemaRepo = cinemaRepo;
 		this.cinemaMapper = cinmeMapper;
@@ -103,17 +104,17 @@ public class CinameInfoService implements ICinameInfoService {
 	@Transactional
 	public String updateImg(MultipartFile file, Integer id) {
 		Optional<Cinema> cinemaOpt = cinemaRepo.findById(id);
-		if(cinemaOpt.isPresent()) {
+		if (cinemaOpt.isPresent()) {
 			Cinema cinema = cinemaOpt.get();
 			// 上傳圖片
 			String url = cloudinaryUtil.uploadImage(file);
-			if(url == null) {
+			if (url == null) {
 				return "Upload new picture faild!";
 			}
-			
+
 			// 刪除舊圖片
 			boolean deleteImage = cloudinaryUtil.deleteImage(cinema.getCinemaImg());
-			if(deleteImage == false) {
+			if (deleteImage == false) {
 				return "Delete old picture faild!";
 			}
 			cinema.setCinemaImg(url);
@@ -121,6 +122,19 @@ public class CinameInfoService implements ICinameInfoService {
 			cinemaRepo.save(cinema);
 		}
 		return "Success";
+	}
+
+	private CinemaDTO convertToDTO(Cinema cinema) {
+		CinemaDTO dto = new CinemaDTO();
+		dto.setId(cinema.getCinemaId());
+		dto.setName(cinema.getCinemaName());
+		dto.setBasePrice(cinema.getBasePrice());
+		return dto;
+	}
+
+	public List<CinemaDTO> getAllCinemas() {
+		List<Cinema> cinemas = cinemaRepo.findAll();
+		return cinemas.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 }

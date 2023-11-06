@@ -95,4 +95,6 @@ public class CinemaInfoController {
 
 		return ResponseEntity.ok(facilities);
 	}
+	
+	
 }

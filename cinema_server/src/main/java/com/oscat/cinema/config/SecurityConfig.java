@@ -53,7 +53,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:8081"));
+		config.setAllowedOrigins(List.of("http://localhost:8081","http://localhost:8082"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
 		config.setAllowCredentials(true);
 		config.setAllowedHeaders(List.of("*"));
@@ -76,7 +76,8 @@ public class SecurityConfig {
 
 		// 控制 api 使用權限
 		http.authorizeHttpRequests(authorize -> {
-			authorize.requestMatchers("/adminlogin", "/generatekey").permitAll();
+			authorize.requestMatchers("/adminlogin").permitAll();
+			authorize.requestMatchers("/official/**").permitAll();
 			authorize.requestMatchers("/api/**").hasAnyRole("ADMIN");
 			authorize.anyRequest().authenticated();
 		});

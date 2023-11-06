@@ -30,8 +30,9 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 			@Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate);
 
-	@Query("SELECT sr.roomName, st.showDateAndTime " + "FROM ShowTime st " + "JOIN st.screeningRoom sr "
-			+ "JOIN sr.cinema c " + "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId "
+	@Query("SELECT st.showTimeId, sr.id, sr.roomName, st.showDateAndTime  " + "FROM ShowTime st "
+			+ "JOIN st.screeningRoom sr " + "JOIN sr.cinema c "
+			+ "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId "
 			+ "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate "
 			+ "ORDER BY st.showDateAndTime, sr.roomName")
 	List<Object[]> findShowTimeByMovieIdAndCinemaIdAndDate(@Param("movieId") UUID movieId,
@@ -64,22 +65,14 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 			@Param("end") LocalDateTime end);
 
 	// 找出原本場次以外，播放時間之後的第一筆資料
-	@Query("SELECT s FROM ShowTime s "
-			+ "WHERE s.screeningRoom.roomId = :roomId AND "
-			+ "s.showTimeId != :oldId AND "
-			+ "s.showDateAndTime >= :start "
-			+ "ORDER BY s.showDateAndTime ASC "
-			+ "LIMIT 1")
+	@Query("SELECT s FROM ShowTime s " + "WHERE s.screeningRoom.roomId = :roomId AND " + "s.showTimeId != :oldId AND "
+			+ "s.showDateAndTime >= :start " + "ORDER BY s.showDateAndTime ASC " + "LIMIT 1")
 	ShowTime findAfterShow(@Param("roomId") Integer roomId, @Param("oldId") UUID oldId,
 			@Param("start") LocalDateTime localDateTime);
 
 	// 找出原本場次以外，之前的最後一筆資料
-	@Query("SELECT s FROM ShowTime s "
-			+ "WHERE s.screeningRoom.roomId = :roomId AND "
-			+ "s.showTimeId != :oldId AND "
-			+ "s.showDateAndTime < :start "
-			+ "ORDER BY s.showDateAndTime DESC "
-			+ "LIMIT 1")
+	@Query("SELECT s FROM ShowTime s " + "WHERE s.screeningRoom.roomId = :roomId AND " + "s.showTimeId != :oldId AND "
+			+ "s.showDateAndTime < :start " + "ORDER BY s.showDateAndTime DESC " + "LIMIT 1")
 	ShowTime findBeforeShow(@Param("roomId") Integer roomId, @Param("oldId") UUID oldId,
 			@Param("start") LocalDateTime localDateTime);
 }

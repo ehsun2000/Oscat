@@ -10,6 +10,6 @@ import com.oscat.cinema.entity.TicketType;
 
 @Repository
 public interface TicketTypeRepository extends JpaRepository<TicketType, Integer> {
-	@Query("select ticketTypeId,ticketTypeName from TicketType")
+	@Query("select ticketTypeId,ticketTypeName,priceDifference from TicketType")
 	List<Object[]> findAllTypes();
 }

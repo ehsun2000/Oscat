@@ -1,22 +1,30 @@
 package com.oscat.cinema.service.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.oscat.cinema.dao.MemberRepository;
+import com.oscat.cinema.dto.MemberDTO;
 import com.oscat.cinema.entity.Member;
+import com.oscat.cinema.entity.Ticket;
+import com.oscat.cinema.entity.TransOrder;
 import com.oscat.cinema.service.IMemberService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -27,7 +35,7 @@ public class MemberService implements IMemberService {
 
 	@Autowired
 	private MemberRepository memberRepo;
-	
+
 	@Autowired
 	private JavaMailSender mailSender;
 
@@ -57,22 +65,31 @@ public class MemberService implements IMemberService {
 		return null;
 	}
 
-	@Transactional
-	public void encodePassword(Member member) {
-		String encodedPwd = pwdEncoder.encode(member.getPassword());
-		member.setPassword(encodedPwd);
+	// 根據 id 查詢會員
+	public Member findById(UUID memberId) {
+		Optional<Member> optional = memberRepo.findById(memberId);
+		if (optional.isPresent()) {
+			return optional.get();
+		}
+		return null;
 	}
-	
+
+	// 加密
+	@Transactional
+	public String encodePassword(String password) {
+		return pwdEncoder.encode(password);
+	}
+
 	@Override
 	public Member findByEmail(String email) {
 		return memberRepo.findByEmail(email);
 	}
 
-	//生驗證碼 寄mail
+	// 生驗證碼 寄mail
 	@Override
-	public void sendVerificationCode(String email,HttpSession session) {
+	public void sendVerificationCode(String email, HttpSession session) {
 		Integer otpvalue = 0;
-		
+
 		if (StringUtils.isNotEmpty(email)) {
 			Random rd = new Random();
 			otpvalue = rd.nextInt(2147483647);
@@ -90,8 +107,59 @@ public class MemberService implements IMemberService {
 			session.setAttribute("otp", otpvalue);
 			session.setAttribute("email", email);
 			System.out.println("成功送出");
-		}catch (MessagingException e) {
+		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	// 更新會員資料
+	public Optional<Member> update(MemberDTO newMember) {
+		Optional<Member> optional = memberRepo.findById(newMember.getMemberId());
+		if (optional.isPresent()) {
+			Member updateMember = optional.get();
+			updateMember.setMemberId(newMember.getMemberId());
+			updateMember.setMemberName(newMember.getMemberName());
+			updateMember.setEmail(newMember.getEmail());
+			updateMember.setPassword(newMember.getPassword());
+			updateMember.setPhone(newMember.getPhone());
+			updateMember.setGender(newMember.getGender());
+			return Optional.of(memberRepo.save(updateMember));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	// 查詢會員訂單
+	public List<Map<String, Object>> getMemberOrders(UUID memberId) {
+		Optional<Member> optional = memberRepo.findById(memberId);
+
+		if (optional.isPresent()) {
+			Member member = optional.get();
+			List<Map<String, Object>> orders = member.getTransOrders().stream().map(order -> toOrderDto(order))
+					.toList();
+			return orders;
+		} else {
+			return Collections.emptyList(); // 回傳空的 List
+		}
+	}
+
+	private Map<String, Object> toOrderDto(TransOrder transOrder) {
+		Map<String, Object> dto = new HashMap<>();
+
+		dto.put("orderId", transOrder.getOrderId());
+		dto.put("paymentMethod", transOrder.getPaymentMethod());
+		dto.put("bookingDateAndTime", transOrder.getBookingDateAndTime());
+		dto.put("totalPrice", transOrder.getTotalPrice());
+		List<Map<String, String>> tickets = transOrder.getTickets().stream().map(ticket -> toTicketDto(ticket))
+				.toList();
+		dto.put("tickets", tickets);
+
+		return dto;
+	}
+
+	private Map<String, String> toTicketDto(Ticket ticket) {
+		Map<String, String> dto = new HashMap<>();
+		dto.put("ticketId", ticket.getTicketId().toString());
+		return dto;
 	}
 }
