@@ -4,8 +4,12 @@
     <form @submit.prevent="getSeatStatus">
       <select v-model="selectedCinemaId" @change="updateScreeningRooms">
         <option disabled value="">------請選擇戲院------</option>
-        <option v-for="cinema in cinemas" :key="cinema.id" :value="cinema.id">
-          {{ cinema.name }}
+        <option
+          v-for="cinema in cinemas"
+          :key="cinema.cinemaId"
+          :value="cinema.cinemaId"
+        >
+          {{ cinema.cinemaName }}
         </option>
       </select>
       <select v-model="selectedRoomId">
@@ -65,7 +69,7 @@ export default {
 
     const fetchCinemas = async () => {
       try {
-        const response = await fetch(`${api}/cinemas/all`, {
+        const response = await fetch(`${api}/cinema`, {
           credentials: 'include',
         });
         if (response.ok) {

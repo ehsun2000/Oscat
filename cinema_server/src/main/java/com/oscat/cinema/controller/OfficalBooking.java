@@ -51,9 +51,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping(path = "/api/official")
+@RequestMapping(path = "/official")
 public class OfficalBooking {
-	
+
 	@Autowired
 	private CinameInfoService infoService;
 	@Autowired
@@ -68,25 +68,25 @@ public class OfficalBooking {
 	private SeatService seatService;
 	@Autowired
 	private ScreeningRoomService srService;
-    @Autowired
-    private OrderService orderService;
-	
+	@Autowired
+	private OrderService orderService;
+
 	@GetMapping("/allCinema")
 	public ResponseEntity<List<CinemaDTO>> getCinemaIdAndName() {
-	    List<CinemaDTO> cinemas = infoService.getAllCinemas();
-	    return ResponseEntity.ok(cinemas);
+		List<CinemaDTO> cinemas = infoService.getAllCinemas();
+		return ResponseEntity.ok(cinemas);
 	}
-	
+
 	@GetMapping("/allScreeningRoom")
 	public List<ScreeningRoomDTO> getAllScreeningRoomRoomId(@RequestParam Integer id) {
 		return srService.getAllScreeningRoomById(id);
 	}
-	
+
 	@GetMapping("/showing")
-	public List<MovieDTO> getMovieShowing(){
+	public List<MovieDTO> getMovieShowing() {
 		return movieService.getMovieShowing();
 	}
-	
+
 	@GetMapping("/{movieId}")
 	public ResponseEntity<?> findById(@PathVariable UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
@@ -97,125 +97,116 @@ public class OfficalBooking {
 		}
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@GetMapping(path = "/{movieId}/{cinemaId}/findtime")
 	public List<Map<String, Object>> findShowTimes(@PathVariable(name = "movieId") UUID movieId,
-	        @PathVariable(name = "cinemaId") Integer cinemaId) {
-	    return bookingService.findShowTime(movieId, cinemaId);
+			@PathVariable(name = "cinemaId") Integer cinemaId) {
+		return bookingService.findShowTime(movieId, cinemaId);
 	}
-	
+
 	@GetMapping(path = "/ticketTypes")
-	public List<TicketTypeDTO> gerTicketTypes(){
+	public List<TicketTypeDTO> getTicketTypes() {
 		return bookingService.getTicketTypesList();
 	}
-	
+
 	@GetMapping("/findshowtime/{showTimeId}")
 	public ResponseEntity<Map<String, Object>> findShowTimeById(@PathVariable UUID showTimeId) {
-	    Optional<ShowTime> optionalShowTime = stmService.findShowTimeById(showTimeId);
-	    if (optionalShowTime.isPresent()) {
-	        ShowTime showTime = optionalShowTime.get();
-	        Integer roomId = showTime.getScreeningRoom().getRoomId();
+		Optional<ShowTime> optionalShowTime = stmService.findShowTimeByIdForOfficial(showTimeId);
+		if (optionalShowTime.isPresent()) {
+			ShowTime showTime = optionalShowTime.get();
+			Integer roomId = showTime.getScreeningRoom().getRoomId();
 
-	        Map<String, Object> response = new HashMap<>();
-	        response.put("showTimeId", showTime.getShowTimeId());
-	        response.put("filmType", showTime.getFilmType());
-	        response.put("extraFee", showTime.getExtraFee());
-	        response.put("showDateAndTime", showTime.getShowDateAndTime());
-	        response.put("roomId", roomId);
-	        response.put("transOrders", showTime.getTransOrders());
+			Map<String, Object> response = new HashMap<>();
+			response.put("showTimeId", showTime.getShowTimeId());
+			response.put("filmType", showTime.getFilmType());
+			response.put("extraFee", showTime.getExtraFee());
+			response.put("showDateAndTime", showTime.getShowDateAndTime());
+			response.put("roomId", roomId);
+			response.put("transOrders", showTime.getTransOrders());
 
-	        return ResponseEntity.ok(response);
-	    } else {
-	        return ResponseEntity.notFound().build();
-	    }
+			return ResponseEntity.ok(response);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
-	
+
 	@GetMapping("/findAllSeatByRoomId")
 	public List<SeatDTO> getSeatsByRoomId(@RequestParam Integer roomId) {
 		return seatService.getAllSeatsByRoomIdSortedByName(roomId);
 	}
-	
+
 	@GetMapping("/showtime/{showtimeId}/seatIds")
 	public ResponseEntity<List<UUID>> getSeatIdsByShowtimeId(@PathVariable String showtimeId) {
-	    UUID uuid = UUID.fromString(showtimeId);
-	    List<Ticket> tickets = bookingService.getTicketsByShowtimeId(uuid);
-	    
-	    List<UUID> seatIds = tickets.stream()
-	        .map(Ticket::getSeat)
-	        .map(Seat::getSeatId)
-	        .collect(Collectors.toList());
-	    
-	    return new ResponseEntity<>(seatIds, HttpStatus.OK);
+		UUID uuid = UUID.fromString(showtimeId);
+		List<Ticket> tickets = bookingService.getTicketsByShowtimeId(uuid);
+
+		List<UUID> seatIds = tickets.stream().map(Ticket::getSeat).map(Seat::getSeatId).collect(Collectors.toList());
+
+		return new ResponseEntity<>(seatIds, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/booking")
-	public ResponseEntity<String> createOrder(
-	    @RequestBody OrderDTO orderDTO,
-	    HttpSession session) {
+	public ResponseEntity<String> createOrder(@RequestBody OrderDTO orderDTO, HttpSession session) {
 
-	    Member loginMember = (Member) session.getAttribute("loginMember");
-	    if (loginMember == null) {
-	        return new ResponseEntity<>("User is not logged in.", HttpStatus.UNAUTHORIZED);
-	    }
-	    UUID memberId = loginMember.getMemberId();
-	    orderDTO.setMemberId(memberId);
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember == null) {
+			return new ResponseEntity<>("User is not logged in.", HttpStatus.UNAUTHORIZED);
+		}
+		UUID memberId = loginMember.getMemberId();
+		orderDTO.setMemberId(memberId);
 
-	    try {
-	        orderService.createOrder(orderDTO);
-	        return new ResponseEntity<>("Order created successfully.", HttpStatus.CREATED);
-	    } catch (Exception e) {
-	        return new ResponseEntity<>("Error creating order: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+		try {
+			orderService.createOrder(orderDTO);
+			return new ResponseEntity<>("Order created successfully.", HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error creating order: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
-    
-    /*準備前往綠界*/
-    @PostMapping("/goECPay")
-    public void goECpay(@RequestBody CheckoutDataDTO checkoutData, HttpServletResponse response)
-    throws IOException {
-    //設定金流
-    AllInOne aio = new AllInOne("");
-    AioCheckOutOneTime aioCheck = new AioCheckOutOneTime();
-    /*特店編號*/
-    aioCheck.setMerchantID("2000214");
-    /*特店交易時間*/
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    sdf.setLenient(false);
-    aioCheck.setMerchantTradeDate(sdf.format(new Date()));
-    /*交易金額*/
-    aioCheck.setTotalAmount(checkoutData.getTotalPrice());
-    /*交易描述*/
-    aioCheck.setTradeDesc("MovieTicket");
-    /*商品名稱*/
-    aioCheck.setItemName("MovieTicket");
-    /*特店交易編號*/
-    aioCheck.setMerchantTradeNo("testSpeakitup");
-    /*付款完成通知回傳網址*/
-    aioCheck.setReturnURL("http://localhost:8080/api/offical/returnURL");
-    /*Client端回傳付款網址*/
-//  setClientBackURL
-//  aioCheck.setOrderResultURL();
-    aioCheck.setClientBackURL("http://localhost:8082/");
-//  輸出畫面
-    PrintWriter out = response.getWriter();
-    response.setContentType("text/html");
-    out.print(aio.aioCheckOut(aioCheck, null));
-    }
-    
-    @PostMapping("/returnURL")
-    public void returnURL(
-    	    @RequestParam("Rtncode") int Rtncode,@RequestParam("TradeAmt") int TradeAmt, HttpServletRequest request) {
-    //交易成功
-    if ((request.getRemoteAddr().equalsIgnoreCase("175.99.72.1")
-    || request.getRemoteAddr().equalsIgnoreCase("175.99.72.11")
-    || request.getRemoteAddr().equalsIgnoreCase("175.99.72.24")
-    || request.getRemoteAddr().equalsIgnoreCase("175.99.72.28")
-    || request.getRemoteAddr().equalsIgnoreCase("175.99.72.32"))&& Rtncode ==1) {
-    	}
-    }
-    
-    
 
-	
-    
-    
+	/* 準備前往綠界 */
+	@PostMapping("/goECPay")
+	public void goECpay(@RequestBody CheckoutDataDTO checkoutData, HttpServletResponse response) throws IOException {
+		// 設定金流
+		AllInOne aio = new AllInOne("");
+		AioCheckOutOneTime aioCheck = new AioCheckOutOneTime();
+		/* 特店編號 */
+		aioCheck.setMerchantID("2000214");
+		/* 特店交易時間 */
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		sdf.setLenient(false);
+		aioCheck.setMerchantTradeDate(sdf.format(new Date()));
+		/* 交易金額 */
+		aioCheck.setTotalAmount(checkoutData.getTotalPrice());
+		/* 交易描述 */
+		aioCheck.setTradeDesc("MovieTicket");
+		/* 商品名稱 */
+		aioCheck.setItemName("MovieTicket");
+		/* 特店交易編號 */
+		Random rand = new Random();
+		int randomNumber = rand.nextInt(900000) + 100000; // 這將保證生成的是一個六位數的數字
+		aioCheck.setMerchantTradeNo("testSpeakitup" + randomNumber);
+		/* 付款完成通知回傳網址 */
+		aioCheck.setReturnURL("http://localhost:8080/api/offical/returnURL");
+		/* Client端回傳付款網址 */
+//  setClientBackURL
+//    aioCheck.setOrderResultURL();
+//    aioCheck.setClientBackURL();
+//  輸出畫面
+		PrintWriter out = response.getWriter();
+		response.setContentType("text/html");
+		out.print(aio.aioCheckOut(aioCheck, null));
+	}
+
+	@PostMapping("/returnURL")
+	public void returnURL(@RequestParam("Rtncode") int Rtncode, @RequestParam("TradeAmt") int TradeAmt,
+			HttpServletRequest request) {
+		// 交易成功
+		if ((request.getRemoteAddr().equalsIgnoreCase("175.99.72.1")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.11")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.24")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.28")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.32")) && Rtncode == 1) {
+		}
+	}
+
 }

@@ -282,8 +282,8 @@ const checkEmail = () => {
 // const emailExists = ref(false);
 
 // const checkEmailRepeat = async () => {
-//   const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT
-//     }/official/member/check`;
+//   const url = `${import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+//     }/member/check`;
 //   try {
 //     const response = await axios.post(url, { email: member.value.email });
 //     if (response.status === 200) {
@@ -300,24 +300,30 @@ const checkEmail = () => {
 const logout = async () => {
   sessionStorage.removeItem('isLogin');
   const url = `${
-    import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/official/member/logout`;
+    import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+  }/member/logout`;
   const responce = await axios.post(url);
   // console.log(url);
   console.log(responce);
-  router.go(0);
+  // router.go(0);
   router.push('/');
 };
 
 // 載入會員資料
 onMounted(async () => {
   try {
-    const url = `${
-      import.meta.env.VITE_OSCAT_API_ENDPOINT
-    }/official/member/find`;
-    const response = await axios.post(url);
-    member.value = response.data;
-    // console.log(member.value);
+    const getMemberUrl = `${
+      import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+    }/member/find`;
+    const loginMember = await axios.post(getMemberUrl);
+    member.value = loginMember.data;
+
+    const getOrders = `${
+      import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+    }/member/order`;
+    // 測試取得訂單
+    const findOrders = await axios.get(getOrders);
+    console.log(findOrders.data);
 
     // 格式化日期
     if (member.value.joinDate) {
@@ -329,32 +335,32 @@ onMounted(async () => {
       formatJoinDate.value = formattedDate;
     }
   } catch (error) {
-    const url = `${
-      import.meta.env.VITE_OSCAT_API_ENDPOINT
-    }/official/member/logout`;
-    await axios.post(url);
-    if (error.response && error.response.status === 404) {
-      logout();
-      // Swal.fire('錯誤', '請重新登入', 'error');
-      await Swal.fire({
-        title: '請重新登入',
-        icon: 'error',
-        timer: 1500, // 1.5秒後關閉畫面
-        showConfirmButton: false,
-      });
-      router.push('/');
-    } else {
-      console.error(error);
-      logout();
-      // Swal.fire('錯誤', '發生了一些問題', 'error');
-      await Swal.fire({
-        title: '發生了一些問題',
-        icon: 'error',
-        timer: 1500, // 1.5秒後關閉畫面
-        showConfirmButton: false,
-      });
-      router.push('/');
-    }
+    // const url = `${
+    //   import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+    // }/member/logout`;
+    // await axios.post(url);
+    // if (error.response && error.response.status === 404) {
+    //   // Swal.fire('錯誤', '請重新登入', 'error');
+    //   await Swal.fire({
+    //     title: '請重新登入',
+    //     icon: 'error',
+    //     timer: 1500, // 1.5秒後關閉畫面
+    //     showConfirmButton: false,
+    //   });
+    //   logout();
+    //   router.push('/');
+    // } else {
+    //   console.error(error);
+    //   logout();
+    //   // Swal.fire('錯誤', '發生了一些問題', 'error');
+    //   await Swal.fire({
+    //     title: '發生了一些問題',
+    //     icon: 'error',
+    //     timer: 1500, // 1.5秒後關閉畫面
+    //     showConfirmButton: false,
+    //   });
+    //   router.push('/');
+    // }
   }
 });
 
@@ -363,8 +369,8 @@ const modifyMember = async (e) => {
   e.preventDefault(); // 防止表單預設行為
 
   const url = `${
-    import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/official/member/update`;
+    import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+  }/member/update`;
   console.log(url);
   console.log(member.value);
   const memberData = { ...member.value };

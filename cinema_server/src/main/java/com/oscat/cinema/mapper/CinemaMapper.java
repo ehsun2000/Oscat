@@ -7,12 +7,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.hibernate.loader.ast.spi.AfterLoadAction;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oscat.cinema.dto.BusinessHourDto;
 import com.oscat.cinema.dto.CinemaDTO;

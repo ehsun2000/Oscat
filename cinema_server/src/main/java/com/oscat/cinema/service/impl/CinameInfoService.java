@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.oscat.cinema.dao.CinemaRepository;
+import com.oscat.cinema.dao.CinemaTicketTypeRepository;
 import com.oscat.cinema.dao.FacilityRepository;
+import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.entity.Facility;
+import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
 import com.oscat.cinema.mapper.FacilityMapper;
@@ -34,11 +37,11 @@ public class CinameInfoService implements ICinameInfoService {
 	private final FacilityRepository facilityRepository;
 	private final FacilityMapper facilityMapper;
 	private final CloudinaryUtil cloudinaryUtil;
+
 	// 建構子注入
 	@Autowired
-	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper,
-			TicketTypeRepository typeRepository, FacilityRepository facilityRepository,
-			TicketTypeMapper ticketTypeMapper,FacilityMapper facilityMapper,
+	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper, TicketTypeRepository typeRepository,
+			FacilityRepository facilityRepository, TicketTypeMapper ticketTypeMapper, FacilityMapper facilityMapper,
 			CloudinaryUtil cloudinaryUtil) {
 		this.cinemaRepo = cinemaRepo;
 		this.cinemaMapper = cinmeMapper;
@@ -101,17 +104,17 @@ public class CinameInfoService implements ICinameInfoService {
 	@Transactional
 	public String updateImg(MultipartFile file, Integer id) {
 		Optional<Cinema> cinemaOpt = cinemaRepo.findById(id);
-		if(cinemaOpt.isPresent()) {
+		if (cinemaOpt.isPresent()) {
 			Cinema cinema = cinemaOpt.get();
 			// 上傳圖片
 			String url = cloudinaryUtil.uploadImage(file);
-			if(url == null) {
+			if (url == null) {
 				return "Upload new picture faild!";
 			}
-			
+
 			// 刪除舊圖片
 			boolean deleteImage = cloudinaryUtil.deleteImage(cinema.getCinemaImg());
-			if(deleteImage == false) {
+			if (deleteImage == false) {
 				return "Delete old picture faild!";
 			}
 			cinema.setCinemaImg(url);
@@ -120,7 +123,7 @@ public class CinameInfoService implements ICinameInfoService {
 		}
 		return "Success";
 	}
-	
+
 	private CinemaDTO convertToDTO(Cinema cinema) {
 		CinemaDTO dto = new CinemaDTO();
 		dto.setId(cinema.getCinemaId());
@@ -128,7 +131,7 @@ public class CinameInfoService implements ICinameInfoService {
 		dto.setBasePrice(cinema.getBasePrice());
 		return dto;
 	}
-	
+
 	public List<CinemaDTO> getAllCinemas() {
 		List<Cinema> cinemas = cinemaRepo.findAll();
 		return cinemas.stream().map(this::convertToDTO).collect(Collectors.toList());

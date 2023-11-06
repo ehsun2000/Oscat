@@ -33,6 +33,4 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 	
 	// 查詢分頁 cinema 資料 JPQL
 	Page<Cinema> findAll(Pageable pageable);
-	
-	List<Cinema> findAll();
 }

@@ -53,6 +53,6 @@ public class TransOrder {
 	private Member member;
 
 	@JsonManagedReference(value = "order-type")
-	@OneToMany(mappedBy = "transOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "transOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Ticket> tickets;
 }

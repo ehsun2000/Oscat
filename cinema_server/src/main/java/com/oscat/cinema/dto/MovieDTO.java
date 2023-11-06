@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class MovieDTO {
+	
 	private UUID movieId;
 	private String movieName;
     private String movieType;

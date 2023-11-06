@@ -65,8 +65,10 @@ const fetchShowTimes = async () => {
       `${api}/${props.movie.movieId}/${selectedCinemaId.value}/findtime`,
       {
         credentials: 'include',
+        method: 'GET',
       },
     );
+
     if (response.ok) {
       const data = await response.json();
       const tempTimes = {};

@@ -101,15 +101,13 @@ const signin = async () => {
           window.location.reload();
         }, 1);
       }
-    } else {
-      await Swal.fire({
-        title: '登入失敗',
-        text: '請檢查email密碼',
-        icon: 'error',
-      });
     }
   } catch (error) {
-    console.error('登入出錯：', error);
+    console.log(error.response);
+    await Swal.fire({
+      title: error.response,
+      icon: 'error',
+    });
   }
 };
 </script>
