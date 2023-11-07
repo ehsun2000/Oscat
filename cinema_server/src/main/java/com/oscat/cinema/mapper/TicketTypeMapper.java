@@ -16,7 +16,6 @@ import com.oscat.cinema.entity.TicketType;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface TicketTypeMapper {
 	
-	
 	// 將 TicketType.name 映射到 String
 	default String toStrArr(TicketType ticketType) {
 		return ticketType.getTicketTypeName();

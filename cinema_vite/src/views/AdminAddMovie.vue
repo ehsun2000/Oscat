@@ -44,7 +44,7 @@
                 class="form-select"
                 id="movieStatus"
                 v-model="movie.movieStatus"
-                @change="handleSelection(event)"
+                @change="handleSelection"
               >
                 <option :value="''">請選擇狀態</option>
                 <option :value="'上映中'">上映中</option>
@@ -155,7 +155,7 @@
                   class="form-select"
                   id="classification"
                   v-model="movie.classification"
-                  @change="handleSelection(event)"
+                  @change="handleSelection"
                 >
                   <option value="普遍級">普遍級</option>
                   <option value="保護級">保護級</option>
@@ -324,11 +324,9 @@ const checkTypeBlur = () => {
 const handleSelection = (event) => {
   if (event.target.value !== '') {
     console.log('選擇了：', event.target.value);
-    // 做你想要的事情
   } else {
     console.log('沒有選擇值');
     alert('請一定要選擇');
-    // 不執行任何操作
   }
 };
 
@@ -528,7 +526,7 @@ const submitForm = async () => {
       movie.value = ref(Movie);
     }
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     Swal.fire('新增失敗', '發生錯誤', 'error');
   }
 };

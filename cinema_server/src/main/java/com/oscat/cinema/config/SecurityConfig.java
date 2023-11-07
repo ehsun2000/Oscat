@@ -26,13 +26,13 @@ import com.oscat.cinema.service.AdminUserDetailsService;
 public class SecurityConfig {
 
 	@Autowired
-	private AdminUserDetailsService detailsService; // 自定義的用戶詳細信息服務
+	private AdminUserDetailsService detailsService;
 
 	@Autowired
-	private AuthRequestFilter authRequestFilter; // 自定義的 JWT 過濾器
+	private AuthRequestFilter authRequestFilter;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder; // 密碼加密器
+	private PasswordEncoder passwordEncoder;
 
 	// 身份驗證提供者，設定 UserdetailsService 和 PasswordEncoder
 	@Bean
@@ -53,7 +53,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:8081"));
+		config.setAllowedOrigins(List.of("http://localhost:8081","http://localhost:8082"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
 		config.setAllowCredentials(true);
 		config.setAllowedHeaders(List.of("*"));
@@ -76,7 +76,8 @@ public class SecurityConfig {
 
 		// 控制 api 使用權限
 		http.authorizeHttpRequests(authorize -> {
-			authorize.requestMatchers("/adminlogin", "/generatekey").permitAll();
+			authorize.requestMatchers("/adminlogin").permitAll();
+			authorize.requestMatchers("/official/**").permitAll();
 			authorize.requestMatchers("/api/**").hasAnyRole("ADMIN");
 			authorize.anyRequest().authenticated();
 		});

@@ -35,7 +35,6 @@ async function handleLogin() {
   };
 
   try {
-    console.log(apiLink);
     const response = await fetch(apiLink, requestOptions);
     if (response.ok) {
       // 使用 Pinia 的 userStore 來更新登入狀態

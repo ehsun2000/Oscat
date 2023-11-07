@@ -1,9 +1,7 @@
 package com.oscat.cinema.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,9 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,9 +29,8 @@ import com.oscat.cinema.dao.MovieRepository;
 import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.service.MovieService;
-import com.oscat.cinema.util.FileUploadUtil;
+import com.oscat.cinema.util.aijie.FileUploadUtil;
 
-import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 
 @RestController
@@ -50,12 +45,11 @@ public class MovieController {
 
 	@Autowired
 	FileUploadUtil fileUploadUtil;
-	
+
 	// 新增電影
 	@PostMapping("/add")
 	public ResponseEntity<?> postAddMovie(@RequestBody Movie movie) {
 
-		
 		Movie result = movieService.saveMovie(movie);
 
 		if (result != null) {
@@ -63,7 +57,7 @@ public class MovieController {
 		}
 		return new ResponseEntity<String>("新增失敗，請檢查輸入格式", null, HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@PostMapping("/addList")
 	public List<Movie> addListMovie(@RequestBody List<Movie> MovieList) {
 		return movRepo.saveAll(MovieList);
@@ -81,7 +75,7 @@ public class MovieController {
 		return new ResponseEntity<String>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
 	}
 
-	// 根據 id 查詢電影
+	// 根據id查詢電影
 	@GetMapping("/{movieId}")
 	public ResponseEntity<?> findById(@PathVariable UUID movieId) {
 		Optional<Movie> optional = movRepo.findById(movieId);
@@ -98,20 +92,20 @@ public class MovieController {
 	public List<Movie> findAllMovie() {
 		return movRepo.findAll();
 	}
-	
+
 	// 根據上映狀態查詢電影
 	@GetMapping("/showing")
-	public List<MovieDTO> getMovieShowing(){
+	public List<MovieDTO> getMovieShowing() {
 		return movieService.getMovieShowing();
 	}
 
-	// 根據 id 刪除電影
+	// 根據id刪除電影
 	@DeleteMapping("/delete/{movieId}")
 	public String deleteMovieById(@PathVariable UUID movieId) {
 		return movieService.deleteMovie(movieId);
 	}
 
-	// 根據 id 修改電影
+	// 根據id修改電影
 	@Transactional
 	@PutMapping("/update/{movieId}")
 	public String updateMovieById(@PathVariable UUID movieId, @RequestBody MovieDTO newMovieDTO) {
@@ -140,7 +134,7 @@ public class MovieController {
 	public List<Movie> findMovieByNameLike(@RequestParam("n") String name) {
 		return movRepo.findMovieByNameLike(name);
 	}
-	
+
 	// 根據id修改電影狀態
 	@PutMapping("/status")
 	public ResponseEntity<String> updateStatusById(@RequestBody String json) throws JSONException {
@@ -150,23 +144,22 @@ public class MovieController {
 		String id = joo.getString("movieId");
 		UUID movieId = UUID.fromString(id);
 		boolean result = movieService.updateStatusById(status, movieId);
-		if(result) {
+		if (result) {
 			return new ResponseEntity<String>("狀態更新", null, HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("更新失敗", null, HttpStatus.BAD_REQUEST);
 	}
-	
+
 	// 分頁所有電影
 	@GetMapping("/page")
-    public ResponseEntity<Page<Movie>> getAllMovies(Pageable pageable) {
-        Page<Movie> movies = movRepo.findAll(pageable);
-        return ResponseEntity.ok(movies);
-    }
-	
-	
+	public ResponseEntity<Page<Movie>> getAllMovies(Pageable pageable) {
+		Page<Movie> movies = movRepo.findAll(pageable);
+		return ResponseEntity.ok(movies);
+	}
+
 	// 上傳圖檔到雲端圖庫
 	@PostMapping("/upload")
-    public ResponseEntity<String> upload(@RequestParam("imageUpload") MultipartFile imageFile) {
+	public ResponseEntity<String> upload(@RequestParam("imageUpload") MultipartFile imageFile) {
 		String imgurl = "";
 		try {
 			imgurl = fileUploadUtil.uploadFile(imageFile);
@@ -174,7 +167,7 @@ public class MovieController {
 			e.printStackTrace();
 		}
 		System.out.println(imgurl);
-        return ResponseEntity.ok(imgurl);
-    }
-	
+		return ResponseEntity.ok(imgurl);
+	}
+
 }
