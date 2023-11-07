@@ -148,12 +148,11 @@ public class OfficalBooking {
 	@PostMapping("/booking")
 	public ResponseEntity<String> createOrder(@RequestBody OrderDTO orderDTO, HttpSession session) {
 
-		Member loginMember = (Member) session.getAttribute("loginMember");
-		if (loginMember == null) {
+		UUID loginId = (UUID) session.getAttribute("loginMember");
+		if (loginId == null) {
 			return new ResponseEntity<>("User is not logged in.", HttpStatus.UNAUTHORIZED);
 		}
-		UUID memberId = loginMember.getMemberId();
-		orderDTO.setMemberId(memberId);
+		orderDTO.setMemberId(loginId);
 
 		try {
 			orderService.createOrder(orderDTO);

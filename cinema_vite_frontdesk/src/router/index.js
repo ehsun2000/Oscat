@@ -1,12 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
-  {
-    path: '/adminlogin',
-    name: 'Login',
-    component: () => import('@/views/AdminLogin.vue'),
-  },
-
   { path: '/', component: import('@/views/HomeVue.vue') },
   { path: '/signin', component: import('@/components/SignIn.vue') },
   { path: '/forgotPwd', component: import('@/components/ForgotPwd.vue') },

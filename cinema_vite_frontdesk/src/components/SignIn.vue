@@ -2,15 +2,29 @@
   <div class="container w-25">
     <h1 class="h3 mb-3 fw-normal">會員登入</h1>
     <div class="form-floating">
-      <input type="email" class="form-control" id="email" v-model="email" placeholder="請輸入email" required
-        @blur="checkEmailBlur" />
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        v-model="email"
+        placeholder="請輸入email"
+        required
+        @blur="checkEmailBlur"
+      />
       <div class="input-error">
         <span class="error-message text-danger">{{ emailErrMsg }}</span>
       </div>
     </div>
     <div class="form-floating">
-      <input type="password" class="form-control" id="password" v-model="password" placeholder="請輸入密碼" required
-        @blur="checkPwdBlur" />
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        v-model="password"
+        placeholder="請輸入密碼"
+        required
+        @blur="checkPwdBlur"
+      />
       <div class="input-error">
         <span class="error-message text-danger">{{ pwdErrMsg }}</span>
       </div>
@@ -64,8 +78,9 @@ const checkPwdBlur = () => {
 // 登入
 const signin = async () => {
   try {
-    const url = `${import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
-      }/member/login`;
+    const url = `${
+      import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+    }/member/login`;
     const response = await axios.post(url, {
       email: email.value,
       password: password.value,
@@ -88,7 +103,7 @@ const signin = async () => {
       }
     }
   } catch (error) {
-console.log(error.response);
+    console.log(error.response);
     await Swal.fire({
       title: error.response,
       icon: 'error',

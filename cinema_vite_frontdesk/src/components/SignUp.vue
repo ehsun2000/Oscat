@@ -229,7 +229,7 @@ const checkEmail = () => {
 const emailExists = ref(false);
 
 const checkEmailRepeat = async () => {
-  const url = `${api}//member/check`;
+  const url = `${api}/member/check`;
   try {
     const response = await axios.post(url, { email: member.value.email });
     // console.log(member.value.email);

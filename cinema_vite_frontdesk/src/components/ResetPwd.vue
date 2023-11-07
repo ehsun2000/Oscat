@@ -120,8 +120,8 @@ const checkCheckPwd = () => {
 
 const onSubmit = async () => {
   const url = `${
-    import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/official/member/resetPwd`;
+    import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
+  }/member/resetPwd`;
   console.log(url);
   const response = await axios.post(url, {
     password: password.value,

@@ -67,7 +67,7 @@ const logout = async () => {
   sessionStorage.removeItem('isLogin');
   const url = `${
     import.meta.env.VITE_OSCATOfficial_API_ENDPOINT
-  }/official/member/logout`;
+  }/member/logout`;
   const responce = await axios.post(url);
   // console.log(url);
   console.log(responce);
