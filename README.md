@@ -33,8 +33,8 @@ Oscat 影城是一個為影院運營商設計的一站式服務平台，提供�
 ### 克隆專案
 
 ```bash
-git clone https://github.com/your-username/your-project-name.git
-cd your-project-name
+  git clone https://github.com/your-username/your-project-name.git
+  cd your-project-name
 ```
 
 ### 前端安裝
@@ -42,9 +42,8 @@ cd your-project-name
 進入前端目錄，然後安裝相關依賴，並啟動開發伺服器：
 
 ```bash
-cd frontend
-npm install
-npm run dev
+  npm install
+  npm run dev
 ```
 
 ### 後端運行
