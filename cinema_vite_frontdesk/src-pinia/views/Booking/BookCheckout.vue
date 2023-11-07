@@ -25,7 +25,6 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore.js';
 
 export default {
   setup() {
@@ -43,7 +42,6 @@ export default {
     const ticketTypeIds = ref([]);
     const showtimeId = ref('');
     const ticketDisplays = ref([]);
-    const userStore = useUserStore();
 
     const api = import.meta.env.VITE_OSCATOfficial_API_ENDPOINT;
 
@@ -140,15 +138,7 @@ export default {
           router.push('/');
         }
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          if (!userStore.isAuthenticated) {
-            userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
-            alert('請先登入才能進行購票。');
-            router.push('/signin');
-          }
-        } else {
-          console.error('結帳失敗:', error);
-        }
+        console.error('結帳失敗:', error);
       }
     };
 
@@ -213,15 +203,7 @@ export default {
           }
         }
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          if (!userStore.isAuthenticated) {
-            userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
-            alert('請先登入才能進行購票。');
-            router.push('/signin');
-          }
-        } else {
-          console.error('結帳失敗:', error);
-        }
+        console.error('結帳失敗:', error);
       }
     };
 
