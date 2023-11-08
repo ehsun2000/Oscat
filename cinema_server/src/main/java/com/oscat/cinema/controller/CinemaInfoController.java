@@ -96,5 +96,11 @@ public class CinemaInfoController {
 		return ResponseEntity.ok(facilities);
 	}
 	
+	@GetMapping("/products")
+	public ResponseEntity<?> getAllProducts(){
+		List<String> products = infoService.findAllProducts();
+		
+		return ResponseEntity.ok(products);
+	}
 	
 }

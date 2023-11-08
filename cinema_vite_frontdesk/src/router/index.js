@@ -5,6 +5,7 @@ const routes = [
   { path: '/signin', component: import('@/components/SignIn.vue') },
   { path: '/forgotPwd', component: import('@/components/ForgotPwd.vue') },
   { path: '/signup', component: import('@/components/SignUp.vue') },
+  { path: '/resetPwd', component: import('@/components/ResetPwd.vue') },
   { path: '/agreement', component: import('@/components/PrivacyPolicy.vue') },
   {
     path: '/select-movie/:movieId',
