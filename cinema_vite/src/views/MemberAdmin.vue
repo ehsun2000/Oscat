@@ -38,12 +38,12 @@
               :to="'/member/update/' + member.memberId"
               ><i class="bi bi-pencil-fill"></i> 修改
             </RouterLink>
-            <button
+            <!-- <button
               class="btn btn-danger"
               @click="deleteHandler(member.memberId)"
             >
               <i class="bi bi-trash-fill"></i> 刪除
-            </button>
+            </button> -->
           </td>
         </tr>
       </tbody>
@@ -61,7 +61,7 @@ import axios from 'axios';
 import { ref, reactive, computed } from 'vue';
 import SearchBox from '@/views/SearchBox.vue';
 import Page from '@/views/SearchPage.vue';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 
 const totalPages = ref(1);
 totalPages.value;
@@ -128,7 +128,7 @@ const formateMember = computed(() => {
 loadMembers(currentPage.value);
 
 // 刪除
-const deleteHandler = async (memberId) => {
+/*const deleteHandler = async (memberId) => {
   Swal.fire({
     title: '確定要刪除嗎?',
     icon: 'question',
@@ -152,7 +152,7 @@ const deleteHandler = async (memberId) => {
     }
   });
 };
-loadMembers();
+loadMembers();*/
 </script>
 
 <style scoped>

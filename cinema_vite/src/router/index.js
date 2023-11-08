@@ -34,6 +34,11 @@ const routes = [
         component: import('@/views/MemberAnalysis.vue'),
       },
       {
+        path: '/transorder',
+        name: 'TransOrder',
+        component: import('@/views/OrderAdmin.vue'),
+      },
+      {
         path: '/cinema-select',
         name: 'CinemaSelect',
         component: import('@/views/CinemaSelect.vue'),

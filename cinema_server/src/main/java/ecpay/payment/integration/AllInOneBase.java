@@ -39,7 +39,7 @@ public class AllInOneBase {
 			/* when using testing code*/
 			
 			//----改成自己電腦裡的payment_conf.xml絕對路徑
-			String paymentConfPath = "C:\\Oscat/cinema_server/src/main/resources/payment_conf.xml";
+			String paymentConfPath = "D:/SummerVacation/TeamProject/cinema_server/src/main/resources/payment_conf.xml";
 			//-------------------------------------
 			doc = EcpayFunction.xmlParser(paymentConfPath);
 			

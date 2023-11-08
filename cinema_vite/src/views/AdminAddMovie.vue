@@ -185,7 +185,6 @@
 
             <div class="col-12">
               <label for="posterImage" class="form-label">電影海報連結</label>
-              <!-- <input type="file" @change="handleFileChange" /> -->
               <button
                 type="button"
                 class="ml-2 btn btn-outline-success"
@@ -240,7 +239,6 @@
               </button>
 
               <div v-for="(still, index) in movie.movieStills" :key="index">
-                <!-- <input type="text" class="form-control" v-model="still.stillImageUrl" /> -->
                 <input
                   type="text"
                   class="mb-2 form-control"
@@ -260,7 +258,7 @@
                 </div>
                 <button
                   type="button"
-                  class="btn btn-danger"
+                  class="btn btn-danger mb-2"
                   @click="removeStills(index)"
                 >
                   删除
@@ -276,6 +274,28 @@
             @click="previousPage"
           >
             返回
+          </button>
+          <hr />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            @click="demo1"
+          >
+            電影資料1
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary mx-1"
+            @click="demo2"
+          >
+            電影資料2
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary mx-1"
+            @click="demo3"
+          >
+            電影資料3
           </button>
         </form>
       </div>
@@ -324,11 +344,9 @@ const checkTypeBlur = () => {
 const handleSelection = (event) => {
   if (event.target.value !== '') {
     console.log('選擇了：', event.target.value);
-    // 做你想要的事情
   } else {
     console.log('沒有選擇值');
     alert('請一定要選擇');
-    // 不執行任何操作
   }
 };
 
@@ -517,6 +535,7 @@ const addStillsLink = async () => {
   });
 };
 
+// 送出表單
 const submitForm = async () => {
   try {
     const url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/add`;
@@ -531,5 +550,90 @@ const submitForm = async () => {
     console.error(error.message);
     Swal.fire('新增失敗', '發生錯誤', 'error');
   }
+};
+
+const demo1 = () => {
+  movie.value = {
+    movieName: '影子背後',
+    movieType: '驚悚/懸疑',
+    movieStatus: '下檔',
+    director: '李世偉 / 蔡坤庭',
+    writerList: '李世偉',
+    actorList: '王鈞浩 / 謝承均 / 吳東諺 / 白家綺 / 梁煒鈿 / 喬思語',
+    plotSummary:
+      '三個月前，因為車禍而失去記憶的男子阿草(王鈞浩飾)，某日醒來後發現，他車禍後這三個月以來，唯一認識且深愛的女友真真(喬思語飾)失蹤了… 當阿草踏上尋找女友的旅程，並與新認識的陌生朋友-記者尼克(吳東諺飾)，一起展開調查真真的身世之後，阿草發現，原來他先前所認知的一切，都不是他所想像的那樣，而這都與他之前出車禍的原因有關… 承辦檢察官（謝承均飾）對案件緝而不捨追查，協助進行嫌犯精神鑑定的琴醫師(白家綺飾)卻敵友難辨，還有牽動著阿草過去、現在和未來的律師馬天弓(梁煒鈿飾)，錯綜復雜的燒腦劇情，真相不到最後一刻無法參透！ 導演採用非線性敘事的手法，透過幾個不同的章節，帶著觀眾一步步拼湊出，藏在阿草影子背後的真相拼圖。',
+    releaseDate: '2021-09-17',
+    duration: '98',
+    classification: '輔導十二級',
+    trailerLink: 'https://www.youtube.com/watch?v=ivE9cKBHfdE',
+    posterImage: '',
+    movieStills: [
+      {
+        stillImageUrl: '',
+      },
+    ],
+  };
+};
+
+const demo2 = () => {
+  movie.value = {
+    movieName: '當男人戀愛時',
+    movieType: '喜劇/愛情/浪漫/家庭',
+    movieStatus: '下檔',
+    director: '殷振豪',
+    writerList: '傅凱羚 / 簡持中',
+    actorList: '邱澤 / 許瑋甯 / 蔡振南 / 鍾欣凌 / 藍葦華 / 陽靚 / 黃路梓茵',
+    plotSummary:
+      '阿成（邱澤 飾）是靠討債維生的流氓，總是嬉皮笑臉面對所有人的鄙視。從未體會過愛情滋味的阿成，某次討債時竟被欠債的浩婷（許瑋甯 飾） 深深吸引，阿成笨拙地畫了一份「塗鴉合約」，向浩婷提出用每一次的吃飯約會來抵銷她的債務，阿成一股腦的心意，漸漸卸下了浩婷的心防。當阿成認為自己總算要搞懂愛情了，一場突如其來的意外，卻無情打擊了兩人對未來的期待?想給浩婷一個依靠的阿成這時才發現，原來當男人戀愛時，是可以義無反顧放棄所有的。',
+    releaseDate: '2021-04-01',
+    duration: '105',
+    classification: '輔導十二級',
+    trailerLink: 'https://www.youtube.com/watch?v=gOjQxvRtMBI',
+    posterImage:
+      'https://taiwancinema.bamid.gov.tw/ImageData/60/2021/87754/t_87754.jpg?v=202310142232143119468',
+    movieStills: [
+      {
+        stillImageUrl:
+          'https://www.themoviedb.org/t/p/w533_and_h300_bestv2/nKNAWa7ATTHUP90lEMA00h7L26P.jpg',
+      },
+      {
+        stillImageUrl:
+          'https://www.themoviedb.org/t/p/w533_and_h300_bestv2/b7V5CpdvvoiqblcTjSXn8IwphC1.jpg',
+      },
+    ],
+  };
+};
+
+const demo3 = () => {
+  movie.value = {
+    movieName: '我沒有談的那場戀愛',
+    movieType: '愛情/浪漫',
+    movieStatus: '下檔',
+    director: '許智彥 / 徐譽庭',
+    writerList: '徐譽庭',
+    actorList: '吳慷仁 / 艾怡良 / 傅孟柏 / 9m88 / 林美秀',
+    plotSummary:
+      '郭勤勤是個令人頭疼的人物：不夠圓融、不夠親切，不怕得罪人，但偏偏，她認真負責、能力很強，所以公司上下眾多討厭她的人幫她取了一個外號「面癱姐」！ 33歲的她，單身，朋友不多、臉友不多，但封鎖名單就有兩個人，而且都是男性。 一個是拍完一部長片後幾乎賠掉自己人生的廣告導演「南之仰」，綽號「南人」。他在「談戀愛」方面的才華遠遠勝過他的電影夢，所以他被列入勤勤黑名單的原因，當然跟「很爛」有關。 另一個黑名單叫「趙書維」，他是個好人，但他好到讓人誤會、誤解、失望，就是個問題了——五年前，全世界都以為「他和郭勤勤在一起」，但他卻只當郭勤勤是最好的朋友！ 終於，郭勤勤決定不再封鎖自己、討厭自己，於是，她讓他們再次回到自己的人生。',
+    releaseDate: '2021-02-10',
+    duration: '99',
+    classification: '普遍級',
+    trailerLink: 'https://www.youtube.com/watch?v=NlbztVoW3qg',
+    posterImage:
+      'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/81XRB9SKgbPyVFVnNRtx1f4uKlc.jpg',
+    movieStills: [
+      {
+        stillImageUrl:
+          'https://www.themoviedb.org/t/p/w533_and_h300_bestv2/ePfLXP6rMOKfe9TwOMWqnvHbyxe.jpg',
+      },
+      {
+        stillImageUrl:
+          'https://www.themoviedb.org/t/p/w533_and_h300_bestv2/4AbnMawQ83DKwYuX9W11waEqLsV.jpg',
+      },
+      {
+        stillImageUrl:
+          'https://www.themoviedb.org/t/p/w533_and_h300_bestv2/lnr4FsTaNU5n2UbzPlwJ6y8KFbI.jpg',
+      },
+    ],
+  };
 };
 </script>

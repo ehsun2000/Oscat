@@ -137,14 +137,14 @@ export default {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
           alert('訂票成功!');
-          router.push('/');
+          router.push('/member-center');
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
           if (!userStore.isAuthenticated) {
             userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
             alert('請先登入才能進行購票。');
-            router.push('/signin');
+            router.push('/sign-in');
           }
         } else {
           console.error('結帳失敗:', error);
@@ -217,7 +217,7 @@ export default {
           if (!userStore.isAuthenticated) {
             userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
             alert('請先登入才能進行購票。');
-            router.push('/signin');
+            router.push('/sign-in');
           }
         } else {
           console.error('結帳失敗:', error);

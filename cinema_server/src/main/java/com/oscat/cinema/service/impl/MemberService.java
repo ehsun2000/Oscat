@@ -19,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.oscat.cinema.dao.MemberRepository;
 import com.oscat.cinema.dto.MemberDTO;
 import com.oscat.cinema.entity.Member;
+import com.oscat.cinema.entity.Seat;
+import com.oscat.cinema.entity.ShowTime;
 import com.oscat.cinema.entity.Ticket;
+import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.entity.TransOrder;
 import com.oscat.cinema.service.IMemberService;
 
@@ -154,12 +157,30 @@ public class MemberService implements IMemberService {
 				.toList();
 		dto.put("tickets", tickets);
 
+		ShowTime showTime = transOrder.getShowTime();
+		if (showTime != null) {
+			dto.put("movieName", showTime.getMovie().getMovieName());
+			dto.put("roomName", showTime.getScreeningRoom().getRoomName());
+			dto.put("cinemaName", showTime.getScreeningRoom().getCinema().getCinemaName());
+			dto.put("showDateAndTime", showTime.getShowDateAndTime());
+		}
+
 		return dto;
 	}
 
 	private Map<String, String> toTicketDto(Ticket ticket) {
 		Map<String, String> dto = new HashMap<>();
 		dto.put("ticketId", ticket.getTicketId().toString());
+
+		TicketType ticketType = ticket.getTicketType();
+		if (ticketType != null) {
+			dto.put("ticketTypeName", ticketType.getTicketTypeName());
+		}
+
+		Seat seat = ticket.getSeat();
+		if (seat != null) {
+			dto.put("seat", seat.getSeatName());
+		}
 		return dto;
 	}
 }

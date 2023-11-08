@@ -148,11 +148,11 @@ public class OfficalBooking {
 	@PostMapping("/booking")
 	public ResponseEntity<String> createOrder(@RequestBody OrderDTO orderDTO, HttpSession session) {
 
-		UUID loginMember = (UUID) session.getAttribute("loginMember");
-		if (loginMember == null) {
+		UUID loginId = (UUID) session.getAttribute("loginMember");
+		if (loginId == null) {
 			return new ResponseEntity<>("User is not logged in.", HttpStatus.UNAUTHORIZED);
 		}
-		orderDTO.setMemberId(loginMember);
+		orderDTO.setMemberId(loginId);
 
 		try {
 			orderService.createOrder(orderDTO);
@@ -189,7 +189,7 @@ public class OfficalBooking {
 		/* Client端回傳付款網址 */
 //  setClientBackURL
 //    aioCheck.setOrderResultURL();
-		aioCheck.setClientBackURL("http://localhost:8082/");
+		aioCheck.setClientBackURL("http://localhost:8082/member-center");
 //  輸出畫面
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");

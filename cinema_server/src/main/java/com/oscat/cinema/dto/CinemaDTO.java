@@ -11,9 +11,10 @@ public class CinemaDTO {
     private String name;
     private String address;
     private String phone;
-    private List<BusinessHourDto> businessHours;
-    private List<String> facilities;
 	private BigDecimal basePrice;
 	private String img;
+	private List<BusinessHourDto> businessHours;
+	private List<String> facilities;
 	private List<String> types;
+	private List<String> products;
 }

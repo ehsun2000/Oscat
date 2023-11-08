@@ -1,7 +1,6 @@
 package com.oscat.cinema.dao;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.oscat.cinema.dto.RequestShowTime;
 import com.oscat.cinema.dto.SearchShowDateForBook;
 import com.oscat.cinema.entity.ShowTime;
 
@@ -30,16 +28,14 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 			@Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate);
 
-	@Query("SELECT st.showTimeId, sr.id, sr.roomName, st.showDateAndTime, st.filmType " + 
-		       "FROM ShowTime st " +
-		       "JOIN st.screeningRoom sr " + 
-		       "JOIN sr.cinema c " +
-		       "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId " +
-		       "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate " +
-		       "ORDER BY st.showDateAndTime, sr.roomName")
-		List<Object[]> findShowTimeByMovieIdAndCinemaIdAndDate(@Param("movieId") UUID movieId,
-		        @Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
-		        @Param("endDate") LocalDateTime endDate);
+	@Query("SELECT st.showTimeId, sr.id, sr.roomName, st.showDateAndTime, st.filmType " + "FROM ShowTime st "
+			+ "JOIN st.screeningRoom sr " + "JOIN sr.cinema c "
+			+ "WHERE st.movie.movieId = :movieId AND c.cinemaId = :cinemaId "
+			+ "AND st.showDateAndTime >= :startDate AND st.showDateAndTime <= :endDate "
+			+ "ORDER BY st.showDateAndTime, sr.roomName")
+	List<Object[]> findShowTimeByMovieIdAndCinemaIdAndDate(@Param("movieId") UUID movieId,
+			@Param("cinemaId") Integer cinemaId, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate);
 
 	@Query(value = "EXEC CreateShowTimes " + ":MovieId, :RoomId, :StartTime, "
 			+ ":FilmType, :Price, :NumberOfShowsToAdd, " + ":Interval", nativeQuery = true)

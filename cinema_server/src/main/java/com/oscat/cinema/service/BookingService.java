@@ -65,7 +65,6 @@ public class BookingService {
 		List<Object[]> result = showTimeRepository.findShowTimeByMovieIdAndCinemaIdAndDate(movieId, cinemaId, startDate,
 				endDate);
 
-		
 		List<Map<String, Object>> responseList = new ArrayList<>();
 		for (Object[] obj : result) {
 			Map<String, Object> entry = new HashMap<>();

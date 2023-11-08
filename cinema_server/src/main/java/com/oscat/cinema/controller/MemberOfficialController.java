@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -161,10 +162,11 @@ public class MemberOfficialController {
 	public ResponseEntity<ApiResponse<?>> updateUser(@Valid @RequestBody MemberDTO newMember, BindingResult result,
 			HttpSession session) {
 		System.out.println(newMember.toString());
-		Member loginMember = (Member) session.getAttribute("loginMember");
-		if (loginMember != null) {
+		UUID id = (UUID) session.getAttribute("loginMember");
+		Member member = memberService.findById(id);
+		if (member != null) {
 
-			System.out.println(loginMember.getMemberId() + " " + loginMember.getMemberName());
+			System.out.println(member.getMemberId() + " " + member.getMemberName());
 
 			if (result.hasErrors()) {
 				System.out.println("有錯誤");
@@ -177,11 +179,9 @@ public class MemberOfficialController {
 						sb.toString(), LocalDateTime.now().toString());
 				return ResponseEntity.badRequest().body(errorResponse);
 			}
-			Member updateMember = memberService.findById(newMember.getMemberId());
-			if (newMember.getMemberId().equals(loginMember.getMemberId())) {
+			if (newMember.getMemberId().equals(member.getMemberId())) {
 				System.out.println("相同會員");
 				memberService.update(newMember);
-				session.setAttribute("loginMember", updateMember);
 				ApiResponse<MemberDTO> successResponse = new ApiResponse<>(HttpStatus.OK.value(), "修改成功", newMember,
 						LocalDateTime.now().toString());
 				return ResponseEntity.ok(successResponse);
@@ -199,6 +199,7 @@ public class MemberOfficialController {
 		}
 	}
 
+
 	// 會員登出
 	@PostMapping("/logout")
 	public ResponseEntity<String> logout(HttpServletRequest request) {
@@ -208,10 +209,18 @@ public class MemberOfficialController {
 		return ResponseEntity.ok("登出");
 	}
 
+	// 取得會員訂單
 	@GetMapping("/order")
 	public ResponseEntity<?> getOrders(HttpSession session) {
 		UUID mId = (UUID) session.getAttribute("loginMember");
 		List<Map<String, Object>> memberOrders = memberService.getMemberOrders(mId);
+		
+		return ResponseEntity.ok(memberOrders);
+	}
+	// 取得會員訂單
+	@GetMapping("/order/{memberId}")
+	public ResponseEntity<?> getOrders(@PathVariable UUID memberId) {
+		List<Map<String, Object>> memberOrders = memberService.getMemberOrders(memberId);
 		
 		return ResponseEntity.ok(memberOrders);
 	}

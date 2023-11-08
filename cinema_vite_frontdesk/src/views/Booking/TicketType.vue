@@ -126,6 +126,10 @@ export default {
     };
 
     const navigateToSelectSeats = () => {
+      if (totalTicketCount() === 0) {
+        alert('請至少選一張票');
+        return;
+      }
       const selectedTicketsQuery = Object.entries(ticketCounts.value).reduce(
         (acc, [typeId, count]) => {
           if (count > 0) {

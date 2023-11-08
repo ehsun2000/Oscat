@@ -47,8 +47,9 @@ const api = import.meta.env.VITE_OSCATOfficial_API_ENDPOINT;
 // 驗證email
 const checkEmailBlur = () => {
   if (!email.value) {
-    // emailError.value = true;
     emailErrMsg.value = '請輸入信箱';
+  } else {
+    emailErrMsg.value = '';
   }
 };
 
@@ -56,18 +57,16 @@ const checkEmailBlur = () => {
 const checkOtp = async (otp) => {
   const url = `${api}/member/checkOtp`;
   const response = await axios.post(url, { value: otp });
-  // console.log(response);
-  // console.log(`輸入的驗證碼是: ${otp}`);
   if (response.status === 200) {
-    console.log('驗證成功重導向');
-    router.push('/resetPwd');
+    // console.log('驗證成功重導向');
+    router.push('/reset-pwd');
   } else {
     Swal.fire({
       title: '驗證碼錯誤',
       text: '請重新操作',
       icon: 'error',
     });
-    router.push('/forgotPwd');
+    router.push('/forgot-pwd');
   }
 };
 
@@ -80,9 +79,7 @@ const getOtp = async () => {
     });
   } else {
     const url = `${api}/member/sendOtp`;
-    // console.log(url);
     const response = await axios.post(url, { email: email.value });
-    // console.log(response);
     if (response.status === 200) {
       const { value: otp } = await Swal.fire({
         title: '請輸入驗證碼',

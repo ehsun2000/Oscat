@@ -103,11 +103,14 @@ const signin = async () => {
       if (userStore.redirectAfterLogin) {
         router.push(userStore.redirectAfterLogin);
         userStore.setRedirectAfterLogin(null); // 清除重定向路徑
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       } else {
         router.push('/');
         setTimeout(() => {
           window.location.reload();
-        }, 1);
+        }, 1000);
       }
     }
   } catch (error) {

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 
@@ -9,6 +9,7 @@ const router = useRouter();
 const isEditing = ref(false);
 const allTicketTypes = ref([]);
 const allFacilities = ref([]);
+const allProducts = reactive([]);
 const fileInput = ref(null);
 
 onMounted(async () => {
@@ -199,6 +200,51 @@ const handleFileChange = (event) => {
   cinema.value.img = URL.createObjectURL(selectedFile);
   console.log(selectedFile);
 };
+
+const showProducts = async () => {
+  const response = await fetch(
+    `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/cinemas/products`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  );
+  
+  allProducts.length = 0;
+  const data = await response.json();
+  data.forEach(item => {
+    allProducts.push(item);
+  });
+
+  const checkboxesHtml = allProducts
+    .map((product) => {
+      const checked = cinema.value.products.includes(product)
+        ? 'checked'
+        : '';
+      return `
+          <label>
+            <input type="checkbox" name="products" value="${product}" ${checked} />
+            <span class="text-light">${product}</span>
+          </label>
+        `;
+    })
+    .join('<br/>');
+
+  const { value: selectedProducts } = await Swal.fire({
+    title: '選擇商品',
+    html: checkboxesHtml,
+    focusConfirm: false,
+    preConfirm: () => {
+      return [
+        ...document.querySelectorAll('input[name="products"]:checked'),
+      ].map((input) => input.value);
+    },
+  });
+
+  if (selectedProducts) {
+    cinema.value.products = selectedProducts;
+  }
+};
 </script>
 
 <template>
@@ -273,7 +319,7 @@ const handleFileChange = (event) => {
               </div>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-md-4">
               <div class="mb-3">
                 <h4 class="text-warning">
                   <span class="me-3">營業時間</span>
@@ -295,6 +341,20 @@ const handleFileChange = (event) => {
                 </h4>
                 <ul class="ms-3">
                   <li v-for="item in cinema.facilities" :key="item">
+                    {{ item }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div>
+                <h4 class="text-warning">
+                  <span class="me-3">影城商品</span>
+                  <i class="bi bi-basket3-fill"></i>
+                </h4>
+                <ul class="ms-3">
+                  <li v-for="item in cinema.products" :key="item">
                     {{ item }}
                   </li>
                 </ul>
@@ -467,6 +527,22 @@ const handleFileChange = (event) => {
                   <div class="d-flex align-items-start mb-3">
                     <ul>
                       <li v-for="item in cinema.facilities" :key="item">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                  <h4 class="text-warning d-flex align-items-center mb-3">
+                    <span class="me-3">影城商品</span>
+                    <button
+                      class="btn btn-outline-warning"
+                      @click="showProducts"
+                    >
+                      <i class="bi bi-basket3-fill"></i>
+                    </button>
+                  </h4>
+                  <div class="d-flex align-items-start mb-3">
+                    <ul>
+                      <li v-for="item in cinema.products" :key="item">
                         {{ item }}
                       </li>
                     </ul>
