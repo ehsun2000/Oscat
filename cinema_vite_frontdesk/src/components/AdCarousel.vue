@@ -28,13 +28,13 @@
         ></button>
       </div>
       <div class="carousel-item active">
-        <img src="/public/add01.jpg" class="d-block w-100" alt="..." />
+        <img src="images/add01.jpg" class="img-fluid" alt="..." />
       </div>
       <div class="carousel-item">
-        <img src="/public/add02.jpg" class="d-block w-100" alt="..." />
+        <img src="images/add02.jpg" class="img-fluid" alt="..." />
       </div>
       <div class="carousel-item">
-        <img src="/public/add03.jpg" class="d-block w-100" alt="..." />
+        <img src="images/add03.jpg" class="img-fluid" alt="..." />
       </div>
     </div>
     <button

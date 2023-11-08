@@ -1,60 +1,48 @@
 <template>
   <div class="container">
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-      <div class="mb-auto">
-        <div>
-          <div>
-            <router-link to="/">
-              <a
-                href="/"
-                class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none"
-                style="margin: 0%"
-              >
-                <img
-                  rel="icon"
-                  src="/cat.png"
-                  style="height: 50px; width: 40px"
-                />
-              </a>
-              <h3 class="float-md-start mb-0">OSCAT</h3>
-            </router-link>
-          </div>
-          <nav class="nav nav-masthead justify-content-center float-md-end">
-            <router-link
-              to="/"
-              class="nav-link fw-bold py-1 px-0 active"
-              aria-current="page"
-              >首頁</router-link
-            >
-            <router-link
-              v-if="isLogin"
-              to="/member-center"
-              class="nav-link fw-bold py-1 px-0"
-              >會員中心</router-link
-            >
-            <router-link
-              v-if="isLogin"
-              to="/"
-              class="nav-link fw-bold py-1 px-0"
-              @click="logout"
-              >登出</router-link
-            >
-            <!-- v-if="!isLogin" -->
-            <router-link
-              v-if="!isLogin"
-              to="/signin"
-              class="nav-link fw-bold py-1 px-0"
-              >登入</router-link
-            >
-            <router-link
-              v-if="!isLogin"
-              to="/signup"
-              class="nav-link fw-bold py-1 px-0"
-              >註冊</router-link
-            >
-          </nav>
-        </div>
-      </div>
+      <nav class="nav nav-masthead justify-content-between float-md-end">
+        <router-link to="/" class="d-flex justify-content-start align-items-center text-decoration-none me-auto">
+          <img
+            rel="icon"
+            src="images/cat.png"
+            style="height: 40px; width: 40px"
+          />
+          <h3>OSCAT</h3>
+        </router-link>
+          <router-link
+            to="/"
+            class="nav-link fw-bold py-1 px-0 active"
+            aria-current="page"
+            >首頁</router-link
+          >
+          <router-link
+            v-if="isLogin"
+            to="/member-center"
+            class="nav-link fw-bold py-1 px-0"
+            >會員中心</router-link
+          >
+          <router-link
+            v-if="isLogin"
+            to="/"
+            class="nav-link fw-bold py-1 px-0"
+            @click="logout"
+            >登出</router-link
+          >
+          <!-- v-if="!isLogin" -->
+          <router-link
+            v-if="!isLogin"
+            to="/sign-in"
+            class="nav-link fw-bold py-1 px-0"
+            >登入</router-link
+          >
+          <router-link
+            v-if="!isLogin"
+            to="/sign-up"
+            class="nav-link fw-bold py-1 px-0"
+            >註冊</router-link
+          >
+        </nav>
     </div>
   </div>
 </template>

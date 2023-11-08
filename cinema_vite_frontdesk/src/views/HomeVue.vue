@@ -4,7 +4,7 @@
   </div>
   <div class="row mb-3">
     <div class="searchMovie">
-      <SearchMovie> </SearchMovie>
+      <!-- <SearchMovie> </SearchMovie> -->
     </div>
   </div>
   <div class="container">
@@ -85,7 +85,7 @@
           class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none"
           style="margin: 0%"
         >
-          <img rel="icon" src="/cat.png" style="height: 40px; width: 32px" />
+          <img rel="icon" src="images/cat.png" style="height: 40px; width: 32px" />
         </a>
         <p class="text-body-secondary">&copy; OSCAT 2023</p>
       </div>
