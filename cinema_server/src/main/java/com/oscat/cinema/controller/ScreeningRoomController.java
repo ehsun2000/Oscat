@@ -22,5 +22,5 @@ public class ScreeningRoomController {
 	public List<ScreeningRoomDTO> getSeatsByRoomId(@RequestParam Integer id) {
 		return srService.getAllScreeningRoomById(id);
 	}
-
+	
 }

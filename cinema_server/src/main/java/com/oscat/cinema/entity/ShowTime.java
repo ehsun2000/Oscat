@@ -55,5 +55,4 @@ public class ShowTime {
 	@OneToMany(mappedBy = "showTime", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference(value = "showtime_order")
 	private List<TransOrder> transOrders;
-
 }

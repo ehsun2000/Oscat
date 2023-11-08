@@ -1,8 +1,13 @@
 package com.oscat.cinema.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.hibernate.resource.beans.internal.FallbackBeanInstanceProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.service.impl.CinameInfoService;
@@ -52,13 +60,39 @@ public class CinemaInfoController {
 
 	// 修改影城資料
 	@PutMapping("/")
-	public ResponseEntity<String> updateCinema(@RequestBody CinemaDTO cinema) {
+	public ResponseEntity<String> updateCinema(@RequestPart("cinema") CinemaDTO cinema,
+			@RequestPart(name = "file", required = false) MultipartFile file) {
 
-		if (infoService.update(cinema)) {
-			return ResponseEntity.ok("Update Sucess!");
+		if (file != null) {
+			String updateImg = infoService.updateImg(file, cinema.getId());
+			
+			if (!updateImg.equals("Success")) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updateImg);
+			}
 		}
 
-		return ResponseEntity.notFound().build();
+		boolean update = infoService.update(cinema);
+		
+		if (update) {
+			return ResponseEntity.ok("Update Success!");
+		}
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update Faild!");
 	}
 
+	// 找尋全部種類資料
+	@GetMapping("/types")
+	public ResponseEntity<?> getAllTicketTypes() {
+		List<String> types = infoService.findAllTicketTypes();
+
+		return ResponseEntity.ok(types);
+	}
+
+	// 找尋全部設施資料
+	@GetMapping("/facilities")
+	public ResponseEntity<?> getAllFacilities() {
+		List<String> facilities = infoService.findAllFacilities();
+
+		return ResponseEntity.ok(facilities);
+	}
 }

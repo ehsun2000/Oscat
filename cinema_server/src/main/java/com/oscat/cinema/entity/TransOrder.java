@@ -42,12 +42,12 @@ public class TransOrder {
 	@Column(name = "total_price", nullable = false, precision = 10, scale = 2)
 	private BigDecimal totalPrice;
 
-	@JsonBackReference(value = "showtime_order")
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "showtime_id")
 	private ShowTime showTime;
 
-	@JsonBackReference(value = "member-order")
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;

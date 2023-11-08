@@ -4,33 +4,62 @@
     <form @submit.prevent="addShowtime">
       <div class="mb-3">
         <label for="movieId" class="form-label">選擇電影</label>
-        <select class="form-control" id="movieId" @click="showid" v-model="newShowtime.movieId" required>
+        <select
+          class="form-control"
+          id="movieId"
+          @click="showid"
+          v-model="newShowtime.movieId"
+          required
+        >
           <option value="" disabled selected>請選擇</option>
-          <option v-for="movie in movies" :key="movie.movieId" :value="movie.movieId">
+          <option
+            v-for="movie in movies"
+            :key="movie.movieId"
+            :value="movie.movieId"
+          >
             {{ movie.movieName }}
           </option>
         </select>
       </div>
       <div class="mb-3">
-        <label for="cinemaName" class="form-label">影廳</label>
-        <input type="text" class="form-control" id="cinemaName" v-model="newShowtime.cinemaName" required />
-      </div>
-      <div class="mb-3">
         <label for="screeningRoom" class="form-label">放映廳</label>
-        <input type="text" class="form-control" id="screeningRoom" v-model="newShowtime.screeningRoom" required />
+        <input
+          type="text"
+          class="form-control"
+          id="screeningRoom"
+          v-model="newShowtime.screeningRoom"
+          required
+        />
       </div>
       <div class="mb-3">
         <label for="filmType" class="form-label">電影類型</label>
-        <input type="text" class="form-control" id="filmType" v-model="newShowtime.filmType" required />
+        <input
+          type="text"
+          class="form-control"
+          id="filmType"
+          v-model="newShowtime.filmType"
+          required
+        />
       </div>
       <div class="mb-3">
         <label for="price" class="form-label">票價</label>
-        <input type="number" class="form-control" id="price" v-model="newShowtime.price" required />
+        <input
+          type="number"
+          class="form-control"
+          id="price"
+          v-model="newShowtime.price"
+          required
+        />
       </div>
       <div class="mb-3">
         <label for="showDateAndTime" class="form-label">放映日期和時間</label>
-        <input type="datetime-local" class="form-control" id="showDateAndTime" v-model="newShowtime.showDateAndTime"
-          required />
+        <input
+          type="datetime-local"
+          class="form-control"
+          id="showDateAndTime"
+          v-model="newShowtime.showDateAndTime"
+          required
+        />
       </div>
       <button type="submit" class="btn btn-primary">新增場次</button>
     </form>
@@ -50,7 +79,6 @@ import axios from 'axios';
 import { ref } from 'vue';
 
 const newShowtime = {
-  cinemaName: '',
   screeningRoom: '',
   filmType: '',
   price: 0,
@@ -66,7 +94,7 @@ const showSuccessModal = ref(false);
 
 // 获取电影列表
 axios
-  .get(`${import.meta.env.VITE_OSCAT_API_ENDPOINT}/movie/`)
+  .get(`${import.meta.env.VITE_API_OSCATURL}movies`)
   .then((response) => {
     movies.value = response.data;
   })
@@ -78,7 +106,7 @@ axios
 const addShowtime = () => {
   axios
     .post(
-      `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/showtime/add`,
+      `${import.meta.env.VITE_API_OSCATURL}showtime/manager/add`,
       newShowtime,
     )
     .then((response) => {

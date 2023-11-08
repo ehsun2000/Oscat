@@ -20,7 +20,7 @@ import com.oscat.cinema.service.CinemaService;
 
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping("/api")
 public class CinemaController {
 	
 	@Autowired
@@ -68,7 +68,7 @@ public class CinemaController {
 	}
 	 
 	//查詢全部 
-	@GetMapping("/cinemas")
+	@GetMapping("/cinema")
 	public List<Cinema> findAll(){
 		return	cinemaService.findAll();
 	}

@@ -65,5 +65,5 @@ public class Cinema {
 	@ManyToMany
 	@JoinTable(name = "cinema_facility", joinColumns = @JoinColumn(name = "cinema_id"), inverseJoinColumns = @JoinColumn(name = "facility_id"))
 	private List<Facility> facilities;
-	
+
 }

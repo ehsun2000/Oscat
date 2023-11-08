@@ -9,9 +9,10 @@ import com.oscat.cinema.entity.Facility;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface FacilityMapper {
+	
 	default String toDto(Facility facility) {
 		return facility.getFacilityName();
 	};
 
-	List<String> tDtos(List<Facility> facilities);
+	List<String> toDtos(List<Facility> facilities);
 }

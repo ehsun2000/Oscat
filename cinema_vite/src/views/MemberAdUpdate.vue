@@ -1,123 +1,129 @@
 <template>
-  <h2>會員修改</h2>
-  <div class="mb-3">
-    <label for="exampleInputName1" class="form-label">姓名</label>
-    <input
-      type="text"
-      class="form-control"
-      id="memberName"
-      aria-describedby="nameHelp"
-      v-bind:class="{ 'is-invalid': nameError }"
-      v-model="member.memberName"
-      required
-      @blur="checkNameBlur"
-      @input="checkName"
-    />
-    <div id="nameError" class="error-message">{{ nameErrMsg }}</div>
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">信箱</label>
-    <input
-      type="email"
-      class="form-control"
-      id="email"
-      aria-describedby="emailHelp"
-      v-bind:class="{ 'is-invalid': emailError }"
-      v-model="member.email"
-      required
-      @blur="checkEmailBlur"
-      @input="checkEmail"
-    />
-    <div id="emailError" class="error-message">{{ emailErrMsg }}</div>
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">密碼</label>
-    <input
-      type="password"
-      class="form-control"
-      id="password"
-      v-bind:class="{ 'is-invalid': pwdError }"
-      v-model="member.password"
-      required
-      @blur="checkPwdBlur"
-      @input="checkPwd"
-    />
-    <div id="passwordHelp" class="form-text">
-      請輸入包含英文跟數字，大於8位的密碼
+  <div class="row">
+    <div class="mb-3">
+      <h2>會員修改</h2>
+      <div class="addFrame">
+        <label for="exampleInputName1" class="form-label">姓名</label>
+        <input
+          type="text"
+          class="form-control"
+          id="memberName"
+          aria-describedby="nameHelp"
+          v-bind:class="{ 'is-invalid': nameError }"
+          v-model="member.memberName"
+          required
+          @blur="checkNameBlur"
+          @input="checkName"
+        />
+        <div id="nameError" class="error-message">{{ nameErrMsg }}</div>
+
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">信箱</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            aria-describedby="emailHelp"
+            v-bind:class="{ 'is-invalid': emailError }"
+            v-model="member.email"
+            required
+            @blur="checkEmailBlur"
+            @input="checkEmail"
+          />
+          <div id="emailError" class="error-message">{{ emailErrMsg }}</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">密碼</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            v-bind:class="{ 'is-invalid': pwdError }"
+            v-model="member.password"
+            required
+            @blur="checkPwdBlur"
+            @input="checkPwd"
+          />
+          <div id="passwordHelp" class="form-text">
+            請輸入包含英文跟數字，大於8位的密碼
+          </div>
+        </div>
+        <div id="pwdError" class="error-message">{{ pwdErrMsg }}</div>
+        <div class="mb-3">
+          <label for="exampleInputPhone" class="form-label">手機</label>
+          <input
+            type="text"
+            class="form-control"
+            id="phone"
+            aria-describedby="phoneHelp"
+            v-bind:class="{ 'is-invalid': phoneError }"
+            v-model="member.phone"
+            @blur="checkPhoneBlur"
+            @input="checkPhone"
+          />
+          <div id="phoneError" class="error-message">{{ phoneErrMsg }}</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPhone" class="form-label">性別</label>
+
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="inlineRadio1"
+              value="man"
+              v-model="member.gender"
+            />
+            <label class="form-check-label" for="inlineRadio1">男</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="inlineRadio2"
+              value="female"
+              v-model="member.gender"
+            />
+            <label class="form-check-label" for="inlineRadio2">女</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="inlineRadio3"
+              value="other"
+              v-model="member.gender"
+            />
+            <label class="form-check-label" for="inlineRadio3">其他</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputDate" class="form-label">生日</label>
+          <input
+            type="date"
+            class="form-control"
+            id="birthDate"
+            aria-describedby="phoneHelp"
+            v-model="member.birthDate"
+          />
+        </div>
+        <button class="btn btn-primary" type="button" @click="editHandler">
+          修改
+        </button>
+      </div>
     </div>
   </div>
-  <div id="pwdError" class="error-message">{{ pwdErrMsg }}</div>
-  <div class="mb-3">
-    <label for="exampleInputPhone" class="form-label">手機</label>
-    <input
-      type="text"
-      class="form-control"
-      id="phone"
-      aria-describedby="phoneHelp"
-      v-bind:class="{ 'is-invalid': phoneError }"
-      v-model="member.phone"
-      @blur="checkPhoneBlur"
-      @input="checkPhone"
-    />
-    <div id="phoneError" class="error-message">{{ phoneErrMsg }}</div>
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputPhone" class="form-label">性別</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input
-      class="form-check-input"
-      type="radio"
-      name="inlineRadioOptions"
-      id="inlineRadio1"
-      value="man"
-      v-model="member.gender"
-    />
-    <label class="form-check-label" for="inlineRadio1">男</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input
-      class="form-check-input"
-      type="radio"
-      name="inlineRadioOptions"
-      id="inlineRadio2"
-      value="female"
-      v-model="member.gender"
-    />
-    <label class="form-check-label" for="inlineRadio2">女</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input
-      class="form-check-input"
-      type="radio"
-      name="inlineRadioOptions"
-      id="inlineRadio3"
-      value="other"
-      v-model="member.gender"
-    />
-    <label class="form-check-label" for="inlineRadio3">其他</label>
-  </div>
-
-  <div class="mb-3">
-    <label for="exampleInputDate" class="form-label">生日</label>
-    <input
-      type="date"
-      class="form-control"
-      id="birthDate"
-      aria-describedby="phoneHelp"
-      v-model="member.birthDate"
-    />
-  </div>
-  <button class="btn btn-primary" type="button" @click="editHandler">
-    修改
-  </button>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
-import Member from '@/models/member.js';
+import Member from '@/models/Member.js';
+import Swal from 'sweetalert2';
 
 const route = useRoute();
 const router = useRouter();
@@ -202,7 +208,6 @@ const checkEmailBlur = () => {
 };
 
 const checkEmail = () => {
-  console.log(123);
   let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!email.value) {
     emailError.value = true;
@@ -218,21 +223,21 @@ const checkEmail = () => {
 
 // 信箱是否重複
 
+const newEmail = ref('');
+const oldEmail = ref('');
+
 watch(
-  () => email.value,
-  (newEmail, oldEmail) => {
-    console.log(`newEmail:${newEmail}`);
-    console.log(`oldEmail:${oldEmail}`);
+  () => member.value.email,
+  (newValue, oldValue) => {
+    oldEmail.value = oldValue;
+    newEmail.value = newValue;
   },
 );
-
-const newEmail = ref('newEmail');
-const oldEmail = ref('oldEmail');
 
 const emailExists = ref(false);
 
 const checkEmailRepeat = async () => {
-  if ((oldEmail.value !== null) | (newEmail.value !== oldEmail.value)) {
+  if (oldEmail.value && newEmail.value !== oldEmail.value) {
     const checkEmail_url = `${
       import.meta.env.VITE_OSCAT_API_ENDPOINT
     }/member/add/${member.value.email}`;
@@ -293,6 +298,9 @@ const checkPhone = () => {
   } else if (!phonePattern.test(phone.value)) {
     phoneError.value = true;
     phoneErrMsg.value = '手機格式錯誤';
+  } else if (phone.value.replace(/[^0-9]/g, '').length > 10) {
+    phoneError.value = true;
+    phoneErrMsg.value = '號碼不可超過10位數字';
   } else {
     phoneError.value = false;
     phoneErrMsg.value = '';
@@ -303,26 +311,61 @@ const checkPhone = () => {
 const editHandler = async () => {
   await checkEmailRepeat();
   if (emailExists.value) {
-    alert('修改失敗 - 該信箱已被註冊');
+    Swal.fire({
+      title: '該信箱已被註冊',
+      icon: 'error',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: '好的',
+    });
     return; // 不提交表單
   }
 
-  const update_url = `${
-    import.meta.env.VITE_OSCAT_API_ENDPOINT
-  }/member/update/${member.value.memberId}`;
-
-  try {
-    const response = await axios.put(update_url, member.value);
-    if (response.status === 200) {
-      alert('修改成功');
-      router.push('/member');
-    } else {
-      alert('修改失敗');
+  Swal.fire({
+    title: '確定要修改嗎?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const update_url = `${
+        import.meta.env.VITE_OSCAT_API_ENDPOINT
+      }/member/update/${member.value.memberId}`;
+      axios
+        .put(update_url, member.value)
+        .then((response) => {
+          if (response.status === 200) {
+            Swal.fire('修改成功', '', 'success').then(() => {
+              router.push('/member');
+            });
+          } else {
+            Swal.fire('修改失敗', '', 'error');
+          }
+        })
+        .catch((error) => {
+          Swal.fire('修改大失敗', error.message, 'error');
+        });
     }
-  } catch (error) {
-    alert('修改大失敗');
-  }
+  });
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+h2 {
+  padding: 10px 0;
+  text-align: center;
+}
+
+.addFrame {
+  width: 80%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.form-label {
+  margin-right: 20px;
+}
+</style>

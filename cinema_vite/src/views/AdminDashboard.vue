@@ -24,11 +24,18 @@ import AdminHeader from '@/components/AdminHeader.vue';
       -- 座位設定
       -- 販售設定
   -->
-  <AdminHeader />
-  <AdminSideBar />
-  <router-view
-    style="width: 85%; margin-left: 15%; height: 90vh; margin-top: 10vh"
-  />
+  <!-- MainLayout.vue -->
+  <div class="container-fluid vh-100">
+    <div class="row h-100">
+      <div class="col-2 d-flex flex-column p-3">
+        <AdminSideBar />
+      </div>
+      <div class="col-10">
+        <AdminHeader />
+        <router-view />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scope></style>

@@ -45,8 +45,8 @@ public interface CinemaMapper {
 	@Mapping(target = "products", ignore = true)
 	@Mapping(target = "openingHours", ignore = true)
 	@Mapping(target = "facilities", ignore = true)
+	@Mapping(target = "cinemaImg", ignore = true)
 	@Mapping(target = "cinemaName", source = "dto.name")
-	@Mapping(target = "cinemaImg", source = "dto.img")
 	@Mapping(target = "cinemaAddress", source = "dto.address")
 	@Mapping(target = "contactPhone", source = "dto.phone")
 	void updateFromDto(CinemaDTO dto, @MappingTarget Cinema cinema, List<TicketType> ticketTypes,
@@ -102,12 +102,9 @@ public interface CinemaMapper {
 			BusinessHourDto dto = inputOpenHourMap.get(openingHour.getWeekDay());
 			// 檢查 dto、openingHour 中 start 、 end 有無變更 (LocalTime)
 			// 若有，則重新 set dto 值進入 openinghour
-			System.out.println(openingHour.getStartTime().equals(dto.getStart()));
 			if (!openingHour.getStartTime().equals(dto.getStart())) {
 				openingHour.setStartTime(dto.getStart());
 			}
-			System.out.println(openingHour.getEndTime().equals(dto.getEnd()));
-
 			if (!openingHour.getEndTime().equals(dto.getEnd())) {
 				openingHour.setEndTime(dto.getEnd());
 			}

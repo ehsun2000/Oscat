@@ -2,6 +2,7 @@ package com.oscat.cinema.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oscat.cinema.dto.RequestShowTime;
+import com.oscat.cinema.dto.ResponseCinemaForShowTime;
 import com.oscat.cinema.dto.ShowTimeDTO;
+import com.oscat.cinema.dto.ShowTimeForPut;
 import com.oscat.cinema.entity.ShowTime;
 import com.oscat.cinema.service.ShowTimeManagerService;
 
@@ -73,21 +78,6 @@ public class ShowTimeManagerController {
 		return stmService.findAll(pageable, roomId);
 	}
 
-	@GetMapping("/find/{id}")
-	public Optional<ShowTime> findShowTimeById(@PathVariable UUID showTimeId) {
-		return stmService.findShowTimeById(showTimeId);
-	}
-
-	@PutMapping("/update/{showTimeId}")
-	public ResponseEntity<?> updateShowTime(@PathVariable UUID showTimeId, @RequestBody ShowTimeDTO ShowTimeDTO) {
-		ShowTime updatedShowTime = stmService.updateShowTime(showTimeId, ShowTimeDTO);
-		if (updatedShowTime != null) {
-			return new ResponseEntity<>(" 場次修改完成 ", HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(" 修改失敗 ", HttpStatus.NOT_FOUND);
-		}
-	}
-
 	@DeleteMapping("/delete/{showTimeId}")
 	public ResponseEntity<String> deleteShowTime(@PathVariable UUID showTimeId) {
 		boolean deleted = stmService.deleteShowTime(showTimeId);
@@ -111,4 +101,47 @@ public class ShowTimeManagerController {
 		return new ResponseEntity<>(nextWeekShowTimes, HttpStatus.OK);
 	}
 
+	// 找出所有影城及其影廳
+	@GetMapping("/findcinemas")
+	public ResponseEntity<?> getCinemasAndRooms() {
+		List<ResponseCinemaForShowTime> list = stmService.findAllCinemas();
+
+		return ResponseEntity.ok(list);
+	}
+
+	// 找出所有電影
+	@GetMapping("/movies")
+	public ResponseEntity<?> getMovies() {
+		List<Map<String, String>> movies = stmService.findMovies();
+
+		return ResponseEntity.ok(movies);
+	}
+
+	// 根據影廳、日期區間、找出場次
+	@PostMapping("/")
+	public ResponseEntity<?> getShowTimes(@RequestBody RequestShowTime req) {
+		List<Map<String, String>> showtimes = stmService.findShowTimes(req);
+		return ResponseEntity.ok(showtimes);
+	}
+
+	// 單筆場次查詢
+	@GetMapping("/{id}")
+	public ResponseEntity<?> findShowTimeById(@PathVariable(name = "id") UUID showTimeId) {
+		Map<String, String> showtime = stmService.findShowTimeById(showTimeId);
+		if (showtime != null) {
+			return ResponseEntity.ok(showtime);
+		}
+
+		return ResponseEntity.badRequest().body("找不到場次!");
+	}
+
+	// 場次資料更新
+	@PutMapping("/")
+	public ResponseEntity<?> updateShowTime(@RequestBody ShowTimeForPut dto) {
+		String updatedShowTime = stmService.updateShowTime(dto);
+		if ("success".equals(updatedShowTime)) {
+			return ResponseEntity.ok("場次修改完成");
+		}
+		return ResponseEntity.badRequest().body(updatedShowTime);
+	}
 }

@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.oscat.cinema.dto.RequestShowTime;
 import com.oscat.cinema.dto.SearchShowDateForBook;
 import com.oscat.cinema.entity.ShowTime;
 
@@ -56,4 +57,29 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, UUID> {
 
 	@Query("SELECT s FROM ShowTime s " + "WHERE s.screeningRoom.roomId = :roomId")
 	Page<ShowTime> findAllByRoomId(Pageable pageable, @Param("roomId") Integer roomId);
+
+	@Query("SELECT s FROM ShowTime s " + "WHERE s.screeningRoom.roomId = :roomId AND "
+			+ "s.showDateAndTime BETWEEN :start AND :end " + "ORDER BY s.showDateAndTime DESC")
+	List<ShowTime> findByStartAndEnd(@Param("roomId") Integer roomId, @Param("start") LocalDateTime start,
+			@Param("end") LocalDateTime end);
+
+	// 找出原本場次以外，播放時間之後的第一筆資料
+	@Query("SELECT s FROM ShowTime s "
+			+ "WHERE s.screeningRoom.roomId = :roomId AND "
+			+ "s.showTimeId != :oldId AND "
+			+ "s.showDateAndTime >= :start "
+			+ "ORDER BY s.showDateAndTime ASC "
+			+ "LIMIT 1")
+	ShowTime findAfterShow(@Param("roomId") Integer roomId, @Param("oldId") UUID oldId,
+			@Param("start") LocalDateTime localDateTime);
+
+	// 找出原本場次以外，之前的最後一筆資料
+	@Query("SELECT s FROM ShowTime s "
+			+ "WHERE s.screeningRoom.roomId = :roomId AND "
+			+ "s.showTimeId != :oldId AND "
+			+ "s.showDateAndTime < :start "
+			+ "ORDER BY s.showDateAndTime DESC "
+			+ "LIMIT 1")
+	ShowTime findBeforeShow(@Param("roomId") Integer roomId, @Param("oldId") UUID oldId,
+			@Param("start") LocalDateTime localDateTime);
 }
