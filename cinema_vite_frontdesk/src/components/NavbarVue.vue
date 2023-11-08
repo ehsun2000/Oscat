@@ -29,13 +29,13 @@
             <!-- v-if="!isLogin" -->
             <router-link
               v-if="!isLogin"
-              to="/signin"
+              to="/sign-in"
               class="nav-link fw-bold py-1 px-0"
               >登入</router-link
             >
             <router-link
               v-if="!isLogin"
-              to="/signup"
+              to="/sign-up"
               class="nav-link fw-bold py-1 px-0"
               >註冊</router-link
             >

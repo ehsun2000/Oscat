@@ -59,11 +59,19 @@
           （六）若因電腦病毒入侵或發作、政府管制而造成暫時性關閉或其他不可抗力事由而造成乙方資料丟失、
           盜用、毀損或竄改等事由，乙方不得對甲方提出任何主張或請求。
         </p>
+        <button type="button" class="btn btn-primary" @click="previousPage">
+          返回
+        </button>
       </div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+// 返回前一頁
+const previousPage = () => {
+  history.back();
+};
+</script>
 
 <style scoped></style>

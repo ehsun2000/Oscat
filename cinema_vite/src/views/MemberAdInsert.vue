@@ -113,6 +113,9 @@
         <button class="btn btn-primary" type="button" @click="addHandler">
           新增
         </button>
+        <button class="btn btn-primary" type="button" @click="addDataHandler">
+          一鍵輸入
+        </button>
       </div>
     </div>
   </div>
@@ -281,6 +284,18 @@ const checkPhone = () => {
   }
 };
 
+// 一鍵輸入
+const addDataHandler = async () => {
+  member.value = {
+    memberName: '小宇',
+    email: 'yu1008@gmail.com',
+    password: 'yui125108',
+    phone: '0911623348',
+    gender: 'man',
+    birthDate: '1998-06-25',
+  };
+};
+
 // 送出處理
 const addHandler = async () => {
   // 先檢查信箱是否重複
@@ -320,7 +335,7 @@ const addHandler = async () => {
           }
         })
         .catch((error) => {
-          Swal.fire('新增大失敗', error.message, 'error');
+          Swal.fire('新增大失敗', '新增失敗', 'error');
         });
     }
   });
@@ -348,5 +363,8 @@ h2 {
 }
 .form-label {
   margin-right: 20px;
+}
+.btn-primary {
+  margin-right: 5px;
 }
 </style>

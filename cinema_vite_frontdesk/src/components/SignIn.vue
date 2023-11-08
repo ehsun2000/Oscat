@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="text-start my-3">
-      <RouterLink :to="'/forgotPwd'">
+      <RouterLink :to="'/forgot-pwd'">
         <button class="btn-text-only" role="button">忘記密碼</button>
       </RouterLink>
     </div>
@@ -51,14 +51,12 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 
-// const pwdError = ref(false);
 const pwdErrMsg = ref('');
 const emailErrMsg = ref('');
 
 // 驗證email
 const checkEmailBlur = () => {
   if (!email.value) {
-    // emailError.value = true;
     emailErrMsg.value = '不可空白，請輸入信箱';
   } else {
     emailErrMsg.value = '';
@@ -68,7 +66,6 @@ const checkEmailBlur = () => {
 // 驗證密碼
 const checkPwdBlur = () => {
   if (!password.value) {
-    // pwdError.value = true;
     pwdErrMsg.value = '不可空白，請輸入密碼';
   } else {
     pwdErrMsg.value = '';
@@ -105,7 +102,7 @@ const signin = async () => {
   } catch (error) {
     console.log(error.response);
     await Swal.fire({
-      title: error.response,
+      title: error.response.data,
       icon: 'error',
     });
   }
