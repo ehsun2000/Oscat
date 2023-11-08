@@ -1,50 +1,127 @@
 <template>
+  <div>
+    <AdCarousel></AdCarousel>
+  </div>
+  <div class="row mb-3">
+    <div class="searchMovie">
+      <SearchMovie> </SearchMovie>
+    </div>
+  </div>
   <div class="container">
     <div class="roll">
+      <div class="onMovie">
+        <h3>現正熱映</h3>
+      </div>
       <div class="box"></div>
-      <div>
-        <div
-          v-for="movie in movies"
-          :key="movie.movieId"
-          class="card"
-          style="width: 18rem"
-        >
-          <a :href="movie.trailerLink">
-            <img :src="movie.posterImage" class="card-img-top" alt="" />
-          </a>
-          <div class="card-body">
-            <div class="card-body">
-              <h6>{{ movie.movieName }}</h6>
-              <h6>上映日 {{ movie.releaseDate }}</h6>
-            </div>
-            <div class="modal-footer text-center">
-              <button
-                type="button"
-                class="btn btn-primary w-100 py-2"
-                @click="goToSelectMovie(movie)"
+      <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <!-- 使用 computed properties 分組每5個電影 -->
+          <div
+            class="carousel-item"
+            style="margin: 0 110px"
+            :class="{ active: index === 0 }"
+            v-for="(group, index) in groupedMovies"
+            :key="index"
+          >
+            <div class="d-flex">
+              <div
+                v-for="movie in group"
+                :key="movie.movieId"
+                class="card"
+                style="width: 13rem; height: 25rem"
               >
-                前往訂票
-              </button>
+                <a :href="movie.trailerLink">
+                  <img
+                    :src="movie.posterImage"
+                    class="card-img-top"
+                    alt="Movie Poster"
+                  />
+                </a>
+                <div class="card-body">
+                  <div class="card-title">
+                    <h6>{{ movie.movieName }}</h6>
+                    <p class="card-text">上映日 {{ movie.releaseDate }}</p>
+                  </div>
+                  <div class="modal-footer text-center">
+                    <button
+                      type="button"
+                      class="btn btn-primary w-100 py-2"
+                      @click="goToSelectMovie(movie)"
+                    >
+                      前往訂票
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          <button
+            class="carousel-control-prev custom-carousel-prev"
+            type="button"
+            data-bs-target="#carouselExample"
+            data-bs-slide="prev"
+          >
+            <span class="bi bi-chevron-compact-left"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next custom-carousel-next"
+            type="button"
+            data-bs-target="#carouselExample"
+            data-bs-slide="next"
+          >
+            <span class="bi bi-chevron-compact-right" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
         </div>
       </div>
-
-      <footer class="mt-auto text-white-50">
-        <p>
-          Cover 模板供
-          <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>
-          使用，由
-          <a href="https://twitter.com/mdo" class="text-white">@mdo</a> 開發。
-        </p>
-      </footer>
     </div>
+    <footer
+      class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top"
+    >
+      <div class="col mb-3">
+        <a
+          href="/"
+          class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none"
+          style="margin: 0%"
+        >
+          <img rel="icon" src="/cat.png" style="height: 40px; width: 32px" />
+        </a>
+        <p class="text-body-secondary">&copy; OSCAT 2023</p>
+      </div>
+
+      <div class="col mb-3-footer">
+        <h5>關於Oscat</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2">
+            <a href="#" class="nav-link p-0 text-body-secondary">最新消息</a>
+          </li>
+          <li class="nav-item mb-2">
+            <a href="#" class="nav-link p-0 text-body-secondary">意見信箱</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col mb-3-footer">
+        <h5>其他資訊</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2">
+            <a href="#" class="nav-link p-0 text-body-secondary">常見問題</a>
+          </li>
+          <li class="nav-item mb-2">
+            <a href="#" class="nav-link p-0 text-body-secondary">聯絡我們</a>
+          </li>
+        </ul>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import axios from 'axios';
+// import NavbarVue from '@/components/NavbarVue.vue';
+import AdCarousel from '@/components/AdCarousel.vue';
+import SearchMovie from '@/components/SearchTextMovie.vue';
 import { useRouter } from 'vue-router';
 
 const movies = ref([]);
@@ -60,6 +137,15 @@ const loadMovies = async () => {
     console.error('無法獲取電影數據：', error);
   }
 };
+
+// 上映的電影(一列5部)
+const groupedMovies = computed(() => {
+  const groups = [];
+  for (let i = 0; i < movies.value.length; i += 5) {
+    groups.push(movies.value.slice(i, i + 5));
+  }
+  return groups;
+});
 
 const goToSelectMovie = (movie) => {
   router.push({
@@ -155,6 +241,7 @@ loadMovies();
 
 img {
   width: 100%;
+  height: 25rem;
 }
 
 h1 {
@@ -185,7 +272,46 @@ h1 {
   /* 設定卡片之間的下間距 */
 }
 .card-img-top {
-  height: 450px; /* 或你需要的高度 */
+  height: 15rem; /* 或你需要的高度 */
   object-fit: cover; /* 保持圖片比例 */
+}
+.mb-3 {
+  width: 50%;
+  margin: auto;
+}
+.carousel-item .d-flex {
+  justify-content: start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.carousel-item .card {
+  flex: 0 0 auto; /* Prevents the cards from shrinking */
+  margin-right: 15px; /* Adds some space between the cards */
+  width: 15rem;
+}
+.carousel-item {
+  margin: 0 30px; /* 添加左右外邊距，調整適當的距離 */
+}
+.card-text {
+  font-size: 12px;
+}
+.searchMovie {
+  width: 100%;
+}
+.onMovie {
+  margin-bottom: 25px;
+}
+.mb-3-footer {
+  width: 25%;
+}
+.custom-carousel-prev,
+.custom-carousel-next {
+  width: 100px;
+  height: 400px;
+  font-size: 40px;
+}
+.carousel-inner {
+  height: 400px;
 }
 </style>

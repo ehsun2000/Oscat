@@ -3,9 +3,22 @@
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
       <div class="mb-auto">
         <div>
-          <router-link to="/">
-            <h3 class="float-md-start mb-0">OSCAT</h3>
-          </router-link>
+          <div>
+            <router-link to="/">
+              <a
+                href="/"
+                class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none"
+                style="margin: 0%"
+              >
+                <img
+                  rel="icon"
+                  src="/cat.png"
+                  style="height: 50px; width: 40px"
+                />
+              </a>
+              <h3 class="float-md-start mb-0">OSCAT</h3>
+            </router-link>
+          </div>
           <nav class="nav nav-masthead justify-content-center float-md-end">
             <router-link
               to="/"
@@ -29,13 +42,13 @@
             <!-- v-if="!isLogin" -->
             <router-link
               v-if="!isLogin"
-              to="/sign-in"
+              to="/signin"
               class="nav-link fw-bold py-1 px-0"
               >登入</router-link
             >
             <router-link
               v-if="!isLogin"
-              to="/sign-up"
+              to="/signup"
               class="nav-link fw-bold py-1 px-0"
               >註冊</router-link
             >
@@ -94,5 +107,9 @@ const logout = async () => {
 .nav-masthead .active {
   color: #fff;
   border-bottom-color: #fff;
+}
+.img {
+  width: 100%;
+  height: 25rem;
 }
 </style>

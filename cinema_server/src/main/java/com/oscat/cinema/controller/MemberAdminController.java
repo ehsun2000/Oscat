@@ -1,9 +1,9 @@
 package com.oscat.cinema.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,7 +87,7 @@ public class MemberAdminController {
 
 	// 新增單筆 (測試OK)
 	@PostMapping("/add")
-	public ResponseEntity<?> postAddCustomer(@Valid @RequestBody Member mem, BindingResult bindingResult) {
+	public ResponseEntity<?> postAddCustomer(@Valid @RequestBody MemberAdminDto memAdDto, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			List<ObjectError> errorList = bindingResult.getAllErrors();
 			StringBuilder sb = new StringBuilder();
@@ -100,7 +100,7 @@ public class MemberAdminController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
 		}
 
-		Optional<Member> existingMember = mService.findMemberByEmail(mem.getEmail());
+		Optional<Member> existingMember = mService.findMemberByEmail(memAdDto.getEmail());
 		if (existingMember.isPresent()) {
 			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "信箱已存在", "該信箱已被註冊",
 					LocalDateTime.now().toString());
@@ -108,18 +108,65 @@ public class MemberAdminController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
 		}
 
-		ResponseEntity<?> checkEmailResponse = checkEmailRegistered(mem.getEmail());
-
+		ResponseEntity<?> checkEmailResponse = checkEmailRegistered(memAdDto.getEmail());
 		if (checkEmailResponse.getStatusCode() == HttpStatus.OK) {
-
-			Member savedMember = mService.addMember(mem);
-			ApiResponse<Member> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), "註冊成功", savedMember,
+			MemberAdminDto memberAdDto = mService.addMember(memAdDto);
+			ApiResponse<MemberAdminDto> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), "註冊成功", memberAdDto,
 					LocalDateTime.now().toString());
 
 			return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 		} else {
 			return checkEmailResponse;
 		}
+	}
+
+	// 更新 (測試OK)
+	@PutMapping("/update/{memberId}")
+	@ResponseBody
+	public ResponseEntity<ApiResponse<?>> updateMemberById(@Valid @RequestBody MemberAdminDto memAdDto,
+			@PathVariable UUID memberId, BindingResult bindingResult) {
+
+		memAdDto.setMemberId(memberId);
+		if (bindingResult.hasErrors()) {
+			List<ObjectError> errorList = bindingResult.getAllErrors();
+			StringBuilder sb = new StringBuilder();
+			for (ObjectError error : errorList) {
+				sb.append(error.getDefaultMessage()).append(", ");
+			}
+
+			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "修改失敗", sb.toString(),
+					LocalDateTime.now().toString());
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+		}
+
+		Optional<Member> existingMember = mService.findMemberById(memAdDto.getMemberId());
+
+		if (!existingMember.isPresent()) {
+			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "沒有該會員",
+					"沒有該會員編號: " + memAdDto.getMemberId(), LocalDateTime.now().toString());
+
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+		}
+
+		try {
+			Optional<MemberAdminDto> updatedMember = mService.updateMember(memAdDto);
+			if (updatedMember.isPresent()) {
+				ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), "會員資料更新成功", updatedMember,
+						LocalDateTime.now().toString());
+
+				return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "會員資料更新失敗", "無法保存更新後的會員資料",
+								LocalDateTime.now().toString()));
+			}
+		} catch (Exception e) {
+			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "會員資料更新失敗",
+					e.getMessage(), LocalDateTime.now().toString());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+		}
+
 	}
 
 	// 透過email keyword搜尋 (測試OK)
@@ -140,55 +187,6 @@ public class MemberAdminController {
 		}
 
 		return new ResponseEntity<String>("沒有該筆資料", null, HttpStatus.BAD_REQUEST);
-	}
-
-	// 更新 (測試OK)
-	@PutMapping("/update/{memberId}")
-	@ResponseBody
-	public ResponseEntity<ApiResponse<?>> updateMemberById(@Valid @RequestBody Member newMember,
-			@PathVariable UUID memberId, BindingResult bindingResult) {
-
-		newMember.setMemberId(memberId);
-		if (bindingResult.hasErrors()) {
-			List<ObjectError> errorList = bindingResult.getAllErrors();
-			StringBuilder sb = new StringBuilder();
-			for (ObjectError error : errorList) {
-				sb.append(error.getDefaultMessage()).append(", ");
-			}
-
-			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "修改失敗", sb.toString(),
-					LocalDateTime.now().toString());
-
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
-		}
-
-		Optional<Member> existingMember = mService.findMemberById(newMember.getMemberId());
-
-		if (!existingMember.isPresent()) {
-			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "沒有該會員",
-					"沒有該會員編號: " + newMember.getMemberId(), LocalDateTime.now().toString());
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-		}
-
-		try {
-			Optional<Member> updatedMember = mService.updateMember(newMember);
-			if (updatedMember.isPresent()) {
-				ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), "會員資料更新成功", updatedMember,
-						LocalDateTime.now().toString());
-
-				return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
-			} else {
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-						.body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "會員資料更新失敗", "無法保存更新後的會員資料",
-								LocalDateTime.now().toString()));
-			}
-		} catch (Exception e) {
-			ApiResponse<?> apiResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "會員資料更新失敗",
-					e.getMessage(), LocalDateTime.now().toString());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
-		}
-
 	}
 
 	// 刪除 (測試OK)(postmanOK)
