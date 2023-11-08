@@ -65,7 +65,6 @@ public class BookingService {
 		List<Object[]> result = showTimeRepository.findShowTimeByMovieIdAndCinemaIdAndDate(movieId, cinemaId, startDate,
 				endDate);
 
-		
 		List<Map<String, Object>> responseList = new ArrayList<>();
 		for (Object[] obj : result) {
 			Map<String, Object> entry = new HashMap<>();
@@ -74,6 +73,7 @@ public class BookingService {
 			entry.put("screeningRoomId", (Integer) obj[1]);
 			entry.put("roomName", (String) obj[2]);
 			entry.put("showtime", formatter.format((LocalDateTime) obj[3]));
+			entry.put("filmType", (String) obj[4]);
 			responseList.add(entry);
 		}
 

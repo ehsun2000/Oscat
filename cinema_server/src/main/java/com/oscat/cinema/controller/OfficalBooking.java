@@ -189,7 +189,7 @@ public class OfficalBooking {
 		/* Client端回傳付款網址 */
 //  setClientBackURL
 //    aioCheck.setOrderResultURL();
-//    aioCheck.setClientBackURL();
+		aioCheck.setClientBackURL("http://localhost:8082/member-center");
 //  輸出畫面
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
