@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="text-start my-3">
-      <RouterLink :to="'/forgot-pwd'">
+      <RouterLink :to="'/forgotPwd'">
         <button class="btn-text-only" role="button">忘記密碼</button>
       </RouterLink>
     </div>
@@ -46,17 +46,21 @@ import { ref } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore.js';
 
 const email = ref('');
 const password = ref('');
 const router = useRouter();
+const userStore = useUserStore();
 
+// const pwdError = ref(false);
 const pwdErrMsg = ref('');
 const emailErrMsg = ref('');
 
 // 驗證email
 const checkEmailBlur = () => {
   if (!email.value) {
+    // emailError.value = true;
     emailErrMsg.value = '不可空白，請輸入信箱';
   } else {
     emailErrMsg.value = '';
@@ -66,6 +70,7 @@ const checkEmailBlur = () => {
 // 驗證密碼
 const checkPwdBlur = () => {
   if (!password.value) {
+    // pwdError.value = true;
     pwdErrMsg.value = '不可空白，請輸入密碼';
   } else {
     pwdErrMsg.value = '';
@@ -85,14 +90,20 @@ const signin = async () => {
     console.log(response.data);
     if (response.status === 200) {
       sessionStorage.setItem('isLogin', 'true');
+      userStore.setAuthenticated(true); // 設置身份驗證狀態
+
       await Swal.fire({
         title: '登入成功',
         icon: 'success',
-        timer: 1500, // 1.5秒後關閉畫面
+        timer: 1500,
         showConfirmButton: false,
       });
-      // 導到首頁
-      if (sessionStorage.getItem('isLogin') === 'true') {
+
+      // 重定向到之前的頁面或預設頁面
+      if (userStore.redirectAfterLogin) {
+        router.push(userStore.redirectAfterLogin);
+        userStore.setRedirectAfterLogin(null); // 清除重定向路徑
+      } else {
         router.push('/');
         setTimeout(() => {
           window.location.reload();
@@ -102,7 +113,7 @@ const signin = async () => {
   } catch (error) {
     console.log(error.response);
     await Swal.fire({
-      title: error.response.data,
+      title: error.response.data.message,
       icon: 'error',
     });
   }

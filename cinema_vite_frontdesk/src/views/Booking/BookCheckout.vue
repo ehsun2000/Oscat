@@ -15,7 +15,7 @@
     </div>
     <div class="buttons-container">
       <button @click="onSiteCheckout">現場結帳</button>
-      <button @click="greenWorldCheckout">綠界結帳</button>
+      <button @click="ecpayCheckout">綠界結帳</button>
       <button @click="cancelOrder">取消訂單</button>
     </div>
   </div>
@@ -25,6 +25,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import { useUserStore } from '@/stores/userStore.js';
 
 export default {
   setup() {
@@ -42,6 +43,7 @@ export default {
     const ticketTypeIds = ref([]);
     const showtimeId = ref('');
     const ticketDisplays = ref([]);
+    const userStore = useUserStore();
 
     const api = import.meta.env.VITE_OSCATOfficial_API_ENDPOINT;
 
@@ -138,30 +140,88 @@ export default {
           router.push('/');
         }
       } catch (error) {
-        console.error('結帳失敗:', error);
+        if (error.response && error.response.status === 401) {
+          if (!userStore.isAuthenticated) {
+            userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
+            alert('請先登入才能進行購票。');
+            router.push('/signin');
+          }
+        } else {
+          console.error('結帳失敗:', error);
+        }
       }
     };
 
-    const greenWorldCheckout = async () => {
-      const postData = {
-        totalPrice: totalPrice.value.toString(),
-        tradeDesc: ticketDisplays.value.join(', '),
-      };
-
+    const ecpayCheckout = async () => {
+      // 從API獲取已被預訂的座位ID
+      let bookedSeatIds = [];
       try {
-        const response = await axios.post(`${api}/goECPay`, postData);
-        // 假設後端現在返回一個含有重導URL的JSON物件
-        if (response.data && response.data.redirectUrl) {
-          // 如果是一個URL，就可以直接重導
-          window.location.href = response.data.redirectUrl;
-        } else {
-          // 如果後端返回的是HTML，則需要以其他方式處理
-          // 例如，將HTML插入到頁面中，並自動提交表單
-          document.body.innerHTML += response.data; // 假設response.data是HTML表單
-          document.forms[0].submit(); // 自動提交第一個表單
+        const response = await axios.get(
+          `${api}/showtime/${showtimeId.value}/seatIds`,
+        );
+        bookedSeatIds = response.data;
+      } catch (error) {
+        console.error('獲取已預訂座位ID失敗:', error);
+        alert('無法獲取座位資訊，請稍後再試。');
+        return;
+      }
+
+      // 檢查用戶選擇的座位是否已被預訂
+      const isAnySeatBooked = selectedSeatIds.value.some((seatId) =>
+        bookedSeatIds.includes(seatId),
+      );
+
+      if (isAnySeatBooked) {
+        // 如果有座位已被預訂，通知用戶並返回選座位頁面
+        alert('座位已被預訂，請重新預定');
+        router.go(-1); // 將用戶踢回前一頁
+        return;
+      }
+
+      // 如果座位檢查通過，則進行訂票操作
+      const postData = {
+        showtimeId: showtimeId.value,
+        paymentMethod: '綠界付款',
+        totalPrice: parseFloat(totalPrice.value),
+        tickets: selectedSeatIds.value.map((seatId, index) => ({
+          typeId: ticketTypeIds.value[index],
+          seatId: seatId,
+        })),
+      };
+      try {
+        const response = await axios.post(`${api}/booking`, postData);
+        if (response.status === 201) {
+          const postData = {
+            totalPrice: totalPrice.value.toString(),
+            tradeDesc: ticketDisplays.value.join(', '),
+          };
+
+          try {
+            const response = await axios.post(`${api}/goECPay`, postData);
+            // 假設後端現在返回一個含有重導URL的JSON物件
+            if (response.data && response.data.redirectUrl) {
+              // 如果是一個URL，就可以直接重導
+              window.location.href = response.data.redirectUrl;
+            } else {
+              // 如果後端返回的是HTML，則需要以其他方式處理
+              // 例如，將HTML插入到頁面中，並自動提交表單
+              document.body.innerHTML += response.data; // 假設response.data是HTML表單
+              document.forms[0].submit(); // 自動提交第一個表單
+            }
+          } catch (error) {
+            console.error('綠界結帳失敗:', error);
+          }
         }
       } catch (error) {
-        console.error('綠界結帳失敗:', error);
+        if (error.response && error.response.status === 401) {
+          if (!userStore.isAuthenticated) {
+            userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
+            alert('請先登入才能進行購票。');
+            router.push('/signin');
+          }
+        } else {
+          console.error('結帳失敗:', error);
+        }
       }
     };
 
@@ -182,7 +242,7 @@ export default {
       ticketTypeIds,
       showtimeId,
       onSiteCheckout,
-      greenWorldCheckout,
+      ecpayCheckout,
       cancelOrder,
       ticketDisplays,
       selectedSeatNames,

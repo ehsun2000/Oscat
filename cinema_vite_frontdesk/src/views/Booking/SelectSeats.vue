@@ -200,7 +200,7 @@ export default {
 
     const gridStyle = computed(() => {
       return {
-        'grid-template-columns': `repeat(${maxSeatsPerRow.value}, 1fr)`,
+        'grid-template-columns': `repeat(${maxSeatsPerRow.value},1fr)`,
       };
     });
 
@@ -280,13 +280,17 @@ export default {
 }
 .seats-container {
   display: grid;
-  gap: 1px;
-  margin: 0;
+  gap: 0;
+  margin: 0 auto; /* 水平居中 */
   padding: 0;
+  justify-content: start; /* 新增，從開始處對齊 */
 }
 .seat-button {
   background-color: #1a1a1a;
-  border-color: #1a1a1a;
+  border: none; /* 移除邊框 */
+  padding: 8px; /* 新增，為座位添加間隙 */
+  margin: 2px; /* 新增，增加座位之間的空間 */
+  color: #fff; /* 新增，如果需要的話可以設置座位數字的顏色 */
 }
 .scrollable-container {
   width: 800px;
@@ -295,7 +299,7 @@ export default {
   overflow-y: auto;
   border: 1px solid #ccc;
   margin: auto;
-  justify-content: center;
+  content: center;
   align-items: center;
 }
 </style>
