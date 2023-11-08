@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="text-start my-3">
-      <RouterLink :to="'/forgotPwd'">
+      <RouterLink :to="'/forgot-pwd'">
         <button class="btn-text-only" role="button">忘記密碼</button>
       </RouterLink>
     </div>
