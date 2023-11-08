@@ -84,7 +84,7 @@ export default {
         );
         filmType.value = response.data.filmType;
         showDateAndTime.value = response.data.showDateAndTime;
-        extraFee.value = Math.round(parseFloat(response.data.extraFee) * 100);
+        extraFee.value = Math.round(parseFloat(response.data.extraFee));
       } catch (error) {
         console.error('Error fetching showtime details:', error);
       }

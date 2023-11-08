@@ -74,6 +74,7 @@ public class BookingService {
 			entry.put("screeningRoomId", (Integer) obj[1]);
 			entry.put("roomName", (String) obj[2]);
 			entry.put("showtime", formatter.format((LocalDateTime) obj[3]));
+			entry.put("filmType", (String) obj[4]);
 			responseList.add(entry);
 		}
 
