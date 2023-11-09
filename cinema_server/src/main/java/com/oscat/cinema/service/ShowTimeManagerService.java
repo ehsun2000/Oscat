@@ -242,7 +242,7 @@ public class ShowTimeManagerService {
 	}
 
 	public List<Map<String, String>> findMovies() {
-		List<Movie> movies = movieRepository.findAll();
+		List<Movie> movies = movieRepository.findMovieShowing();
 		List<Map<String, String>> dtoList = movies.stream().map(movie -> toMovieDto(movie)).toList();
 
 		return dtoList;
