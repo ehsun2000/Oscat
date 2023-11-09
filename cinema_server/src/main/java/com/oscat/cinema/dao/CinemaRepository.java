@@ -31,6 +31,9 @@ public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 	@Query("FROM Cinema WHERE cinemaId = :id")
 	Cinema findCinemaById(@Param("id") Integer id);
 	
+	@Query("FROM Cinema WHERE cinemaName = :cinemaName")
+	Cinema findCinemaByName(@Param("cinemaName") String cinemaName);
+	
 	// 查詢分頁 cinema 資料 JPQL
 	Page<Cinema> findAll(Pageable pageable);
 }

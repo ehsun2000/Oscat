@@ -21,7 +21,12 @@ import com.oscat.cinema.dao.TicketTypeRepository;
 import com.oscat.cinema.dto.SearchCinemaForBook;
 import com.oscat.cinema.dto.SearchShowDateForBook;
 import com.oscat.cinema.dto.TicketTypeDTO;
+import com.oscat.cinema.entity.Cinema;
+import com.oscat.cinema.entity.ShowTime;
 import com.oscat.cinema.entity.Ticket;
+import com.oscat.cinema.entity.TicketType;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class BookingService {
@@ -97,5 +102,33 @@ public class BookingService {
 	public List<Ticket> getTicketsByShowtimeId(UUID showTimeId) {
 		return ticketRepository.findByTransOrder_ShowTime_ShowTimeId(showTimeId);
 	}
+	
+    public BigDecimal calculateTotalPrice(String cinemaName, UUID showtimeId, Map<Integer, Integer> ticketTypeCounts) {
+        // 首先找到對應的影城，以獲得基礎票價
+        Cinema cinema = cinemaRepository.findCinemaByName(cinemaName);
+        if (cinema == null) {
+            throw new EntityNotFoundException("Cinema not found");
+        }
+
+        // 接著找到對應的場次，以獲得額外費用
+        ShowTime showtime = showTimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new EntityNotFoundException("Showtime not found"));
+
+        // 接下來，對每種票類型的數量進行計算
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (Map.Entry<Integer, Integer> entry : ticketTypeCounts.entrySet()) {
+            // 找到票種類型，以獲得價格差異
+            TicketType ticketType = ticketTypeRepository.findById(entry.getKey())
+                    .orElseThrow(() -> new EntityNotFoundException("Ticket type not found"));
+
+            BigDecimal priceForThisType = cinema.getBasePrice()
+                    .add(ticketType.getPriceDifference())
+                    .add(showtime.getExtraFee())
+                    .multiply(new BigDecimal(entry.getValue()));
+            totalPrice = totalPrice.add(priceForThisType);
+        }
+
+        return totalPrice;
+    }
 
 }
