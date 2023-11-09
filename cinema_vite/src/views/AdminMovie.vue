@@ -17,13 +17,12 @@
         v-for="movie in formateMovie"
         :key="movie.movieId"
         class="card"
-        style="width: 18rem"
       >
         <a :href="movie.trailerLink">
           <img :src="movie.posterImage" class="card-img-top" alt="" />
         </a>
-        <div class="card-body">
-          <h1>{{ movie.movieName }}</h1>
+        <div class="card-body text-center">
+          <h1 style="font-size: 0.8rem;">{{ movie.movieName }}</h1 >
           <button
             type="button"
             :class="[
@@ -157,8 +156,8 @@ h1 {
 .movie {
   border: 1px solid #ccc;
   border-radius: 10px;
-  width: 220px;
-  height: 400px;
+  width: 200px;
+  height: 300px;
   margin: 10px;
   padding: 10px;
 
@@ -170,11 +169,11 @@ h1 {
 .card {
   display: inline-block;
   /* 顯示card */
-  width: 18rem;
+  width: 15rem;
   /* 設定card寬度 */
-  margin-right: 20px;
+  margin-right: 10px;
   /* 設定card之間的右邊間距 */
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   /* 設定卡片之間的下間距 */
 }
 </style>
