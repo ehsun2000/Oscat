@@ -1,6 +1,5 @@
 package com.oscat.cinema.service.impl;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,16 +133,9 @@ public class MemberService implements IMemberService {
 
 	// 查詢會員訂單
 	public List<Map<String, Object>> getMemberOrders(UUID memberId) {
-		Optional<Member> optional = memberRepo.findById(memberId);
-
-		if (optional.isPresent()) {
-			Member member = optional.get();
-			List<Map<String, Object>> orders = member.getTransOrders().stream().map(order -> toOrderDto(order))
-					.toList();
-			return orders;
-		} else {
-			return Collections.emptyList(); // 回傳空的 List
-		}
+		List<TransOrder> orders = memberRepo.findOrdersByMid(memberId);
+		List<Map<String, Object>> dtos = orders.stream().map(order -> toOrderDto(order)).toList();
+		return dtos;
 	}
 
 	private Map<String, Object> toOrderDto(TransOrder transOrder) {
