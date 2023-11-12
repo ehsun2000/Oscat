@@ -33,19 +33,18 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useCinemaStore } from '@/stores/cinemaStore';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   setup() {
-    const cinemaStore = useCinemaStore();
+    const route = useRoute();
     const ticketTypes = ref([]);
     const ticketCounts = ref({});
-    const cinemaName = ref(cinemaStore.cinemaName);
-    const movieName = ref(cinemaStore.movieName);
-    const screenRoomName = ref(cinemaStore.screenRoomName);
-    const basicPrice = ref(cinemaStore.basicPrice);
-    const showtimeId = ref(cinemaStore.showtimeId);
+    const cinemaName = ref(route.query.cinemaName);
+    const movieName = ref(route.query.movieName);
+    const screenRoomName = ref(route.query.screenRoomName);
+    const basicPrice = ref(parseInt(route.query.basicPrice || '0'));
+    const showtimeId = ref(route.query.showtimeId);
     const filmType = ref('');
     const showDateAndTime = ref('');
     const extraFee = ref(0);
@@ -85,13 +84,7 @@ export default {
         );
         filmType.value = response.data.filmType;
         showDateAndTime.value = response.data.showDateAndTime;
-        extraFee.value = Math.round(parseFloat(response.data.extraFee) * 100);
-
-        cinemaStore.setFilmType(response.data.filmType);
-        cinemaStore.setShowDateAndTime(response.data.showDateAndTime);
-        cinemaStore.setExtraFee(
-          Math.round(parseFloat(response.data.extraFee) * 100),
-        );
+        extraFee.value = Math.round(parseFloat(response.data.extraFee));
       } catch (error) {
         console.error('Error fetching showtime details:', error);
       }
@@ -133,6 +126,10 @@ export default {
     };
 
     const navigateToSelectSeats = () => {
+      if (totalTicketCount() === 0) {
+        alert('請至少選一張票');
+        return;
+      }
       const selectedTicketsQuery = Object.entries(ticketCounts.value).reduce(
         (acc, [typeId, count]) => {
           if (count > 0) {

@@ -232,8 +232,6 @@ const checkEmailRepeat = async () => {
   const url = `${api}/member/check`;
   try {
     const response = await axios.post(url, { email: member.value.email });
-    // console.log(member.value.email);
-    // console.log(response);
     if (response.status === 200) {
       emailExists.value = false;
       emailErrMsg.value = '';
@@ -241,7 +239,6 @@ const checkEmailRepeat = async () => {
   } catch (error) {
     emailExists.value = true;
     emailErrMsg.value = '該信箱已被註冊';
-    // console.log(error);
   }
 };
 

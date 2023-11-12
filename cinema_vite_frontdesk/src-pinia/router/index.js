@@ -1,12 +1,42 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
-  { path: '/', component: import('@/views/HomeVue.vue') },
-  { path: '/signin', component: import('@/components/SignIn.vue') },
-  { path: '/forgotPwd', component: import('@/components/ForgotPwd.vue') },
-  { path: '/signup', component: import('@/components/SignUp.vue') },
-  { path: '/resetPwd', component: import('@/components/ResetPwd.vue') },
-  { path: '/agreement', component: import('@/components/PrivacyPolicy.vue') },
+  {
+    path: '/adminlogin',
+    name: 'Login',
+    component: () => import('@/views/AdminLogin.vue'),
+  },
+
+  {
+    path: '/',
+    name: 'Home',
+    component: import('@/views/HomeVue.vue'),
+  },
+  {
+    path: '/sign-in',
+    name: 'SignIn',
+    component: import('@/components/SignIn.vue'),
+  },
+  {
+    path: '/forgot-pwd',
+    name: 'ForgotPwd',
+    component: import('@/components/ForgotPwd.vue'),
+  },
+  {
+    path: '/sign-up',
+    name: 'SignUp',
+    component: import('@/components/SignUp.vue'),
+  },
+  {
+    path: '/reset-pwd',
+    name: 'ResetPwd',
+    component: import('@/components/ResetPwd.vue'),
+  },
+  {
+    path: '/orders/:memberId',
+    name: 'Orders',
+    component: import('@/views/OfficialOrders.vue'),
+  },
   {
     path: '/select-movie/:movieId',
     name: 'SelectMovie',
@@ -30,6 +60,7 @@ const routes = [
   },
   {
     path: '/agreement',
+    name: 'Agreement',
     component: () => import('@/components/PrivacyPolicy.vue'),
   },
   {

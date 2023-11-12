@@ -25,6 +25,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import { useUserStore } from '@/stores/userStore.js';
 
 export default {
   setup() {
@@ -42,6 +43,7 @@ export default {
     const ticketTypeIds = ref([]);
     const showtimeId = ref('');
     const ticketDisplays = ref([]);
+    const userStore = useUserStore();
 
     const api = import.meta.env.VITE_OSCATOfficial_API_ENDPOINT;
 
@@ -93,9 +95,55 @@ export default {
           }
         }
       });
+
+      const savedTotalPrice = localStorage.getItem('totalPrice');
+      if (savedTotalPrice) {
+        totalPrice.value = parseFloat(savedTotalPrice);
+      }
     });
 
+    const calculateTotalPrice = async () => {
+      const data = {
+        cinemaName: cinemaName.value,
+        showtimeId: showtimeId.value,
+        ticketTypeCounts: {},
+      };
+
+      // 使用 Set 去除重複的票類型 ID
+      const uniqueTicketTypeIds = [...new Set(ticketTypeIds.value)];
+
+      // 計算每種票類型的張數
+      uniqueTicketTypeIds.forEach((typeId) => {
+        const count = ticketTypeIds.value.filter((id) => id === typeId).length;
+        data.ticketTypeCounts[typeId] = count;
+      });
+
+      try {
+        // 在計算新的總價格之前，先從LocalStorage中刪除舊的總價格
+        localStorage.removeItem('totalPrice');
+
+        const response = await axios.post(`${api}/calculate`, data);
+        totalPrice.value = response.data.totalPrice;
+        console.log(response.data.totalPrice);
+
+        // 保存計算的總價格到LocalStorage
+        localStorage.setItem('totalPrice', totalPrice.value.toString());
+      } catch (error) {
+        console.error('計算總價格時發生錯誤:', error);
+        alert('無法計算總價格，請稍後再試。');
+      }
+    };
+
     const onSiteCheckout = async () => {
+      const originalTotalPrice = totalPrice.value; // 保存當前的總價格
+      await calculateTotalPrice(); // 計算最新的總價格
+
+      if (totalPrice.value !== originalTotalPrice) {
+        alert('結帳金額有誤，將更新為正確的金額。');
+        totalPrice.value = await calculateTotalPrice();
+        location.reload();
+        return;
+      }
       // 從API獲取已被預訂的座位ID
       let bookedSeatIds = [];
       try {
@@ -135,14 +183,31 @@ export default {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
           alert('訂票成功!');
-          router.push('/');
+          router.push('/member-center');
         }
       } catch (error) {
-        console.error('結帳失敗:', error);
+        if (error.response && error.response.status === 401) {
+          if (!userStore.isAuthenticated) {
+            userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
+            alert('請先登入才能進行購票。');
+            router.push('/sign-in');
+          }
+        } else {
+          console.error('結帳失敗:', error);
+        }
       }
     };
 
     const ecpayCheckout = async () => {
+      const originalTotalPrice = totalPrice.value; // 保存當前的總價格
+      await calculateTotalPrice(); // 計算最新的總價格
+
+      if (totalPrice.value !== originalTotalPrice) {
+        alert('結帳金額有誤，將更新為正確的金額。');
+        totalPrice.value = await calculateTotalPrice();
+        location.reload();
+        return;
+      }
       // 從API獲取已被預訂的座位ID
       let bookedSeatIds = [];
       try {
@@ -203,7 +268,15 @@ export default {
           }
         }
       } catch (error) {
-        console.error('結帳失敗:', error);
+        if (error.response && error.response.status === 401) {
+          if (!userStore.isAuthenticated) {
+            userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
+            alert('請先登入才能進行購票。');
+            router.push('/sign-in');
+          }
+        } else {
+          console.error('結帳失敗:', error);
+        }
       }
     };
 

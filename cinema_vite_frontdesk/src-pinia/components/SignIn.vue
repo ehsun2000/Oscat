@@ -46,10 +46,12 @@ import { ref } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore.js';
 
 const email = ref('');
 const password = ref('');
 const router = useRouter();
+const userStore = useUserStore();
 
 // const pwdError = ref(false);
 const pwdErrMsg = ref('');
@@ -88,24 +90,33 @@ const signin = async () => {
     console.log(response.data);
     if (response.status === 200) {
       sessionStorage.setItem('isLogin', 'true');
+      userStore.setAuthenticated(true); // 設置身份驗證狀態
+
       await Swal.fire({
         title: '登入成功',
         icon: 'success',
-        timer: 1500, // 1.5秒後關閉畫面
+        timer: 1500,
         showConfirmButton: false,
       });
-      // 導到首頁
-      if (sessionStorage.getItem('isLogin') === 'true') {
+
+      // 重定向到之前的頁面或預設頁面
+      if (userStore.redirectAfterLogin) {
+        router.push(userStore.redirectAfterLogin);
+        userStore.setRedirectAfterLogin(null); // 清除重定向路徑
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
         router.push('/');
         setTimeout(() => {
           window.location.reload();
-        }, 1);
+        }, 1000);
       }
     }
   } catch (error) {
     console.log(error.response);
     await Swal.fire({
-      title: error.response,
+      title: error.response.data.message,
       icon: 'error',
     });
   }

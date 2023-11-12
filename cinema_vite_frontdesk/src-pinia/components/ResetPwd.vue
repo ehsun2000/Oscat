@@ -134,7 +134,7 @@ const onSubmit = async () => {
       timer: 1500, // 1.5秒後關閉畫面
       showConfirmButton: false,
     });
-    router.push('/signin');
+    router.push('/sign-in');
   } else {
     await Swal.fire({
       title: '修改失敗',

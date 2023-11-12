@@ -6,21 +6,27 @@
         {{ cinema.name }}
       </option>
     </select>
-    <div v-for="(times, date) in organizedShowTimes" :key="date">
-      {{ date }}
-      <br />
-      <div class="button-container">
-        <div v-for="slot in times" :key="slot.time">
-          <button
-            :disabled="shouldDisableButton(date + ' ' + slot.time)"
-            @click="
-              goToTicketType(date, slot.time, slot.roomName, slot.showtimeId)
-            "
-          >
-            {{ slot.time }}
-          </button>
+    <div
+      v-for="(timesByFilmType, date, index) in organizedShowTimes"
+      :key="date"
+    >
+      <h5>{{ date }}</h5>
+      <div v-for="(times, filmType) in timesByFilmType" :key="filmType">
+        {{ filmType }}：
+        <div class="button-container">
+          <div v-for="slot in times" :key="slot.time">
+            <button
+              :disabled="shouldDisableButton(date + ' ' + slot.time)"
+              @click="
+                goToTicketType(date, slot.time, slot.roomName, slot.showtimeId)
+              "
+            >
+              {{ slot.time }}
+            </button>
+          </div>
         </div>
       </div>
+      <hr v-if="index < Object.keys(organizedShowTimes).length - 1" />
     </div>
     <p>溫馨提醒：電影開始前30分鐘將無法線上訂票</p>
   </div>
@@ -29,10 +35,8 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useCinemaStore } from '@/stores/cinemaStore'; // 確保這裡的路徑是正確的
 
 const router = useRouter();
-const cinemaStore = useCinemaStore();
 const cinemas = ref([]);
 const selectedCinemaId = ref('');
 const organizedShowTimes = ref({});
@@ -76,12 +80,18 @@ const fetchShowTimes = async () => {
       const tempTimes = {};
 
       data.forEach((item) => {
-        const [date, hour] = item.showtime.split(' ');
+        const date = item.showtime.split(' ')[0];
+        const filmType = item.filmType;
+
         if (!tempTimes[date]) {
-          tempTimes[date] = [];
+          tempTimes[date] = {};
         }
-        tempTimes[date].push({
-          time: hour,
+        if (!tempTimes[date][filmType]) {
+          tempTimes[date][filmType] = [];
+        }
+
+        tempTimes[date][filmType].push({
+          time: item.showtime.split(' ')[1],
           roomName: item.roomName,
           showtimeId: item.showtimeId,
         });
@@ -111,18 +121,16 @@ const goToTicketType = (date, time, roomName, showtimeId) => {
   const selectedCinema = cinemas.value.find(
     (cinema) => cinema.id === selectedCinemaId.value,
   );
-
-  cinemaStore.setSelectedShowtime(
-    date,
-    time,
-    roomName,
-    showtimeId,
-    props.movie.movieName,
-    selectedCinema.name,
-    selectedCinema.basePrice.toString(),
-  );
-
-  cinemaStore.goToTicketType();
+  router.push({
+    name: 'TicketType',
+    query: {
+      movieName: props.movie.movieName,
+      cinemaName: selectedCinema.name,
+      screenRoomName: roomName,
+      basicPrice: selectedCinema.basePrice.toString(),
+      showtimeId: showtimeId,
+    },
+  });
 };
 
 onMounted(() => {
