@@ -134,8 +134,8 @@ const formateMovie = computed(() => {
 const deleteMovie = async (movieId) => {
   if (window.confirm('真的要刪除嗎?')) {
     const URLAPI = `${
-      import.meta.env.VITE_API_OSCATURL
-    }movie/delete/${movieId}`;
+      import.meta.env.VITE_OSCAT_API_ENDPOINT
+    }/movie/delete/${movieId}`;
     const response = await axios.delete(URLAPI);
     if (response.data) {
       alert(response.data);

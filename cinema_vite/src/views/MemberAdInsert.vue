@@ -1,125 +1,132 @@
 <template>
   <div class="row">
-    <h2>會員新增</h2>
     <div class="mb-3">
-      <label for="exampleInputName1" class="form-label">姓名</label>
-      <input
-        type="text"
-        class="form-control"
-        id="memberName"
-        aria-describedby="nameHelp"
-        v-bind:class="{ 'is-invalid': nameError }"
-        v-model="member.memberName"
-        required
-        @blur="checkNameBlur"
-        @input="checkName"
-      />
-      <div id="nameError" class="error-message">{{ nameErrMsg }}</div>
-    </div>
-    <div class="mb-3">
-      <label for="exampleInputEmail1" class="form-label">信箱</label>
-      <input
-        type="text"
-        class="form-control"
-        id="email"
-        aria-describedby="emailHelp"
-        v-bind:class="{ 'is-invalid': emailError }"
-        v-model="member.email"
-        required
-        @blur="checkEmailBlur"
-        @input="checkEmail"
-      />
-      <div id="emailError" class="error-message">{{ emailErrMsg }}</div>
-    </div>
-    <div class="mb-3">
-      <label for="exampleInputPassword1" class="form-label">密碼</label>
-      <input
-        type="password"
-        class="form-control"
-        id="password"
-        v-bind:class="{ 'is-invalid': pwdError }"
-        v-model="member.password"
-        required
-        @blur="checkPwdBlur"
-        @input="checkPwd"
-      />
-      <div id="passwordHelp" class="form-text">
-        請輸入包含英文跟數字，大於8位的密碼
-      </div>
-      <div id="pwdError" class="error-message">{{ pwdErrMsg }}</div>
-    </div>
-    <div class="mb-3">
-      <label for="exampleInputPhone" class="form-label">手機</label>
-      <input
-        type="text"
-        class="form-control"
-        id="phone"
-        aria-describedby="phoneHelp"
-        v-bind:class="{ 'is-invalid': phoneError }"
-        v-model="member.phone"
-        @blur="checkPhoneBlur"
-        @input="checkPhone"
-      />
-      <div id="phoneError" class="error-message">{{ phoneErrMsg }}</div>
-    </div>
-    <div class="mb-3">
-      <label for="exampleInputPhone" class="form-label">性別</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="inlineRadioOptions"
-        id="inlineRadio1"
-        value="man"
-        v-model="member.gender"
-      />
-      <label class="form-check-label" for="inlineRadio1">男</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="inlineRadioOptions"
-        id="inlineRadio2"
-        value="female"
-        v-model="member.gender"
-      />
-      <label class="form-check-label" for="inlineRadio2">女</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="inlineRadioOptions"
-        id="inlineRadio3"
-        value="other"
-        v-model="member.gender"
-      />
-      <label class="form-check-label" for="inlineRadio3">其他</label>
-    </div>
+      <h2>會員新增</h2>
+      <div class="addFrame">
+        <label for="exampleInputName1" class="form-label">姓名</label>
+        <input
+          type="text"
+          class="form-control"
+          id="memberName"
+          aria-describedby="nameHelp"
+          v-bind:class="{ 'is-invalid': nameError }"
+          v-model="member.memberName"
+          required
+          @blur="checkNameBlur"
+          @input="checkName"
+        />
+        <div id="nameError" class="error-message">{{ nameErrMsg }}</div>
 
-    <div class="mb-3">
-      <label for="exampleInputDate" class="form-label">生日</label>
-      <input
-        type="date"
-        class="form-control"
-        id="birthDate"
-        aria-describedby="birthDateHelp"
-        v-model="member.birthDate"
-      />
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">信箱</label>
+          <input
+            type="text"
+            class="form-control"
+            id="email"
+            aria-describedby="emailHelp"
+            v-bind:class="{ 'is-invalid': emailError }"
+            v-model="member.email"
+            required
+            @blur="checkEmailBlur"
+            @input="checkEmail"
+          />
+          <div id="emailError" class="error-message">{{ emailErrMsg }}</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">密碼</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            v-bind:class="{ 'is-invalid': pwdError }"
+            v-model="member.password"
+            required
+            @blur="checkPwdBlur"
+            @input="checkPwd"
+          />
+          <div id="passwordHelp" class="form-text">
+            請輸入包含英文跟數字，大於8位的密碼
+          </div>
+          <div id="pwdError" class="error-message">{{ pwdErrMsg }}</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPhone" class="form-label">手機</label>
+          <input
+            type="text"
+            class="form-control"
+            id="phone"
+            aria-describedby="phoneHelp"
+            v-bind:class="{ 'is-invalid': phoneError }"
+            v-model="member.phone"
+            @blur="checkPhoneBlur"
+            @input="checkPhone"
+          />
+          <div id="phoneError" class="error-message">{{ phoneErrMsg }}</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPhone" class="form-label">性別</label>
+
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="inlineRadio1"
+              value="man"
+              v-model="member.gender"
+            />
+            <label class="form-check-label" for="inlineRadio1">男</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="inlineRadio2"
+              value="female"
+              v-model="member.gender"
+            />
+            <label class="form-check-label" for="inlineRadio2">女</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="inlineRadio3"
+              value="other"
+              v-model="member.gender"
+            />
+            <label class="form-check-label" for="inlineRadio3">其他</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputDate" class="form-label">生日</label>
+          <input
+            type="date"
+            class="form-control"
+            id="birthDate"
+            aria-describedby="birthDateHelp"
+            v-model="member.birthDate"
+          />
+        </div>
+        <button class="btn btn-primary" type="button" @click="addHandler">
+          新增
+        </button>
+        <button class="btn btn-primary" type="button" @click="addDataHandler">
+          一鍵輸入
+        </button>
+      </div>
     </div>
-    <button class="btn btn-primary" type="button" @click="addHandler">
-      新增
-    </button>
   </div>
 </template>
 
 <script setup>
-import Member from '@/models/member.js';
+import Member from '@/models/Member.js';
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const member = ref(Member);
@@ -268,10 +275,25 @@ const checkPhone = () => {
   } else if (!phonePattern.test(phone.value)) {
     phoneError.value = true;
     phoneErrMsg.value = '手機格式錯誤';
+  } else if (phone.value.replace(/[^0-9]/g, '').length > 10) {
+    phoneError.value = true;
+    phoneErrMsg.value = '號碼不可超過10位數字';
   } else {
     phoneError.value = false;
     phoneErrMsg.value = '';
   }
+};
+
+// 一鍵輸入
+const addDataHandler = async () => {
+  member.value = {
+    memberName: '小宇',
+    email: 'yu1008@gmail.com',
+    password: 'yui125108',
+    phone: '0911623348',
+    gender: 'man',
+    birthDate: '1998-06-25',
+  };
 };
 
 // 送出處理
@@ -279,45 +301,70 @@ const addHandler = async () => {
   // 先檢查信箱是否重複
   await checkEmailRepeat();
   if (emailExists.value) {
-    alert('新增失敗 - 該信箱已被註冊');
+    Swal.fire({
+      title: '該信箱已被註冊',
+      icon: 'error',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: '好的',
+    });
     return; // 不提交表單
   }
 
-  const insert_url = `${import.meta.env.VITE_OSCAT_API_ENDPOINT}/member/add`;
-  try {
-    const response = await axios.post(insert_url, member.value);
-    if (response.status === 200) {
-      alert('新增成功');
-      router.push('/member');
-    } else {
-      alert('新增失敗');
+  Swal.fire({
+    title: '確定要新增嗎?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const update_url = `${
+        import.meta.env.VITE_OSCAT_API_ENDPOINT
+      }/member/add`;
+      axios
+        .post(update_url, member.value)
+        .then((response) => {
+          if (response.status === 200) {
+            Swal.fire('新增成功', '', 'success').then(() => {
+              router.push('/member');
+            });
+          } else {
+            Swal.fire('新增失敗', '', 'error');
+          }
+        })
+        .catch((error) => {
+          Swal.fire('新增大失敗', '新增失敗', 'error');
+        });
     }
-  } catch (error) {
-    alert('新增失敗');
-  }
+  });
 };
 
+// 回到首頁，清空上一筆新增的資料
 const restart = () => {
   member.value = ref(Member);
 };
 restart();
-
-// 回到首頁，清空上一筆新增的資料
 </script>
 
 <style scoped>
-.form-check {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+h2 {
+  padding: 10px 0;
+  text-align: center;
 }
 
-.form-check .form-check-input {
-  margin-right: 10px;
+.addFrame {
+  width: 80%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
 }
-
-.form-check-inline {
-  display: inline-block;
-  margin-right: 10px;
+.form-label {
+  margin-right: 20px;
+}
+.btn-primary {
+  margin-right: 5px;
 }
 </style>

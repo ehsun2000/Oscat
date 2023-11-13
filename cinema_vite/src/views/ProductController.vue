@@ -25,6 +25,7 @@
           </div>
         </div>
         <div style="padding: 20px">
+          <p>{{ totalItems }}個商品</p>
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -113,6 +114,7 @@ const productType = ref('');
 const productNumbers = ref([]);
 const initialPage = ref(1); // 用於保存初始的頁碼
 const page = ref(1);
+const totalItems = ref(0);
 
 // 從 .env 文件中讀取 API URL
 const URL = import.meta.env.VITE_OSCAT_API_ENDPOINT;
@@ -130,6 +132,11 @@ const caculateProductNumbers = (page) => {
   productNumbers.value = numbers;
 };
 
+// 在載入商品列表或搜尋後更新總筆數
+const updateTotalItems = (count) => {
+  totalItems.value = count;
+};
+
 const loadProducts = async () => {
   const pageNumber = currentPage.value; // 使用當前頁碼
   const url = `${URL}/product/page/${pageNumber}`;
@@ -143,6 +150,9 @@ const loadProducts = async () => {
     }));
 
     totalPages.value = response.data.totalPages;
+
+    //更新總筆數
+    updateTotalItems(response.data.totalElements);
   } catch (error) {
     console.error('獲取分頁商品數據失敗', error);
   }
@@ -179,6 +189,9 @@ const searchProducts = async () => {
 
       // 重新計算總頁數，根據查詢結果的數量
       totalPages.value = Math.ceil(response.data.length / 6); // 假設每頁顯示 6 項商品
+
+      // 重新計算總筆數，根據查詢結果的數量
+      totalItems.value = response.data.length; // 更新總筆數
 
       currentPage.value = initialPage.value; // 重置為初始頁碼
     } else {
@@ -259,6 +272,26 @@ onMounted(() => {
 loadProducts();
 </script>
 <style scoped>
+body {
+  font-family: 'Arial', sans-serif; /* 替換 'YourFont' 為你喜歡的字體名稱 */
+}
+p,
+.page-title {
+  font-size: 24px;
+  color: #d1d8e0;
+}
+/* 修改表格文字字體 */
+.table {
+  font-family: 'Arial', sans-serif; /* 替換 'YourTableFont' 為你喜歡的字體名稱 */
+  font-size: 20px; /* 修改表格文字的字體大小 */
+}
+
+/* 修改表格文字顏色 */
+.table td,
+.table th {
+  color: #ffffff; /* 修改表格中文字的顏色，這裡設定為深灰色 */
+}
+
 .search-container {
   display: flex;
   justify-content: flex-end; /* 將內容靠右對齊 */
