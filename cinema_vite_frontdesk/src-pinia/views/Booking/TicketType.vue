@@ -34,14 +34,16 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+import { useBookingStore } from '@/stores/bookingStore.js';
 
 export default {
   setup() {
+    const store = useBookingStore();
     const route = useRoute();
     const ticketTypes = ref([]);
     const ticketCounts = ref({});
-    const cinemaName = ref(route.query.cinemaName);
-    const movieName = ref(route.query.movieName);
+    const cinemaName = ref(store.cinema?.name);
+    const movieName = ref(store.movie?.movieName);
     const screenRoomName = ref(route.query.screenRoomName);
     const basicPrice = ref(parseInt(route.query.basicPrice || '0'));
     const showtimeId = ref(route.query.showtimeId);
@@ -55,10 +57,11 @@ export default {
     const fetchTicketTypes = async () => {
       try {
         const response = await axios.get(`${api}/ticketTypes`);
-        ticketTypes.value = response.data;
+        const types = response.data;
+        store.setTicketTypes(types); // 保存票種信息到 store
 
-        ticketTypes.value.forEach((ticket) => {
-          ticketCounts.value[ticket.typeId] = 0;
+        types.forEach((ticket) => {
+          store.ticketCounts[ticket.typeId] = 0; // 初始化票數
         });
       } catch (error) {
         console.error('Error fetching ticket types:', error);
@@ -156,8 +159,12 @@ export default {
     };
 
     onMounted(() => {
-      fetchTicketTypes();
-      fetchShowTimeDetails();
+      if (!store.cinema) {
+        router.push({ name: 'CinemaSelection' }); // 如果沒有選擇戲院信息，返回到 CinemaSelection 組件
+      } else {
+        fetchTicketTypes();
+        fetchShowTimeDetails();
+      }
     });
 
     return {

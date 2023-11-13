@@ -33,10 +33,12 @@
 </template>
 
 <script setup>
+import { useBookingStore } from '@/stores/bookingStore.js';
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const store = useBookingStore();
 const cinemas = ref([]);
 const selectedCinemaId = ref('');
 const organizedShowTimes = ref({});
@@ -121,16 +123,8 @@ const goToTicketType = (date, time, roomName, showtimeId) => {
   const selectedCinema = cinemas.value.find(
     (cinema) => cinema.id === selectedCinemaId.value,
   );
-  router.push({
-    name: 'TicketType',
-    query: {
-      movieName: props.movie.movieName,
-      cinemaName: selectedCinema.name,
-      screenRoomName: roomName,
-      basicPrice: selectedCinema.basePrice.toString(),
-      showtimeId: showtimeId,
-    },
-  });
+  store.setCinema(selectedCinema);
+  router.push({ name: 'TicketType' });
 };
 
 onMounted(() => {

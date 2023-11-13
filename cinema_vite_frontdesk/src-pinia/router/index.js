@@ -10,52 +10,52 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: import('@/views/HomeVue.vue'),
+    component: () => import('@/views/HomeVue.vue'),
   },
   {
     path: '/sign-in',
     name: 'SignIn',
-    component: import('@/components/SignIn.vue'),
+    component: () => import('@/components/SignIn.vue'),
   },
   {
     path: '/forgot-pwd',
     name: 'ForgotPwd',
-    component: import('@/components/ForgotPwd.vue'),
+    component: () => import('@/components/ForgotPwd.vue'),
   },
   {
     path: '/sign-up',
     name: 'SignUp',
-    component: import('@/components/SignUp.vue'),
+    component: () => import('@/components/SignUp.vue'),
   },
   {
     path: '/reset-pwd',
     name: 'ResetPwd',
-    component: import('@/components/ResetPwd.vue'),
+    component: () => import('@/components/ResetPwd.vue'),
   },
   {
     path: '/orders/:memberId',
     name: 'Orders',
-    component: import('@/views/OfficialOrders.vue'),
+    component: () => import('@/views/OfficialOrders.vue'),
   },
   {
     path: '/select-movie/:movieId',
     name: 'SelectMovie',
-    component: import('@/views/Booking/SelectMovie.vue'),
+    component: () => import('@/views/Booking/SelectMovie.vue'),
   },
   {
     path: '/ticket-type',
     name: 'TicketType',
-    component: import('@/views/Booking/TicketType.vue'),
+    component: () => import('@/views/Booking/TicketType.vue'),
   },
   {
     path: '/select-seats',
     name: 'SelectSeats',
-    component: import('@/views/Booking/SelectSeats.vue'),
+    component: () => import('@/views/Booking/SelectSeats.vue'),
   },
   {
     path: '/book-checkout',
     name: 'BookCheckout',
-    component: import('@/views/Booking/BookCheckout.vue'),
+    component: () => import('@/views/Booking/BookCheckout.vue'),
     props: true,
   },
   {

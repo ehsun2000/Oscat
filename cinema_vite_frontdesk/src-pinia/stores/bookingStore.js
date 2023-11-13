@@ -6,7 +6,7 @@ export const useBookingStore = defineStore('booking', {
     selectedCinema: null,
     selectedSeats: [],
     selectedTicketTypes: [],
-    totalPrice: 0
+    totalPrice: 0,
   }),
   actions: {
     setMovie(movie) {
@@ -23,6 +23,6 @@ export const useBookingStore = defineStore('booking', {
     },
     setTotalPrice(price) {
       this.totalPrice = price;
-    }
-  }
+    },
+  },
 });

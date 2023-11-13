@@ -191,8 +191,11 @@ export default {
     });
 
     const gridStyle = computed(() => {
+      const seatWidth = 50;
+      const totalWidth = maxSeatsPerRow.value * seatWidth;
       return {
-        'grid-template-columns': `repeat(${maxSeatsPerRow.value}, 1fr)`,
+        'grid-template-columns': `repeat(auto-fill, minmax(${seatWidth}px, 1fr))`,
+        width: `${totalWidth}px`,
       };
     });
 
@@ -227,19 +230,23 @@ export default {
 .error-message {
   color: red;
 }
-.seats-container {
-  display: grid;
-  gap: 1px;
-  margin: 0;
-  padding: 0;
-}
 .showButtons {
   text-align: center;
   margin-top: 20px;
 }
+.seats-container {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  margin: auto;
+}
 .seat-button {
   background-color: #1a1a1a;
   border-color: #1a1a1a;
+  margin: 0; /* 減少邊距 */
+  padding: 2px; /* 調整內距 */
+  justify-content: center;
 }
 .scrollable-container {
   width: 800px;
