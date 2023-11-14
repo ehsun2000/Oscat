@@ -183,7 +183,7 @@ public class OfficalBooking {
 		/* 特店交易編號 */
 		Random rand = new Random();
 		int randomNumber = rand.nextInt(900000) + 100000; // 這將保證生成的是一個六位數的數字
-		aioCheck.setMerchantTradeNo("testSpeakitup" + randomNumber);
+		aioCheck.setMerchantTradeNo(String.valueOf(randomNumber));
 		/* 付款完成通知回傳網址 */
 		aioCheck.setReturnURL("http://localhost:8080/api/offical/returnURL");
 		/* Client端回傳付款網址 */
