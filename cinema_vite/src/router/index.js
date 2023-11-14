@@ -30,13 +30,18 @@ const routes = [
       },
       {
         path: '/member-report',
-        name: 'Analysis',
+        name: 'MAnalysis',
         component: import('@/views/MemberAnalysis.vue'),
       },
       {
         path: '/transorder',
         name: 'TransOrder',
         component: import('@/views/OrderAdmin.vue'),
+      },
+      {
+        path: '/transorder-report',
+        name: 'OAnalysis',
+        component: import('@/views/OrderAnalysis.vue'),
       },
       {
         path: '/cinema-select',

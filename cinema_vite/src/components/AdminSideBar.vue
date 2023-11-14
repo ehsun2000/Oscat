@@ -22,6 +22,7 @@ const menus = [
       { name: '會員一覽', path: '/member' },
       { name: '分析報告', path: '/member-report' },
       { name: '訂單管理', path: '/transorder' },
+      { name: '訂單分析', path: '/transorder-report' },
     ],
   },
   {
