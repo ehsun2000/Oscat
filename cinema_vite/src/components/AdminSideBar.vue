@@ -36,23 +36,22 @@ const menus = [
   },
 ];
 
-
 const logout = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_OUT_API_ENDPOINT}`, {
-        credentials: 'include',
-        method: 'GET'
-      });
+  try {
+    const response = await fetch(`${import.meta.env.VITE_OUT_API_ENDPOINT}`, {
+      credentials: 'include',
+      method: 'GET',
+    });
 
-      if (response.ok) {
-        await router.push('/adminlogin');
-      } else {
-        console.error('登出未成功!');
-      }
-    } catch (error) {
-      console.error('登出過程中發生錯誤:', error);
+    if (response.ok) {
+      await router.push('/adminlogin');
+    } else {
+      console.error('登出未成功!');
     }
-  };
+  } catch (error) {
+    console.error('登出過程中發生錯誤:', error);
+  }
+};
 </script>
 
 <template>
@@ -73,7 +72,11 @@ const logout = async () => {
     ></CollapseMenu>
   </ul>
   <hr />
-  <span class="d-flex justify-content-center align-items-end mb-3 mb-md-0 me-md-auto text-decoration-none text-light" @click="logout">登出</span>
+  <span
+    class="d-flex justify-content-center align-items-end mb-3 mb-md-0 me-md-auto text-decoration-none text-light"
+    @click="logout"
+    >登出</span
+  >
 </template>
 
 <style scoped>

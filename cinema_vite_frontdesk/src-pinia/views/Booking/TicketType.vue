@@ -33,20 +33,19 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useBookingStore } from '@/stores/bookingStore.js';
 
 export default {
   setup() {
     const store = useBookingStore();
-    const route = useRoute();
     const ticketTypes = ref([]);
     const ticketCounts = ref({});
-    const cinemaName = ref(store.cinema?.name);
-    const movieName = ref(store.movie?.movieName);
-    const screenRoomName = ref(route.query.screenRoomName);
-    const basicPrice = ref(parseInt(route.query.basicPrice || '0'));
-    const showtimeId = ref(route.query.showtimeId);
+    const cinemaName = ref(store.selectedCinema?.name);
+    const movieName = ref(store.selectedMovie?.movieName);
+    const basicPrice = ref(parseInt(store.selectedMovie?.basicPrice || '0'));
+    const screenRoomName = ref(store.selectedShowTime?.roomName);
+    const showtimeId = ref(store.selectedShowTime?.showtimeId);
     const filmType = ref('');
     const showDateAndTime = ref('');
     const extraFee = ref(0);
@@ -70,17 +69,24 @@ export default {
 
     const increaseCount = (typeId) => {
       if (totalTicketCount() < 10) {
-        ticketCounts.value[typeId]++;
+        const newCount = (ticketCounts.value[typeId] || 0) + 1;
+        store.setTicketCount(typeId, newCount);
       }
     };
 
     const decreaseCount = (typeId) => {
       if (ticketCounts.value[typeId] && ticketCounts.value[typeId] > 0) {
-        ticketCounts.value[typeId]--;
+        const newCount = ticketCounts.value[typeId] - 1;
+        store.setTicketCount(typeId, newCount);
       }
     };
 
     const fetchShowTimeDetails = async () => {
+      if (!showtimeId.value) {
+        console.error('showtimeId is undefined, cannot fetch showtime details');
+        return;
+      }
+
       try {
         const response = await axios.get(
           `${api}/findshowtime/${showtimeId.value}`,
@@ -159,12 +165,8 @@ export default {
     };
 
     onMounted(() => {
-      if (!store.cinema) {
-        router.push({ name: 'CinemaSelection' }); // 如果沒有選擇戲院信息，返回到 CinemaSelection 組件
-      } else {
-        fetchTicketTypes();
-        fetchShowTimeDetails();
-      }
+      fetchTicketTypes();
+      fetchShowTimeDetails();
     });
 
     return {

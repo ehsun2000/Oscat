@@ -1,6 +1,7 @@
 package com.oscat.cinema.service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class OrderService {
     private SeatRepository seatRepository;
 
     @Transactional
-    public void createOrder(OrderDTO request) {
+    public UUID createOrder(OrderDTO request) {
     	
         TransOrder order = new TransOrder();
         order.setShowTime(showTimeRepository.findById(request.getShowtimeId()).orElse(null));
@@ -41,7 +42,7 @@ public class OrderService {
         order.setPaymentMethod(request.getPaymentMethod());
         order.setBookingDateAndTime(LocalDateTime.now());
         order.setTotalPrice(request.getTotalPrice());
-        transOrderRepository.save(order);
+        TransOrder savedOrder = transOrderRepository.save(order);
 
         for (TicketRequest ticketRequest : request.getTickets()) {
             Ticket ticket = new Ticket();
@@ -50,5 +51,7 @@ public class OrderService {
             ticket.setSeat(seatRepository.findById(ticketRequest.getSeatId()).orElse(null));
             ticketRepository.save(ticket);
         }
+        
+        return savedOrder.getOrderId();
     }
 }

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore.js';
@@ -126,7 +126,6 @@ export default {
         totalPrice.value = response.data.totalPrice;
         console.log(response.data.totalPrice);
 
-        // 保存計算的總價格到LocalStorage
         localStorage.setItem('totalPrice', totalPrice.value.toString());
       } catch (error) {
         console.error('計算總價格時發生錯誤:', error);
@@ -183,6 +182,7 @@ export default {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
           alert('訂票成功!');
+          localStorage.removeItem('totalPrice');
           router.push('/member-center');
         }
       } catch (error) {
@@ -246,13 +246,17 @@ export default {
       try {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
-          const postData = {
+          const orderId = response.data;
+          console.log(response.data);
+          const ecpayData = {
             totalPrice: totalPrice.value.toString(),
-            tradeDesc: ticketDisplays.value.join(', '),
+            orderId: orderId,
           };
 
+          console.log(ecpayData);
+
           try {
-            const response = await axios.post(`${api}/goECPay`, postData);
+            const response = await axios.post(`${api}/goECPay`, ecpayData);
             // 假設後端現在返回一個含有重導URL的JSON物件
             if (response.data && response.data.redirectUrl) {
               // 如果是一個URL，就可以直接重導
@@ -282,9 +286,14 @@ export default {
 
     const cancelOrder = () => {
       if (confirm('真的要取消訂單嗎？')) {
+        localStorage.removeItem('totalPrice');
         router.push('/');
       }
     };
+
+    onUnmounted(() => {
+      localStorage.removeItem('totalPrice');
+    });
 
     return {
       movieName,

@@ -124,6 +124,8 @@ const goToTicketType = (date, time, roomName, showtimeId) => {
     (cinema) => cinema.id === selectedCinemaId.value,
   );
   store.setCinema(selectedCinema);
+  store.setShowTime({ date, time, roomName, showtimeId }); // 假設您要保存這些信息
+
   router.push({ name: 'TicketType' });
 };
 

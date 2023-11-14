@@ -209,18 +209,16 @@ const showProducts = async () => {
       credentials: 'include',
     },
   );
-  
+
   allProducts.length = 0;
   const data = await response.json();
-  data.forEach(item => {
+  data.forEach((item) => {
     allProducts.push(item);
   });
 
   const checkboxesHtml = allProducts
     .map((product) => {
-      const checked = cinema.value.products.includes(product)
-        ? 'checked'
-        : '';
+      const checked = cinema.value.products.includes(product) ? 'checked' : '';
       return `
           <label>
             <input type="checkbox" name="products" value="${product}" ${checked} />
@@ -346,7 +344,7 @@ const showProducts = async () => {
                 </ul>
               </div>
             </div>
-            
+
             <div class="col-md-4">
               <div>
                 <h4 class="text-warning">
