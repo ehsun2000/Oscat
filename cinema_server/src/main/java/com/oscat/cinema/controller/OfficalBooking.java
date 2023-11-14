@@ -207,5 +207,10 @@ public class OfficalBooking {
 				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.32")) && Rtncode == 1) {
 		}
 	}
+	
+	@GetMapping("/nameLike")
+	public List<Movie> findMovieByNameLike(@RequestParam("n") String name) {
+		return movRepo.findMovieByNameLike(name);
+	}
 
 }

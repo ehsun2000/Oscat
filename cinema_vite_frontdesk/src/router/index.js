@@ -68,6 +68,11 @@ const routes = [
     name: 'MemberCenter',
     component: () => import('@/views/OfficialMember.vue'),
   },
+  {
+    path: '/search-movie/:keyword',
+    name: 'SearchMovie',
+    component: () => import('@/views/ShowSearchMovie.vue'),
+  },
 ];
 
 const router = createRouter({

@@ -3,8 +3,9 @@
     <AdCarousel></AdCarousel>
   </div>
   <div class="row mb-3">
-    <div class="searchMovie">
-      <!-- <SearchMovie> </SearchMovie> -->
+    <div class="searchMovie d-flex justify-content">
+      <SearchMovie></SearchMovie>
+      <!-- <SearchMovie v-model="datas.movieName"> </SearchMovie> -->
     </div>
   </div>
   <div class="container">
@@ -45,7 +46,7 @@
                   <div class="modal-footer text-center">
                     <button
                       type="button"
-                      class="btn btn-primary w-100 py-2"
+                      class="btn btn-primary"
                       @click="goToSelectMovie(movie)"
                     >
                       前往訂票
@@ -85,7 +86,11 @@
           class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none"
           style="margin: 0%"
         >
-          <img rel="icon" src="images/cat.png" style="height: 40px; width: 32px" />
+          <img
+            rel="icon"
+            src="images/cat.png"
+            style="height: 40px; width: 32px"
+          />
         </a>
         <p class="text-body-secondary">&copy; OSCAT 2023</p>
       </div>
@@ -117,9 +122,8 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
-// import NavbarVue from '@/components/NavbarVue.vue';
 import AdCarousel from '@/components/AdCarousel.vue';
 import SearchMovie from '@/components/SearchTextMovie.vue';
 import { useRouter } from 'vue-router';
