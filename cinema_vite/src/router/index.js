@@ -34,6 +34,16 @@ const routes = [
         component: import('@/views/MemberAnalysis.vue'),
       },
       {
+        path: '/transorder',
+        name: 'TransOrder',
+        component: import('@/views/OrderAdmin.vue'),
+      },
+      {
+        path: '/transorder-report',
+        name: 'Analysis',
+        component: import('@/views/OrderAnalysis.vue'),
+      },
+      {
         path: '/cinema-select',
         name: 'CinemaSelect',
         component: import('@/views/CinemaSelect.vue'),
@@ -82,11 +92,6 @@ const routes = [
         path: '/movie/edit/:movieId',
         name: 'Edit',
         component: import('@/views/AdminEditMovie.vue'),
-      },
-      {
-        path: '/transorder',
-        name: 'TransOrder',
-        component: import('@/views/OrderAdmin.vue'),
       },
     ],
   },

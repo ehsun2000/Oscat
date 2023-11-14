@@ -32,7 +32,7 @@
           />
           <div id="emailError" class="error-message">{{ emailErrMsg }}</div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3" v-if="showPwd">
           <label for="exampleInputPassword1" class="form-label">密碼</label>
           <input
             type="password"
@@ -49,6 +49,13 @@
           </div>
         </div>
         <div id="pwdError" class="error-message">{{ pwdErrMsg }}</div>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          @click="updateOldPwd"
+        >
+          修改密碼
+        </button>
         <div class="mb-3">
           <label for="exampleInputPhone" class="form-label">手機</label>
           <input
@@ -122,7 +129,7 @@
 import { ref, computed, watch } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
-import Member from '@/models/Member.js';
+import Member from '@/models/member.js';
 import Swal from 'sweetalert2';
 
 const route = useRoute();
@@ -255,6 +262,24 @@ const checkEmailRepeat = async () => {
       emailErrMsg.value = '該信箱已被註冊';
       throw error;
     }
+  }
+};
+
+// 修改密碼
+
+const originalPwd = ref(member.value.password);
+console.log(member.value.password);
+const showPwd = ref(false);
+
+const updateOldPwd = () => {
+  console.log(member.value.password);
+  showPwd.value = !showPwd.value;
+  if (showPwd.value) {
+    // 清除密碼
+    member.value.password = '';
+  } else {
+    // 不打開就是原本密碼
+    member.value.password = originalPwd;
   }
 };
 

@@ -48,12 +48,28 @@
               {{ transorder.totalPrice }}
             </td>
             <td>
-              <button @click="confirmOrder(transorder.orderId)">
+              <button
+                @click="confirmOrder(transorder.orderId)"
+                :disabled="
+                  transorder.paymentMethod === '線上付款' ||
+                  transorder.paymentMethod === '已付款' ||
+                  transorder.paymentMethod === '已取消' ||
+                  transorder.paymentMethod === '綠界付款'
+                "
+              >
                 確認訂單
               </button>
             </td>
             <td>
-              <button @click="cancelOrder(transorder.orderId)">取消訂單</button>
+              <button
+                @click="cancelOrder(transorder.orderId)"
+                :disabled="
+                  transorder.paymentMethod === '已取消' ||
+                  transorder.paymentMethod === '已付款'
+                "
+              >
+                取消訂單
+              </button>
             </td>
           </tr>
         </tbody>
@@ -64,18 +80,23 @@
         @childClick="clickHandler"
       ></Page>
     </div>
+    <!-- <component :is="currentComponent"></component> -->
   </div>
 </template>
 
 <script setup>
+import Swal from 'sweetalert2';
 import axios from 'axios';
 import Page from '@/views/SearchPage.vue';
 import { ref, onMounted, computed } from 'vue';
+// import MovieAnalysis from '@/components/OrderBar.vue';
 
 const transorders = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const selectedEmail = ref(null);
+
+// const currentComponent = ref(MovieAnalysis);
 
 // 分頁
 const loadOrders = async (page = currentPage.value) => {
@@ -125,61 +146,119 @@ const formatDate = (dateString) => {
   const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
   return `${year}-${month}-${day} ${formattedTime}`;
 };
-
+// 確認訂單
 const confirmOrder = (orderId) => {
-  const isConfirmed = window.confirm('確認訂單?');
+  Swal.fire({
+    title: '確認訂單?',
+    text: '您確定要確認此訂單嗎？',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const requestData = {
+        orderId: orderId,
+      };
 
-  if (isConfirmed) {
-    const requestData = {
-      orderId: orderId,
-    };
+      const confirmOrderUrl = `${
+        import.meta.env.VITE_OSCAT_API_ENDPOINT
+      }/transorder/confirmOrder`;
 
-    const confirmOrderUrl = `${
-      import.meta.env.VITE_OSCAT_API_ENDPOINT
-    }/transorder/confirmOrder`;
+      axios
+        .post(confirmOrderUrl, requestData)
+        .then(() => {
+          const orderIndex = transorders.value.findIndex(
+            (order) => order.orderId === orderId,
+          );
+          if (orderIndex !== -1) {
+            transorders.value[orderIndex].paymentMethod = '已付款';
+          }
 
-    axios
-      .post(confirmOrderUrl, requestData)
-      .then(() => {
-        const orderIndex = transorders.value.findIndex(
-          (order) => order.orderId === orderId,
-        );
-        if (orderIndex !== -1) {
-          transorders.value[orderIndex].paymentMethod = '已付款';
-        }
-
-        window.alert('訂單已成功確認');
-      })
-      .catch(() => {});
-  }
+          Swal.fire('訂單已成功確認', '', 'success');
+        })
+        .catch(() => {
+          Swal.fire('訂單確認失敗', '', 'error');
+        });
+    }
+  });
 };
+// 取消訂單，並有退款成功之後的畫面
 const cancelOrder = (orderId) => {
-  const isConfirmed = window.confirm('確定要取消訂單嗎？');
+  Swal.fire({
+    title: '確定取消訂單?',
+    text: '您確定要取消此訂單嗎？',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      showRefundInProgressAlert();
+      setTimeout(() => {
+        const cancelOrderUrl = `${
+          import.meta.env.VITE_OSCAT_API_ENDPOINT
+        }/transorder/cancelOrder?orderId=${orderId}`;
 
-  if (isConfirmed) {
-    const requestData = { orderId };
+        axios
+          .post(cancelOrderUrl)
+          .then(() => {
+            const orderIndex = transorders.value.findIndex(
+              (order) => order.orderId === orderId,
+            );
+            if (orderIndex !== -1) {
+              transorders.value[orderIndex].paymentMethod = '已取消';
+            }
 
-    const cancelOrderUrl = `${
-      import.meta.env.VITE_OSCAT_API_ENDPOINT
-    }/transorder/cancelOrder`;
-
-    axios
-      .post(cancelOrderUrl, null, {
-        params: requestData,
-      })
-
-      .then(() => {
-        const orderIndex = transorders.value.findIndex(
-          (order) => order.orderId === orderId,
-        );
-        if (orderIndex !== -1) {
-          transorders.value[orderIndex].paymentMethod = '已取消';
-        }
-        window.alert('取消成功');
-      })
-      .catch(() => {});
-  }
+            showCancelOrderSuccessAlert();
+          })
+          .catch((error) => {
+            console.error('Error canceling order:', error);
+            showCancelOrderFailureAlert();
+          });
+      }, 5000);
+    }
+  });
 };
+
+const showRefundInProgressAlert = () => {
+  let timerInterval;
+  Swal.fire({
+    title: '退款中',
+    html: '請稍候，退款中 <b></b> 秒',
+    timer: 5000,
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+      const timer = Swal.getPopup().querySelector('b');
+      timerInterval = setInterval(() => {
+        timer.textContent = `${Math.ceil(Swal.getTimerLeft() / 1000)}`;
+      }, 1000);
+    },
+    willClose: () => {
+      clearInterval(timerInterval);
+    },
+  });
+};
+
+const showCancelOrderSuccessAlert = () => {
+  Swal.fire({
+    title: '訂單已取消',
+    text: '訂單已成功取消',
+    icon: 'success',
+  });
+};
+
+const showCancelOrderFailureAlert = () => {
+  Swal.fire({
+    title: '取消失敗',
+    text: '取消訂單時出現錯誤',
+    icon: 'error',
+  });
+};
+
 onMounted(async () => {
   loadOrders();
 });

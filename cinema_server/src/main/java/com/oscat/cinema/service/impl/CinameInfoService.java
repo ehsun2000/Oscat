@@ -2,6 +2,7 @@ package com.oscat.cinema.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.oscat.cinema.dao.CinemaRepository;
-import com.oscat.cinema.dao.CinemaTicketTypeRepository;
 import com.oscat.cinema.dao.FacilityRepository;
 import com.oscat.cinema.dao.ProductRepository;
 import com.oscat.cinema.dao.TicketTypeRepository;
@@ -21,6 +21,7 @@ import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 import com.oscat.cinema.mapper.CinemaMapper;
 import com.oscat.cinema.mapper.FacilityMapper;
+import com.oscat.cinema.mapper.ProductMapper;
 import com.oscat.cinema.mapper.TicketTypeMapper;
 import com.oscat.cinema.service.ICinameInfoService;
 import com.oscat.cinema.util.CloudinaryUtil;
@@ -31,19 +32,24 @@ import jakarta.transaction.Transactional;
 public class CinameInfoService implements ICinameInfoService {
 	private final CinemaRepository cinemaRepo;
 	private final CinemaMapper cinemaMapper;
+	private final ProductRepository productRepository;
+	private final ProductMapper productMapper;
 	private final TicketTypeRepository typeRepository;
 	private final TicketTypeMapper ticketTypeMapper;
 	private final FacilityRepository facilityRepository;
 	private final FacilityMapper facilityMapper;
 	private final CloudinaryUtil cloudinaryUtil;
+
 	// 建構子注入
 	@Autowired
-	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper,
-			TicketTypeRepository typeRepository, FacilityRepository facilityRepository,
-			TicketTypeMapper ticketTypeMapper,FacilityMapper facilityMapper,
-			CloudinaryUtil cloudinaryUtil) {
+	public CinameInfoService(CinemaRepository cinemaRepo, CinemaMapper cinmeMapper, TicketTypeRepository typeRepository,
+			FacilityRepository facilityRepository, TicketTypeMapper ticketTypeMapper, FacilityMapper facilityMapper,
+			CloudinaryUtil cloudinaryUtil, ProductRepository productRepository,
+			ProductMapper productMapper) {
 		this.cinemaRepo = cinemaRepo;
 		this.cinemaMapper = cinmeMapper;
+		this.productRepository = productRepository;
+		this.productMapper = productMapper;
 		this.typeRepository = typeRepository;
 		this.ticketTypeMapper = ticketTypeMapper;
 		this.facilityRepository = facilityRepository;
@@ -73,13 +79,14 @@ public class CinameInfoService implements ICinameInfoService {
 		Optional<Cinema> existingCinema = cinemaRepo.findById(dto.getId());
 		List<TicketType> types = typeRepository.findAll();
 		List<Facility> facilities = facilityRepository.findAll();
+		List<Product> products = productRepository.findAll();
 
 //		判斷是否有找到值
 		if (existingCinema.isPresent()) {
 
 			Cinema cinema = existingCinema.get();
 //			缺少 validator
-			cinemaMapper.updateFromDto(dto, cinema, types, facilities);
+			cinemaMapper.updateFromDto(dto, cinema, types, facilities, products);
 			cinemaRepo.flush();
 
 			cinemaRepo.save(cinema);
@@ -103,17 +110,17 @@ public class CinameInfoService implements ICinameInfoService {
 	@Transactional
 	public String updateImg(MultipartFile file, Integer id) {
 		Optional<Cinema> cinemaOpt = cinemaRepo.findById(id);
-		if(cinemaOpt.isPresent()) {
+		if (cinemaOpt.isPresent()) {
 			Cinema cinema = cinemaOpt.get();
 			// 上傳圖片
 			String url = cloudinaryUtil.uploadImage(file);
-			if(url == null) {
+			if (url == null) {
 				return "Upload new picture faild!";
 			}
-			
+
 			// 刪除舊圖片
 			boolean deleteImage = cloudinaryUtil.deleteImage(cinema.getCinemaImg());
-			if(deleteImage == false) {
+			if (deleteImage == false) {
 				return "Delete old picture faild!";
 			}
 			cinema.setCinemaImg(url);
@@ -121,6 +128,24 @@ public class CinameInfoService implements ICinameInfoService {
 			cinemaRepo.save(cinema);
 		}
 		return "Success";
+	}
+
+	private CinemaDTO convertToDTO(Cinema cinema) {
+		CinemaDTO dto = new CinemaDTO();
+		dto.setId(cinema.getCinemaId());
+		dto.setName(cinema.getCinemaName());
+		dto.setBasePrice(cinema.getBasePrice());
+		return dto;
+	}
+
+	public List<CinemaDTO> getAllCinemas() {
+		List<Cinema> cinemas = cinemaRepo.findAll();
+		return cinemas.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	public List<String> findAllProducts() {
+		List<Product> products = productRepository.findAll();
+		return productMapper.toDtos(products);
 	}
 
 }

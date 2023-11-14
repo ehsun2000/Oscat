@@ -7,26 +7,26 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.hibernate.loader.ast.spi.AfterLoadAction;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oscat.cinema.dto.BusinessHourDto;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.entity.Cinema;
 import com.oscat.cinema.entity.CinemaTicketType;
 import com.oscat.cinema.entity.Facility;
+import com.oscat.cinema.entity.Product;
 import com.oscat.cinema.entity.TicketType;
 
 // 使用 mapstruct 轉換 dto
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR
 // 透過 TicketTypeMapper 將 List<TicketType> 轉換成 List<TicketTypeDTO>
-		, uses = { CinemaTicketTypeMapper.class, FacilityMapper.class, OpeningHourMapper.class })
+		, uses = { CinemaTicketTypeMapper.class, FacilityMapper.class, 
+				OpeningHourMapper.class, ProductMapper.class })
 public interface CinemaMapper {
 //	映射不同屬性名稱
 	@Mapping(source = "cinemaId", target = "id")
@@ -50,7 +50,7 @@ public interface CinemaMapper {
 	@Mapping(target = "cinemaAddress", source = "dto.address")
 	@Mapping(target = "contactPhone", source = "dto.phone")
 	void updateFromDto(CinemaDTO dto, @MappingTarget Cinema cinema, List<TicketType> ticketTypes,
-			List<Facility> facilities);
+			List<Facility> facilities, List<Product> products);
 
 	@Named("toEntityWithCinema")
 	default CinemaTicketType toEntityWithCinema(String type, Cinema cinema, List<TicketType> ticketTypes) {
@@ -111,9 +111,30 @@ public interface CinemaMapper {
 		});
 	};
 
+	@Named("toEntityWithProducts")
+	default List<Product> toProductEntity(List<String> inputProducts, List<Product> products) {
+		Map<String, Product> productMap = products.stream()
+				.collect(Collectors.toMap(Product::getProductName, product -> product));
+
+		List<Product> finalProduct = new ArrayList<>();
+
+		for (String cinemaProcuct : inputProducts) {
+			Optional<Product> productOpt = Optional.ofNullable(productMap.get(cinemaProcuct));
+
+			// 比對是否有在原本設施陣列中
+			if (productOpt.isPresent()) {
+				// 加入影城設施陣列中
+				finalProduct.add(productOpt.get());
+			}
+		}
+		;
+
+		return finalProduct;
+	};
+
 	@AfterMapping
 	default void handleCustomMapping(@MappingTarget Cinema cinema, CinemaDTO cinemaDTO, List<TicketType> ticketTypes,
-			List<Facility> facilities) {
+			List<Facility> facilities, List<Product> products) {
 		if (cinemaDTO.getTypes() != null) {
 			List<CinemaTicketType> existingTicketTypes = cinema.getTicketTypes();
 
@@ -142,8 +163,10 @@ public interface CinemaMapper {
 			}
 
 			List<Facility> cinemaFacility = toFacilityEntity(cinemaDTO.getFacilities(), facilities);
-
+			List<Product> CinemaProduct = toProductEntity(cinemaDTO.getProducts(), products);
+			
 			cinema.setFacilities(cinemaFacility);
+			cinema.setProducts(CinemaProduct);
 
 			toOpeningHourEntity(cinemaDTO.getBusinessHours(), cinema);
 			// 將 ticketTypes set 回 cinema（如果使用的是持久化對象，這步可能不是必需的，因為對象可能已經是持久化的）

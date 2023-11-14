@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oscat.cinema.dto.MovieOrderStatsDTO;
 import com.oscat.cinema.dto.OrderDTO;
 import com.oscat.cinema.entity.TransOrder;
 import com.oscat.cinema.service.TransOrderService;
@@ -104,5 +105,12 @@ public class TransOrderController {
 
 		return new ResponseEntity<>("訂單已取消", HttpStatus.OK);
 	}
+	
+	//1109
+	 @GetMapping("/movieOrderStats")
+	    public ResponseEntity<List<MovieOrderStatsDTO>> getMovieOrderStats() {
+	        List<MovieOrderStatsDTO> movieOrderStats = orderService.getMovieOrderStats();
+	        return new ResponseEntity<>(movieOrderStats, HttpStatus.OK);
+	    }
 
 }

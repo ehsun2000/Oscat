@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,8 +19,10 @@ import org.springframework.stereotype.Service;
 import com.oscat.cinema.dao.MemberRepository;
 import com.oscat.cinema.dao.ShowTimeRepository;
 import com.oscat.cinema.dao.TransOrderRepository;
+import com.oscat.cinema.dto.MovieOrderStatsDTO;
 import com.oscat.cinema.dto.OrderDTO;
 import com.oscat.cinema.entity.Member;
+import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.entity.ShowTime;
 import com.oscat.cinema.entity.TransOrder;
 
@@ -109,8 +112,45 @@ public class TransOrderService {
 	}
 
 	public List<TransOrder> findOrdersByTimeAndEmail(LocalDateTime bookingDateAndTime, String email) {
-		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	//1109圖表
+	public List<MovieOrderStatsDTO> getMovieOrderStats() {
+	    List<TransOrder> allOrders = orderRepository.findAll();
+	    Map<ShowTime, Integer> movieOrderCountMap = new HashMap<>();
+
+	    for (TransOrder order : allOrders) {
+	        ShowTime showTime = order.getShowTime();
+	        if (showTime != null) {
+	            // 檢查該電影是否已經在統計中
+	            if (movieOrderCountMap.containsKey(showTime)) {
+	                // 如果已經在統計中，則增加訂單數量
+	                movieOrderCountMap.put(showTime, movieOrderCountMap.get(showTime) + 1);
+	            } else {
+	                // 如果還未在統計中，則添加新的電影並設置訂單數量為1
+	                movieOrderCountMap.put(showTime, 1);
+	            }
+	        }
+	    }
+
+	    // 將統計結果轉換為DTO列表，包括Movie物件
+	    List<MovieOrderStatsDTO> movieOrderStatsList = new ArrayList<>();
+	    for (Map.Entry<ShowTime, Integer> entry : movieOrderCountMap.entrySet()) {
+	        MovieOrderStatsDTO statsDTO = new MovieOrderStatsDTO();
+	        statsDTO.setShowTime(entry.getKey());
+	        statsDTO.setOrderCount(entry.getValue());
+
+	        // 為MovieOrderStatsDTO設置Movie物件
+	        Movie movie = entry.getKey().getMovie();
+	        statsDTO.setMovie(movie);
+
+	        movieOrderStatsList.add(statsDTO);
+	    }
+
+	    return movieOrderStatsList;
+	}
+
 
 }

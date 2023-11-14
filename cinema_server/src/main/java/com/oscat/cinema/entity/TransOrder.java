@@ -42,17 +42,17 @@ public class TransOrder {
 	@Column(name = "total_price", nullable = false, precision = 10, scale = 2)
 	private BigDecimal totalPrice;
 
-
+	@JsonBackReference(value = "showtime_order")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "showtime_id")
 	private ShowTime showTime;
 
-	
+	@JsonBackReference(value = "member-order")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@JsonManagedReference(value = "order-type")
-	@OneToMany(mappedBy = "transOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "transOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Ticket> tickets;
 }

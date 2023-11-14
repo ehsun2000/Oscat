@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,36 +29,52 @@ public class AdminAuthController {
 		this.authenticationManager = authenticationManager;
 	}
 
+	// 管理者登入
 	@PostMapping("/adminlogin")
-	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest,
-			HttpServletRequest req,HttpSession session) {
+	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletRequest req,
+			HttpSession session) {
 		try {
 			// 嘗試進行身份認證
-			Authentication authentication = 
-					authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 					authenticationRequest.getAccount(), authenticationRequest.getPassword()));
-			
+
 			// 從 Authentication 對象中獲取 UserDetails
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			
+
 			// 使用 Session 儲存驗證資訊
 			session.setAttribute("userdetails", userDetails);
 			session.setMaxInactiveInterval(60 * 60 * 10); // 10 小時
-			
+
 			return ResponseEntity.ok("Login Success");
 		} catch (AuthenticationException e) {
 			// 身份認證失敗，進行錯誤處理
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
 		}
 	}
-	
-	// 確認用戶是否登入
+
+	// 確認管理者是否登入
 	@GetMapping("/checkLogin")
 	public ResponseEntity<?> checkLogin(Authentication authentication) {
-	    // 如果Authentication對象不為null，代表用戶已登入
-	    if (authentication != null && authentication.isAuthenticated()) {
-	        return new ResponseEntity<>("已登入", HttpStatus.OK);
-	    }
-	    return new ResponseEntity<>("未登入", HttpStatus.UNAUTHORIZED);
+		// 如果Authentication對象不為null，代表用戶已登入
+		if (authentication != null && authentication.isAuthenticated()) {
+			return new ResponseEntity<>("已登入", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("未登入", HttpStatus.UNAUTHORIZED);
+	}
+
+	// 管理者登出
+	@GetMapping("/logOut")
+	public ResponseEntity<?> logOut(Authentication authentication, HttpServletRequest request) {
+		if (authentication != null && authentication.isAuthenticated()) {
+			HttpSession session = request.getSession(false); // 獲取當前 Session，而不是創建一個新的
+			
+            if (session != null) {
+                session.invalidate(); // 使 Session 失效
+            }
+            
+            return ResponseEntity.ok().body("用戶已成功登出");
+		}
+
+		return ResponseEntity.badRequest().body("用戶未登錄或已經登出");
 	}
 }

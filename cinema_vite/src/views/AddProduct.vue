@@ -73,6 +73,9 @@
             >
               新增
             </button>
+            <button class="btn btn-dark" type="button" @click="inputHandler">
+              一鍵輸入
+            </button>
           </div>
           <div class="col text-end">
             <button
@@ -147,6 +150,11 @@ const addHandler = async () => {
       text: '已有相同名稱',
     });
   }
+};
+
+//一鍵輸入
+const inputHandler = () => {
+  product.value = { productName: '咖啡', unitPrice: '70', productType: '飲品' };
 };
 
 const openUploadDialog = async () => {

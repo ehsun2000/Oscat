@@ -3,9 +3,9 @@ package com.oscat.cinema.service;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,12 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.oscat.cinema.dao.MemberAdminRepository;
 import com.oscat.cinema.dto.AgeProportionDTO;
 import com.oscat.cinema.dto.GenderProportionDTO;
 import com.oscat.cinema.dto.JoinDateProportionDTO;
+import com.oscat.cinema.dto.MemberAdminDto;
 import com.oscat.cinema.entity.Member;
 
 import jakarta.transaction.Transactional;
@@ -29,15 +31,60 @@ import jakarta.transaction.Transactional;
 public class MemberAdminService {
 
 	private final MemberAdminRepository memberRepository;
+	private final PasswordEncoder pwdEncoder;
 
 	@Autowired
-	public MemberAdminService(MemberAdminRepository memberRepository) {
+	public MemberAdminService(MemberAdminRepository memberRepository, PasswordEncoder pwdEncoder) {
 		this.memberRepository = memberRepository;
+		this.pwdEncoder = pwdEncoder;
 	}
 
-	// 新增會員
-	public Member addMember(Member member) {
-		return memberRepository.save(member);
+	// 新增會員(密碼加密)
+	public MemberAdminDto addMember(MemberAdminDto memDto) {
+		Member member = new Member();
+		member.setMemberName(memDto.getMemberName());
+		member.setEmail(memDto.getEmail());
+		member.setPhone(memDto.getPhone());
+		member.setGender(memDto.getGender());
+		member.setBirthDate(memDto.getBirthDate());
+		member.setJoinDate(memDto.getJoinDate());
+		// 加密
+		String encoderPwd = pwdEncoder.encode(memDto.getPassword());
+		member.setPassword(encoderPwd);
+		member = memberRepository.save(member);
+		memDto.setMemberId(member.getMemberId());
+		return memDto;
+	}
+
+	// 更新會員資料
+	public Optional<MemberAdminDto> updateMember(MemberAdminDto memDto) {
+		Optional<Member> existingMember = memberRepository.findById(memDto.getMemberId());
+		if (existingMember.isPresent()) {
+			Member memberToUpdate = existingMember.get();
+			memberToUpdate.setMemberName(memDto.getMemberName());
+			memberToUpdate.setEmail(memDto.getEmail());
+			memberToUpdate.setPhone(memDto.getPhone());
+			memberToUpdate.setGender(memDto.getGender());
+			memberToUpdate.setBirthDate(memDto.getBirthDate());
+
+			// 不為空值(寫入新密碼)加密
+			if (memDto.getPassword() != null) {
+				memberToUpdate.setPassword(pwdEncoder.encode(memDto.getPassword()));
+			}
+			Member updateMember = memberRepository.save(memberToUpdate);
+			MemberAdminDto updatedDto = new MemberAdminDto();
+			updatedDto.setMemberId(updateMember.getMemberId());
+			updatedDto.setMemberName(updateMember.getMemberName());
+			updatedDto.setEmail(updateMember.getEmail());
+			updatedDto.setPassword(updateMember.getPassword());
+			updatedDto.setPhone(updateMember.getPhone());
+			updatedDto.setGender(updateMember.getGender());
+			updatedDto.setBirthDate(updateMember.getBirthDate());
+
+			return Optional.of(updatedDto);
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	// 根據id查找會員
@@ -76,24 +123,6 @@ public class MemberAdminService {
 			return "刪除成功";
 		} else {
 			return "找不到該會員";
-		}
-	}
-
-	// 更新會員資料
-	public Optional<Member> updateMember(Member newMember) {
-		Optional<Member> existingMember = memberRepository.findById(newMember.getMemberId());
-		if (existingMember.isPresent()) {
-			Member memberToUpdate = existingMember.get();
-			memberToUpdate.setMemberName(newMember.getMemberName());
-			memberToUpdate.setEmail(newMember.getEmail());
-			memberToUpdate.setPassword(newMember.getPassword());
-			memberToUpdate.setPhone(newMember.getPhone());
-			memberToUpdate.setGender(newMember.getGender());
-			memberToUpdate.setBirthDate(newMember.getBirthDate());
-
-			return Optional.of(memberRepository.save(memberToUpdate));
-		} else {
-			return Optional.empty();
 		}
 	}
 
@@ -222,17 +251,18 @@ public class MemberAdminService {
 		return joinDateProportion;
 	}
 
+	// 計算各生日月份人數
 	public Map<Integer, Long> calculateBirthDate() {
 		List<Object[]> result = memberRepository.countBirthDate();
 		Map<Integer, Long> birthResult = new HashMap<>();
-		
-		for(Object[] obj:result) {
+
+		for (Object[] obj : result) {
 			Integer month = (Integer) obj[0];
 			Long count = (Long) obj[1];
-			
+
 			birthResult.put(month, count);
 		}
-		
+
 		return birthResult;
 	}
 

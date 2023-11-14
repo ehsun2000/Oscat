@@ -373,5 +373,11 @@ public class ShowTimeManagerService {
 			showTime.setExtraFee(new BigDecimal(30));
 		}
 	}
+	
+//  透過ID找場次
+	public Optional<ShowTime> findShowTimeByIdForOfficial(UUID id) {
+		// 調用相應的 ShowTimeRepository 方法來查找特定 ID 的 show time
+		return showTimeRepository.findById(id);
+	}
 
 }
