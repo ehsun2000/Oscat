@@ -2,6 +2,7 @@ package com.oscat.cinema.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,10 +28,10 @@ import com.oscat.cinema.dto.CheckoutDataDTO;
 import com.oscat.cinema.dto.CinemaDTO;
 import com.oscat.cinema.dto.MovieDTO;
 import com.oscat.cinema.dto.OrderDTO;
+import com.oscat.cinema.dto.PriceCalculationDTO;
 import com.oscat.cinema.dto.ScreeningRoomDTO;
 import com.oscat.cinema.dto.SeatDTO;
 import com.oscat.cinema.dto.TicketTypeDTO;
-import com.oscat.cinema.entity.Member;
 import com.oscat.cinema.entity.Movie;
 import com.oscat.cinema.entity.Seat;
 import com.oscat.cinema.entity.ShowTime;
@@ -46,6 +46,7 @@ import com.oscat.cinema.service.impl.CinameInfoService;
 
 import ecpay.payment.integration.AllInOne;
 import ecpay.payment.integration.domain.AioCheckOutOneTime;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -181,9 +182,9 @@ public class OfficalBooking {
 		/* 商品名稱 */
 		aioCheck.setItemName("MovieTicket");
 		/* 特店交易編號 */
-		Random rand = new Random();
-		int randomNumber = rand.nextInt(900000) + 100000; // 這將保證生成的是一個六位數的數字
-		aioCheck.setMerchantTradeNo(String.valueOf(randomNumber));
+		String uuid = checkoutData.getOrderId().toString().replace("-", "");
+		String merchantTradeNo = uuid.substring(uuid.length() - 12);
+		aioCheck.setMerchantTradeNo(merchantTradeNo);
 		/* 付款完成通知回傳網址 */
 		aioCheck.setReturnURL("http://localhost:8080/api/offical/returnURL");
 		/* Client端回傳付款網址 */
@@ -211,6 +212,20 @@ public class OfficalBooking {
 	@GetMapping("/nameLike")
 	public List<Movie> findMovieByNameLike(@RequestParam("n") String name) {
 		return movRepo.findMovieByNameLike(name);
+	}
+
+	@PostMapping("/calculate")
+	public ResponseEntity<?> calculateTotalPrice(@RequestBody PriceCalculationDTO request) {
+		try {
+			BigDecimal totalPrice = bookingService.calculateTotalPrice(request.getCinemaName(), request.getShowtimeId(),
+					request.getTicketTypeCounts());
+			return new ResponseEntity<>(Map.of("totalPrice", totalPrice), HttpStatus.OK);
+		} catch (EntityNotFoundException enfe) {
+			return new ResponseEntity<>(enfe.getMessage(), HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred during price calculation.",
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

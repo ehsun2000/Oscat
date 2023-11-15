@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class CheckoutDataDTO {
     private String totalPrice;
-    private String tradeDesc;
+    private String orderId;
 }

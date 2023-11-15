@@ -5,7 +5,7 @@
         <router-link to="/" class="d-flex justify-content-start align-items-center text-decoration-none me-auto">
           <img
             rel="icon"
-            src="images/cat.png"
+            src="/images/cat.png"
             style="height: 40px; width: 40px"
           />
           <h3>OSCAT</h3>

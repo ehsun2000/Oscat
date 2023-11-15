@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore.js';
@@ -95,9 +95,54 @@ export default {
           }
         }
       });
+
+      const savedTotalPrice = localStorage.getItem('totalPrice');
+      if (savedTotalPrice) {
+        totalPrice.value = parseFloat(savedTotalPrice);
+      }
     });
 
+    const calculateTotalPrice = async () => {
+      const data = {
+        cinemaName: cinemaName.value,
+        showtimeId: showtimeId.value,
+        ticketTypeCounts: {},
+      };
+
+      // 使用 Set 去除重複的票類型 ID
+      const uniqueTicketTypeIds = [...new Set(ticketTypeIds.value)];
+
+      // 計算每種票類型的張數
+      uniqueTicketTypeIds.forEach((typeId) => {
+        const count = ticketTypeIds.value.filter((id) => id === typeId).length;
+        data.ticketTypeCounts[typeId] = count;
+      });
+
+      try {
+        // 在計算新的總價格之前，先從LocalStorage中刪除舊的總價格
+        localStorage.removeItem('totalPrice');
+
+        const response = await axios.post(`${api}/calculate`, data);
+        totalPrice.value = response.data.totalPrice;
+        console.log(response.data.totalPrice);
+
+        localStorage.setItem('totalPrice', totalPrice.value.toString());
+      } catch (error) {
+        console.error('計算總價格時發生錯誤:', error);
+        alert('無法計算總價格，請稍後再試。');
+      }
+    };
+
     const onSiteCheckout = async () => {
+      const originalTotalPrice = totalPrice.value; // 保存當前的總價格
+      await calculateTotalPrice(); // 計算最新的總價格
+
+      if (totalPrice.value !== originalTotalPrice) {
+        alert('結帳金額有誤，將更新為正確的金額。');
+        totalPrice.value = await calculateTotalPrice();
+        location.reload();
+        return;
+      }
       // 從API獲取已被預訂的座位ID
       let bookedSeatIds = [];
       try {
@@ -137,6 +182,7 @@ export default {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
           alert('訂票成功!');
+          localStorage.removeItem('totalPrice');
           router.push('/member-center');
         }
       } catch (error) {
@@ -153,6 +199,15 @@ export default {
     };
 
     const ecpayCheckout = async () => {
+      const originalTotalPrice = totalPrice.value; // 保存當前的總價格
+      await calculateTotalPrice(); // 計算最新的總價格
+
+      if (totalPrice.value !== originalTotalPrice) {
+        alert('結帳金額有誤，將更新為正確的金額。');
+        totalPrice.value = await calculateTotalPrice();
+        location.reload();
+        return;
+      }
       // 從API獲取已被預訂的座位ID
       let bookedSeatIds = [];
       try {
@@ -191,13 +246,17 @@ export default {
       try {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
-          const postData = {
+          const orderId = response.data;
+          console.log(response.data);
+          const ecpayData = {
             totalPrice: totalPrice.value.toString(),
-            tradeDesc: ticketDisplays.value.join(', '),
+            orderId: orderId,
           };
 
+          console.log(ecpayData);
+
           try {
-            const response = await axios.post(`${api}/goECPay`, postData);
+            const response = await axios.post(`${api}/goECPay`, ecpayData);
             // 假設後端現在返回一個含有重導URL的JSON物件
             if (response.data && response.data.redirectUrl) {
               // 如果是一個URL，就可以直接重導
@@ -227,9 +286,14 @@ export default {
 
     const cancelOrder = () => {
       if (confirm('真的要取消訂單嗎？')) {
+        localStorage.removeItem('totalPrice');
         router.push('/');
       }
     };
+
+    onUnmounted(() => {
+      localStorage.removeItem('totalPrice');
+    });
 
     return {
       movieName,

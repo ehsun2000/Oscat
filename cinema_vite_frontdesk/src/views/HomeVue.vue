@@ -88,7 +88,7 @@
         >
           <img
             rel="icon"
-            src="images/cat.png"
+            src="/images/cat.png"
             style="height: 40px; width: 32px"
           />
         </a>
