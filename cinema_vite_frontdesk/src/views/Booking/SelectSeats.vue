@@ -45,6 +45,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 export default {
   setup() {
@@ -224,7 +225,11 @@ export default {
       // 檢查是否選擇了足夠的座位
       if (selectedSeatsCount.value < totalTicketCount.value) {
         // 如果沒有，顯示警告
-        alert('請選擇所有座位後再進行結帳。');
+        Swal.fire({
+          icon: 'info',
+          title: '還有未選座位的票',
+          text: '請選擇所有座位後再進行結帳。',
+        });
       } else {
         // 如果足夠，則繼續導航
         let ticketQueryParams = {};

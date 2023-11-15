@@ -52,6 +52,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
+import Swal from 'sweetalert2';
 
 export default {
   setup() {
@@ -159,17 +160,33 @@ export default {
       const seatsToUpdate = seats.value.filter(
         (seat) => seat.tempStatus !== seat.seatStatus,
       );
+      try {
+        for (const seat of seatsToUpdate) {
+          const url = `${api}/seat/updateSeatStatusById?id=${seat.seatId}&status=${seat.tempStatus}`;
+          const response = await fetch(url, {
+            method: 'PUT',
+            credentials: 'include',
+          });
 
-      for (const seat of seatsToUpdate) {
-        const url = `${api}/seat/updateSeatStatusById?id=${seat.seatId}&status=${seat.tempStatus}`;
-        await fetch(url, {
-          method: 'PUT',
-          credentials: 'include',
+          if (!response.ok) {
+            throw new Error('網路請求失敗');
+          }
+        }
+
+        await getSeatStatus();
+
+        Swal.fire({
+          title: '變更成功',
+          text: '你選擇的座位狀態已經變更',
+          icon: 'success',
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '似乎發生了點問題...',
         });
       }
-      await getSeatStatus();
-      message.value = '更改成功';
-      messageType.value = 'success';
     };
 
     const maxSeatsPerRow = computed(() => {
@@ -225,9 +242,11 @@ export default {
   text-align: center;
 }
 .success-message {
+  font-size: large;
   color: green;
 }
 .error-message {
+  font-size: large;
   color: red;
 }
 .showButtons {

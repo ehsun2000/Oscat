@@ -147,7 +147,7 @@ public class OfficalBooking {
 	}
 
 	@PostMapping("/booking")
-	public ResponseEntity<String> createOrder(@RequestBody OrderDTO orderDTO, HttpSession session) {
+	public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderDTO, HttpSession session) {
 
 		UUID loginId = (UUID) session.getAttribute("loginMember");
 		if (loginId == null) {
@@ -156,8 +156,8 @@ public class OfficalBooking {
 		orderDTO.setMemberId(loginId);
 
 		try {
-			orderService.createOrder(orderDTO);
-			return new ResponseEntity<>("Order created successfully.", HttpStatus.CREATED);
+			UUID orderId = orderService.createOrder(orderDTO);
+			return new ResponseEntity<>(orderId, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error creating order: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

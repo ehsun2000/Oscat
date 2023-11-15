@@ -26,6 +26,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore.js';
+import Swal from 'sweetalert2';
 
 export default {
   setup() {
@@ -129,7 +130,11 @@ export default {
         localStorage.setItem('totalPrice', totalPrice.value.toString());
       } catch (error) {
         console.error('計算總價格時發生錯誤:', error);
-        alert('無法計算總價格，請稍後再試。');
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '無法計算總價格，請稍後再試。',
+        });
       }
     };
 
@@ -138,7 +143,11 @@ export default {
       await calculateTotalPrice(); // 計算最新的總價格
 
       if (totalPrice.value !== originalTotalPrice) {
-        alert('結帳金額有誤，將更新為正確的金額。');
+        Swal.fire({
+          icon: 'warning',
+          title: '總金額有誤',
+          text: '結帳金額有誤，將更新為正確的金額。',
+        });
         totalPrice.value = await calculateTotalPrice();
         location.reload();
         return;
@@ -152,7 +161,10 @@ export default {
         bookedSeatIds = response.data;
       } catch (error) {
         console.error('獲取已預訂座位ID失敗:', error);
-        alert('無法獲取座位資訊，請稍後再試。');
+        Swal.fire({
+          icon: 'error',
+          title: '無法獲取座位資訊，請稍後再試。',
+        });
         return;
       }
 
@@ -163,7 +175,11 @@ export default {
 
       if (isAnySeatBooked) {
         // 如果有座位已被預訂，通知用戶並返回選座位頁面
-        alert('座位已被預訂，請重新預定');
+        Swal.fire({
+          icon: 'warning',
+          title: '您選的座位已被預訂',
+          text: '將導向選位畫面，請重新預定',
+        });
         router.go(-1); // 將用戶踢回前一頁
         return;
       }
@@ -181,7 +197,11 @@ export default {
       try {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
-          alert('訂票成功!');
+          Swal.fire({
+            icon: 'success',
+            title: '訂票成功!',
+            text: '感謝您的購買',
+          });
           localStorage.removeItem('totalPrice');
           router.push('/member-center');
         }
@@ -189,7 +209,11 @@ export default {
         if (error.response && error.response.status === 401) {
           if (!userStore.isAuthenticated) {
             userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
-            alert('請先登入才能進行購票。');
+            Swal.fire({
+              icon: 'warning',
+              title: '請先登入才能進行購票。',
+              text: '將導向登入畫面，請登入或註冊會員。',
+            });
             router.push('/sign-in');
           }
         } else {
@@ -203,7 +227,11 @@ export default {
       await calculateTotalPrice(); // 計算最新的總價格
 
       if (totalPrice.value !== originalTotalPrice) {
-        alert('結帳金額有誤，將更新為正確的金額。');
+        Swal.fire({
+          icon: 'warning',
+          title: '總金額有誤',
+          text: '結帳金額有誤，將更新為正確的金額。',
+        });
         totalPrice.value = await calculateTotalPrice();
         location.reload();
         return;
@@ -217,7 +245,10 @@ export default {
         bookedSeatIds = response.data;
       } catch (error) {
         console.error('獲取已預訂座位ID失敗:', error);
-        alert('無法獲取座位資訊，請稍後再試。');
+        Swal.fire({
+          icon: 'error',
+          title: '無法獲取座位資訊，請稍後再試。',
+        });
         return;
       }
 
@@ -228,7 +259,11 @@ export default {
 
       if (isAnySeatBooked) {
         // 如果有座位已被預訂，通知用戶並返回選座位頁面
-        alert('座位已被預訂，請重新預定');
+        Swal.fire({
+          icon: 'warning',
+          title: '您選的座位已被預訂',
+          text: '將導向選位畫面，請重新預定',
+        });
         router.go(-1); // 將用戶踢回前一頁
         return;
       }
@@ -247,13 +282,10 @@ export default {
         const response = await axios.post(`${api}/booking`, postData);
         if (response.status === 201) {
           const orderId = response.data;
-          console.log(response.data);
           const ecpayData = {
             totalPrice: totalPrice.value.toString(),
             orderId: orderId,
           };
-
-          console.log(ecpayData);
 
           try {
             const response = await axios.post(`${api}/goECPay`, ecpayData);
@@ -275,7 +307,11 @@ export default {
         if (error.response && error.response.status === 401) {
           if (!userStore.isAuthenticated) {
             userStore.setRedirectAfterLogin(router.currentRoute.value.fullPath);
-            alert('請先登入才能進行購票。');
+            Swal.fire({
+              icon: 'warning',
+              title: '請先登入才能進行購票。',
+              text: '將導向登入畫面，請登入或註冊會員。',
+            });
             router.push('/sign-in');
           }
         } else {
@@ -285,10 +321,26 @@ export default {
     };
 
     const cancelOrder = () => {
-      if (confirm('真的要取消訂單嗎？')) {
-        localStorage.removeItem('totalPrice');
-        router.push('/');
-      }
+      Swal.fire({
+        title: '真的要取消訂單嗎？',
+        text: '您將取消訂單！',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '是的，取消訂單！',
+        cancelButtonText: '不，再讓我想想...',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('totalPrice');
+          router.push('/');
+          Swal.fire({
+            title: '已取消！',
+            text: '您的訂單已被取消。',
+            icon: 'success',
+          });
+        }
+      });
     };
 
     onUnmounted(() => {
