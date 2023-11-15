@@ -24,16 +24,23 @@ import AdminSideBar from '@/components/AdminSideBar.vue';
       -- 販售設定
   -->
   <!-- MainLayout.vue -->
-  <div class="container-fluid vh-100">
-    <div class="row h-100">
+  <div class="container-fluid h-100">
+    <div class="row vh-100">
       <div class="col-2 d-flex flex-column p-3">
         <AdminSideBar />
       </div>
-      <div class="col-10 mt-3">
+      <div class="col-10 h-100 wrapper">
         <router-view />
       </div>
     </div>
   </div>
 </template>
 
-<style scope></style>
+<style scope>
+.wrapper {
+  overflow: scroll;
+}
+.wrapper::-webkit-scrollbar {
+  display: none;
+}
+</style>

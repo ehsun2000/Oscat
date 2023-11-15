@@ -467,7 +467,7 @@ const showtimeInfo = async (e) => {
 <template>
   <div class="container">
     <div class="row text-center">
-      <h1>場次排程</h1>
+      <h1 class="mt-3">場次排程</h1>
       <div class="col-md-3 justify-content-start">
         <h2>{{ cinemaName }}</h2>
         <h3>{{ roomName }}</h3>
