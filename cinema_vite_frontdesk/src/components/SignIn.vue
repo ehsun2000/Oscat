@@ -37,6 +37,21 @@
     <button class="btn btn-primary w-100 py-2" type="submit" @click="signin">
       登入
     </button>
+    <hr />
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm"
+      @click="aijie"
+    >
+      aijie
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm mx-2"
+      @click="admin"
+    >
+      admin
+    </button>
     <p class="mt-5 mb-3 text-body-secondary">&copy; OSCAT 2023</p>
   </div>
 </template>
@@ -116,10 +131,20 @@ const signin = async () => {
   } catch (error) {
     console.log(error.response);
     await Swal.fire({
-      title: error.response.data.message,
+      title: error.response.data,
       icon: 'error',
     });
   }
+};
+
+// 一鍵輸入
+const aijie = () => {
+  (email.value = 'interpretationlove@gmail.com'),
+    (password.value = 'amberwuwuwu1274');
+};
+
+const admin = () => {
+  (email.value = 'admin@exampl.com'), (password.value = 'test1111');
 };
 </script>
 

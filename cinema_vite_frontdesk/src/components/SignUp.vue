@@ -7,16 +7,8 @@
           <div class="row g-3">
             <div class="col-sm-6">
               <label for="memberName" class="form-label">姓名</label>
-              <input
-                type="text"
-                class="form-control"
-                id="memberName"
-                :class="{ 'is-invalid': nameError }"
-                v-model="member.memberName"
-                required
-                @blur="checkNameBlur"
-                @input="checkName"
-              />
+              <input type="text" class="form-control" id="memberName" :class="{ 'is-invalid': nameError }"
+                v-model="member.memberName" required @blur="checkNameBlur" @input="checkName" />
               <div id="nameError" class="error-message text-danger">
                 {{ nameErrMsg }}
               </div>
@@ -24,16 +16,8 @@
 
             <div class="col-sm-6">
               <label for="phone" class="form-label">手機</label>
-              <input
-                type="text"
-                class="form-control"
-                id="phone"
-                :class="{ 'is-invalid': phoneError }"
-                v-model="member.phone"
-                @blur="checkPhoneBlur"
-                @input="checkPhone"
-                required
-              />
+              <input type="text" class="form-control" id="phone" :class="{ 'is-invalid': phoneError }"
+                v-model="member.phone" @blur="checkPhoneBlur" @input="checkPhone" required />
               <div id="phoneError" class="error-message text-danger">
                 {{ phoneErrMsg }}
               </div>
@@ -41,36 +25,24 @@
 
             <div class="col-12">
               <label for="email" class="form-label">信箱</label>
-              <input
-                type="text"
-                class="form-control"
-                id="email"
-                :class="{ 'is-invalid': emailError }"
-                v-model="member.email"
-                placeholder="name@example.com"
-                required
-                @blur="checkEmailBlur"
-                @input="checkEmail"
-              />
+              <input type="text" class="form-control" id="email" :class="{ 'is-invalid': emailError }"
+                v-model="member.email" placeholder="name@example.com" required @blur="checkEmailBlur"
+                @input="checkEmail" />
               <div id="emailError" class="error-message text-danger">
                 {{ emailErrMsg }}
               </div>
             </div>
 
             <div class="col-12">
-              <label for="password" class="form-label">密碼</label>
+              <label for="password" class="form-label">密碼
+                <span @click="toggleShowPassword">
+                  <i :class="[showPassword ? 'bi bi-eye' : 'bi bi-eye-slash']"></i>
+                </span>
+              </label>
               <div class="input-group has-validation">
-                <input
-                  type="password"
-                  class="mb-2 form-control"
-                  id="password"
-                  aria-describedby="inputGroupPrepend"
-                  :class="{ 'is-invalid': pwdError }"
-                  v-model="member.password"
-                  required
-                  @blur="checkPwdBlur"
-                  @input="checkPwd"
-                />
+                <input class="mb-2 form-control" :class="{ 'is-invalid': pwdError }"
+                  :type="showPassword ? 'text' : 'password'" v-model="member.password" @blur="checkPwdBlur"
+                  @input="checkPwd" required />
                 <div id="pwdError" class="error-message text-danger">
                   {{ pwdErrMsg }}
                 </div>
@@ -78,23 +50,12 @@
 
               <div class="col-md-6">
                 <label for="birthDate" class="form-label">生日</label>
-                <input
-                  type="date"
-                  class="mb-2 form-control"
-                  id="birthDate"
-                  v-model="member.birthDate"
-                  required
-                />
+                <input type="date" class="mb-2 form-control" id="birthDate" v-model="member.birthDate" required />
               </div>
 
               <div class="col-md-6">
                 <label for="gender" class="form-label">性別</label>
-                <select
-                  class="form-select"
-                  id="gender"
-                  v-model="member.gender"
-                  required
-                >
+                <select class="form-select" id="gender" v-model="member.gender" required>
                   <option selected disabled value="">...</option>
                   <option value="man">男</option>
                   <option value="female">女</option>
@@ -107,17 +68,9 @@
           <hr class="my-4" />
 
           <div class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              value=""
-              id="invalidCheck"
-              required
-            />
+            <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required />
             <label class="form-check-label" for="invalidCheck">
-              我已閱讀並同意<RouterLink :to="'/agreement'"
-                >使用條款/隱私政策</RouterLink
-              >
+              我已閱讀並同意<RouterLink :to="'/agreement'">使用條款/隱私政策</RouterLink>
             </label>
           </div>
 
@@ -125,6 +78,10 @@
 
           <button class="w-100 btn btn-primary btn-lg" type="submit">
             註冊
+          </button>
+          <hr />
+          <button type="button" class="btn btn-outline-secondary btn-sm" @click="demo">
+            註冊資料
           </button>
         </form>
       </div>
@@ -270,6 +227,13 @@ const checkPwd = () => {
   }
 };
 
+// 顯示密碼
+const showPassword = ref(false);
+
+const toggleShowPassword = () => {
+  showPassword.value = !showPassword.value;
+};
+
 // 註冊會員
 const register = async () => {
   await checkEmailRepeat();
@@ -301,6 +265,19 @@ const register = async () => {
   }
 };
 
+// 一鍵輸入
+const demo = () => {
+  member.value = {
+    memberName: 'aijie',
+    email: 'interpretationlove@gmail.com',
+    password: 'amberwuwuwu1274',
+    phone: '0987654321',
+    gender: 'female',
+    birthDate: '1996-08-09',
+  };
+};
+
+// 清除表單
 const restart = () => {
   member.value = ref(Member);
 };

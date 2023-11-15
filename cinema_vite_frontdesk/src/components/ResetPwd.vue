@@ -6,7 +6,7 @@
         <form class="needs-validation" @submit.prevent="onSubmit">
           <div class="row g-3">
             <div class="col-12">
-              <label for="password" class="form-label">密碼</label>
+              <label for="password" class="form-label">密碼 </label>
               <div class="input-group has-validation">
                 <input
                   type="password"
@@ -45,6 +45,14 @@
           <hr class="my-4" />
           <button class="w-100 btn btn-primary btn-lg" type="submit">
             重設密碼
+          </button>
+          <hr />
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            @click="pwd"
+          >
+            demo
           </button>
         </form>
       </div>
@@ -142,6 +150,12 @@ const onSubmit = async () => {
       icon: 'error',
     });
   }
+};
+
+// 一鍵輸入
+const pwd = () => {
+  password.value = 'aaaa1111';
+  checkPassword.value = 'aaaa1111';
 };
 </script>
 

@@ -27,6 +27,13 @@
         >
           返回
         </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          @click="demo"
+        >
+          demo
+        </button>
       </div>
     </div>
     <p class="mt-5 mb-3 text-body-secondary">&copy; OSCAT 2023</p>
@@ -78,30 +85,43 @@ const getOtp = async () => {
       icon: 'error',
     });
   } else {
-    const url = `${api}/member/sendOtp`;
-    const response = await axios.post(url, { email: email.value });
-    if (response.status === 200) {
-      const { value: otp } = await Swal.fire({
-        title: '請輸入驗證碼',
-        input: 'text',
-        inputAttributes: {
-          autocapitalize: 'off',
-        },
-        showCancelButton: true,
-        confirmButtonText: '確認',
-        cancelButtonText: '取消',
-        showLoaderOnConfirm: true,
-        preConfirm: (input) => {
-          if (!input) {
-            Swal.showValidationMessage('請輸入驗證碼');
-          }
-        },
-      });
-      if (otp) {
-        checkOtp(otp); // 在這裡調用驗證函式，傳入驗證碼
+    try {
+      const url = `${api}/member/sendOtp`;
+      const response = await axios.post(url, { email: email.value });
+      if (response.status === 200) {
+        const { value: otp } = await Swal.fire({
+          title: '請輸入驗證碼',
+          input: 'text',
+          inputAttributes: {
+            autocapitalize: 'off',
+          },
+          showCancelButton: true,
+          confirmButtonText: '確認',
+          cancelButtonText: '取消',
+          showLoaderOnConfirm: true,
+          preConfirm: (input) => {
+            if (!input) {
+              Swal.showValidationMessage('請輸入驗證碼');
+            }
+          },
+        });
+        if (otp) {
+          checkOtp(otp); // 在這裡調用驗證函式，傳入驗證碼
+        }
       }
-    }
+    } catch (error) {
+      await Swal.fire({
+        title: '查無信箱請註冊',
+        icon: 'error',
+        showConfirmButton: false,
+      });
+    }  
   }
+};
+
+// 一鍵輸入
+const demo = () => {
+  email.value = 'interpretationlove@gmail.com';
 };
 
 // 返回

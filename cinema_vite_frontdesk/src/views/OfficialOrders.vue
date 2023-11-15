@@ -34,8 +34,8 @@
             <p class="card-text">
               {{ formatDateTime(order.bookingDateAndTime) }}
             </p>
+            <h6>座位:</h6>
             <div v-for="ticket in order.tickets" :key="ticketId">
-              <h6>座位:</h6>
               <p class="card-text">
                 {{ ticket.seat }} ({{ ticket.ticketTypeName }})
               </p>
@@ -92,5 +92,14 @@ loadData();
 .custom-card {
   float: left;
   margin-right: 10px;
+}
+
+.card {
+  height: 460px;
+  overflow: scroll;
+}
+
+.card::-webkit-scrollbar {
+  display: none;
 }
 </style>
